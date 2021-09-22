@@ -3,11 +3,13 @@ package mashup.spring.perfumate.domain.entity.perfume
 import javax.persistence.*
 
 @Entity
-data class Brand(
+class PerfumeAccord(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val name: String,
-    val koreanName: String,
-    @OneToMany(mappedBy = "brand")
-    val perfumes : MutableList<Perfume> = mutableListOf()
+    @ManyToOne
+    @JoinColumn(name = "perfume_id")
+    val perfume: Perfume,
+    @ManyToOne
+    @JoinColumn(name = "accord_id")
+    val accord: Accord
 )

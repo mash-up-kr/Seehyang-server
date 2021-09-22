@@ -11,7 +11,11 @@ class Perfume(
     @Enumerated(EnumType.STRING)
     val gender: Gender,
     val thumbnailUrl: String,
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
-    val brand: Brand
+    val brand: Brand,
+    @OneToMany(mappedBy = "perfume")
+    val accords: MutableList<PerfumeAccord> = mutableListOf(),
+    @OneToMany(mappedBy = "perfume")
+    val notes: MutableList<PerfumeNote> = mutableListOf(),
 )
