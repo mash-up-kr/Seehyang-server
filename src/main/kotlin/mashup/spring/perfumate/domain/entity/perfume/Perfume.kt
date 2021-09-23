@@ -1,5 +1,6 @@
 package mashup.spring.perfumate.domain.entity.perfume
 
+import mashup.spring.perfumate.domain.entity.BaseTimeEntity
 import javax.persistence.*
 
 @Entity
@@ -18,4 +19,4 @@ class Perfume(
     val accords: MutableList<PerfumeAccord> = mutableListOf(),
     @OneToMany(mappedBy = "perfume")
     val notes: MutableList<PerfumeNote> = mutableListOf(),
-)
+) : BaseTimeEntity()

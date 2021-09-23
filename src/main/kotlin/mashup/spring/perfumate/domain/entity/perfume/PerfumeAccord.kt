@@ -1,5 +1,6 @@
 package mashup.spring.perfumate.domain.entity.perfume
 
+import mashup.spring.perfumate.domain.entity.BaseTimeEntity
 import javax.persistence.*
 
 @Entity
@@ -12,4 +13,4 @@ class PerfumeAccord(
     @ManyToOne
     @JoinColumn(name = "accord_id")
     val accord: Accord
-)
+) : BaseTimeEntity()
