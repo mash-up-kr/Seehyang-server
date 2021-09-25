@@ -18,7 +18,7 @@ class Comment(
      * Comment Self-Join
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
     val parent : Comment,
 
     @OneToMany(mappedBy = "parent")
@@ -31,6 +31,10 @@ class Comment(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    val post: Post
+    val post: Post,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    val user : User
 
 ) : BaseTimeEntity()
