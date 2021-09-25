@@ -18,10 +18,10 @@ class Comment(
      * Comment Self-Join
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
+    @JoinColumn(name = "parent_id")
     val parent : Comment,
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "parent")
     val children : MutableList<Comment> = mutableListOf(),
 
     /**

@@ -14,7 +14,7 @@ class Post(
 
     /**
      * ========== One to Many ==========
-     * Like, Comment
+     * Like, Comment, TagPost
      */
 
     /**
@@ -28,6 +28,12 @@ class Post(
      */
     @OneToMany(mappedBy = "post")
     val comments : MutableList<Comment> = mutableListOf(),
+
+    /**
+     * Post는 여러개의 Tag를 가질 수 있다.
+     */
+    @OneToMany(mappedBy = "post")
+    val posts: MutableList<TagPost> = mutableListOf(),
 
 
 
