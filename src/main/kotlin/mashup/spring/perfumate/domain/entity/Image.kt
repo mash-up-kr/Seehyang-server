@@ -10,4 +10,4 @@ class Image (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     val url : String
-)
+) : BaseTimeEntity()
