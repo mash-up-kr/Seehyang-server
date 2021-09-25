@@ -26,8 +26,8 @@ class Post(
     /**
      * Post는 여러개의 Comments를 가질 수 있다.
      */
-    @OneToMany(mappedBy = "post")
-    val comments : MutableList<Comment> = mutableListOf(),
+//    @OneToMany(mappedBy = "post")
+//    val comments : MutableList<Comment> = mutableListOf(),
 
     /**
      * Post는 여러개의 Tag를 가질 수 있다.
