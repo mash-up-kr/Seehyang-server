@@ -1,7 +1,9 @@
 package mashup.spring.perfumate.controller.api
 
-import mashup.spring.perfumate.controller.dto.perfume.PerfumeDto
+import mashup.spring.perfumate.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.perfumate.service.PerfumeService
+import mashup.spring.perfumate.controller.api.response.PerfumateResponse
+import mashup.spring.perfumate.controller.api.response.PerfumateStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 
@@ -13,8 +15,8 @@ class PerfumeApiController(
     @GetMapping("/perfume/{id}")
     fun getPerfumeDetail(
         @PathVariable id: Long
-    ) : PerfumeDto {
+    ) : PerfumateResponse<PerfumeDto> {
         val perfume = perfumeService.get(id)
-        return PerfumeDto(perfume)
+        return PerfumateResponse(PerfumeDto(perfume))
     }
 }

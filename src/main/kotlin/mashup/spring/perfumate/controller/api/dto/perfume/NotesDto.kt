@@ -1,4 +1,4 @@
-package mashup.spring.perfumate.controller.dto.perfume
+package mashup.spring.perfumate.controller.api.dto.perfume
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import mashup.spring.perfumate.domain.entity.perfume.NoteType
