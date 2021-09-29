@@ -1,3 +1,6 @@
+# ===================================================================
+# SPRING BOOT PROPERTIES
+# ===================================================================
 spring:
   datasource:
     url: jdbc:h2:mem:test
@@ -12,3 +15,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    show-sql: true
+
+# ===================================================================
+# AWS PROPERTIES
+# ===================================================================
+cloud:
+  aws:
+    credentials:
+      accessKey: 'test'
+      secretKey: 'test'
+    s3:
+      bucket: 'test'
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
