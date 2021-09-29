@@ -3,7 +3,7 @@ name: perfumate-server
 on:
   push:
     branches:
-      - feature/image-upload-api
+      - develop
 
 jobs:
   build:
