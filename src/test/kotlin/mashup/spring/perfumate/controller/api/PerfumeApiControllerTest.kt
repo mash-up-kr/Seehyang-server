@@ -1,8 +1,9 @@
 package mashup.spring.perfumate.controller.api
 
-import mashup.spring.perfumate.controller.dto.perfume.PerfumeDto
+import mashup.spring.perfumate.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.perfumate.domain.entity.perfume.*
 import mashup.spring.perfumate.service.PerfumeService
+import mashup.spring.perfumate.controller.api.response.PerfumateResponse
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -26,14 +27,14 @@ class PerfumeApiControllerTest @Autowired constructor(
         val testPerfume = testPerfume()
         given(perfumeService.get(anyLong())).willReturn(testPerfume)
 
-        val actual: PerfumeDto = perfumeApiController.getPerfumeDetail(0L)
+        val actual: PerfumateResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L)
 
-        assertEquals(actual.id, testPerfume.id)
-        assertEquals(actual.brandId, testPerfume.brand.id)
-        assertEquals(actual.notes.base.size, 1)
-        assertEquals(actual.notes.middle.size, 1)
-        assertEquals(actual.notes.top.size, 0)
-        assertEquals(actual.accords.size, 1)
+        assertEquals(actual.data!!.id, testPerfume.id)
+        assertEquals(actual.data!!.brandId, testPerfume.brand.id)
+        assertEquals(actual.data!!.notes.base.size, 1)
+        assertEquals(actual.data!!.notes.middle.size, 1)
+        assertEquals(actual.data!!.notes.top.size, 0)
+        assertEquals(actual.data!!.accords.size, 1)
     }
 
     fun testPerfume() :Perfume {
