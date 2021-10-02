@@ -42,7 +42,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSOWRD}
-    url: jdbc:mysql://aa1mnxep5graj8m.c0jea8ollihw.ap-northeast-2.rds.amazonaws.com:3306
+    url: jdbc:mysql://aa1mnxep5graj8m.c0jea8ollihw.ap-northeast-2.rds.amazonaws.com:3306/aa1mnxep5graj8m
 
 #    url: jdbc:mysql://aa1mnxep5graj8m.c0jea8ollihw.ap-northeast-2.rds.amazonaws.com:3306
 #    hikari:
