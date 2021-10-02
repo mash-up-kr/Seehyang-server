@@ -4,7 +4,7 @@ import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import javax.persistence.*
 
 @Entity
-class TagPost (
+class StoryTag (
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -14,7 +14,7 @@ class TagPost (
     val tag: Tag,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    val post: Post
+    @JoinColumn(name = "story_id")
+    val story: Story
 
 ): BaseTimeEntity()

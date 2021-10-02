@@ -11,6 +11,6 @@ class Tag(
     val contents : String,
 
     @OneToMany(mappedBy = "tag")
-    val tagPosts: MutableList<TagPost> = mutableListOf()
+    val storyTags: MutableList<StoryTag> = mutableListOf()
 
 ):BaseTimeEntity()

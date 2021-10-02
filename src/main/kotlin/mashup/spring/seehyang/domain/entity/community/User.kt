@@ -29,7 +29,7 @@ class User(
      * User는 여러 개의 Post를 쓸 수 있다.
      */
     @OneToMany(mappedBy = "user")
-    val posts: MutableList<Post> = mutableListOf(),
+    val stories: MutableList<Story> = mutableListOf(),
 
     /**
      * User는 여러개의 like를 가질 수 있다.

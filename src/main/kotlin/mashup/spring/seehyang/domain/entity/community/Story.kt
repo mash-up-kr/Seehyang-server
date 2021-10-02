@@ -5,7 +5,7 @@ import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import javax.persistence.*
 
 @Entity
-class Post(
+class Story(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
@@ -13,26 +13,26 @@ class Post(
 
     /**
      * ========== One to Many ==========
-     * Like, Comment, TagPost
+     * Like, Comment, Tagstory
      */
 
     /**
-     * Post는 여러개의 Like를 가질 수 있다.
+     * story는 여러개의 Like를 가질 수 있다.
      */
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "story")
     val likes : MutableList<Like> = mutableListOf(),
 
     /**
-     * Post는 여러개의 Comments를 가질 수 있다.
+     * story는 여러개의 Comments를 가질 수 있다.
      */
-//    @OneToMany(mappedBy = "post")
+//    @OneToMany(mappedBy = "story")
 //    val comments : MutableList<Comment> = mutableListOf(),
 
     /**
-     * Post는 여러개의 Tag를 가질 수 있다.
+     * story는 여러개의 Tag를 가질 수 있다.
      */
-    @OneToMany(mappedBy = "post")
-    val posts: MutableList<TagPost> = mutableListOf(),
+    @OneToMany(mappedBy = "story")
+    val storys: MutableList<StoryTag> = mutableListOf(),
 
 
 
