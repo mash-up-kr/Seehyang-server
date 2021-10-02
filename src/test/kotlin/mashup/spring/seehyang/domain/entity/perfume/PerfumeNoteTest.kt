@@ -26,8 +26,7 @@ class PerfumeNoteTest @Autowired constructor(
 
     private val testNote = Note(
         name = "steel",
-        koreanName = "강철",
-        type = NoteType.BASE
+        koreanName = "강철"
     )
 
     private val testPerfume = Perfume(
@@ -47,7 +46,8 @@ class PerfumeNoteTest @Autowired constructor(
 
         val perfumeNote = PerfumeNote(
             perfume = testPerfume,
-            note = testNote
+            note = testNote,
+            type = NoteType.TOP
         )
 
         perfumeNoteRepository.save(perfumeNote)

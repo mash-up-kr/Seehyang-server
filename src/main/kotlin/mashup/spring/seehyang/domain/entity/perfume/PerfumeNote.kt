@@ -12,5 +12,6 @@ class PerfumeNote(
     val perfume: Perfume,
     @ManyToOne
     @JoinColumn(name = "note_id")
-    val note: Note
+    val note: Note,
+    val type: NoteType
 ) : BaseTimeEntity()
