@@ -22,6 +22,8 @@ class StoryService(
         val perfume = perfumeRepository.findById(storyCreateRequest.perfumeId).get()
         val image = imageRepository.findById(storyCreateRequest.imageId).get()
 
+        // TODO : Tag 작업 해야함.
+
         val story = Story(
             perfume = perfume,
             user=user,
