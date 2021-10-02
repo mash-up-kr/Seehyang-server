@@ -30,8 +30,8 @@ class Comment(
      */
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    val post: Post,
+    @JoinColumn(name = "story_id")
+    val story: Story,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
