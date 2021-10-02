@@ -2,6 +2,7 @@ package mashup.spring.seehyang.domain.entity.community
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
+import mashup.spring.seehyang.domain.entity.user.User
 import javax.persistence.*
 
 @Entity
@@ -25,8 +26,8 @@ class Story(
     /**
      * story는 여러개의 Comments를 가질 수 있다.
      */
-//    @OneToMany(mappedBy = "story")
-//    val comments : MutableList<Comment> = mutableListOf(),
+    @OneToMany(mappedBy = "story")
+    val comments : MutableList<Comment> = mutableListOf(),
 
     /**
      * story는 여러개의 Tag를 가질 수 있다.
