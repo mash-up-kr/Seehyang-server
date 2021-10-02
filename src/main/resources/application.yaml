@@ -4,10 +4,10 @@
 spring:
   datasource:
     url: jdbc:h2:mem:test
-    hikari:
-      username: sa
-      password:
-      driver-class-name: org.h2.Driver
+#    hikari:
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
@@ -39,15 +39,20 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:mysql://aa1mnxep5graj8m.c0jea8ollihw.ap-northeast-2.rds.amazonaws.com:3306/aa1mnxep5graj8m
-    hikari:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      username: ${DB_USERNAME}
-      password: ${DB_PASSOWRD}
+    url: jdbc:mysql://seehyang.c0jea8ollihw.ap-northeast-2.rds.amazonaws.com:3306/seehyang?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8
+#    hikari:
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
 
   jpa:
     hibernate:
       ddl-auto: create
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
 
 
