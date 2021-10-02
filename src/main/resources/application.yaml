@@ -39,17 +39,15 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSOWRD}
     url: jdbc:mysql://aa1mnxep5graj8m.c0jea8ollihw.ap-northeast-2.rds.amazonaws.com:3306/aa1mnxep5graj8m
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: ${DB_USERNAME}
+      password: ${DB_PASSOWRD}
 
-#    url: jdbc:mysql://aa1mnxep5graj8m.c0jea8ollihw.ap-northeast-2.rds.amazonaws.com:3306
-#    hikari:
-#      username: ${DB_USERNAME}
-#      password: ${DB_PASSOWRD}
-#      driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: create
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+
 
