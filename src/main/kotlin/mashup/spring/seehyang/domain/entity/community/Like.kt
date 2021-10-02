@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.domain.entity.community
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
+import mashup.spring.seehyang.domain.entity.user.User
 import javax.persistence.*
 
 @Entity

@@ -1,6 +1,9 @@
-package mashup.spring.seehyang.domain.entity.community
+package mashup.spring.seehyang.domain.entity.user
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
+import mashup.spring.seehyang.domain.entity.community.Comment
+import mashup.spring.seehyang.domain.entity.community.Like
+import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import javax.persistence.*
 
