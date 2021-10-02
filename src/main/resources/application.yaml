@@ -35,8 +35,9 @@ cloud:
 ---
 
 spring:
-  profiles:
-    on-profile: prod
+  config:
+    activate:
+      on-profile: prod
   datasource:
     url: aa1mnxep5graj8m.c0jea8ollihw.ap-northeast-2.rds.amazonaws.com:3306
     hikari:
