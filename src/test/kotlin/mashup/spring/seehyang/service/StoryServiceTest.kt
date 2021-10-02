@@ -48,13 +48,14 @@ class StoryServiceTest  @Autowired constructor(
 
     @Test
     fun storyCreateTest() {
-        val request = StoryCreateRequest(perfume.id!!, "오늘은 해커톤", image.id!!, mutableListOf("태그1", "태그2"))
+        val request = StoryCreateRequest(perfume.id!!, image.id!!, mutableListOf("태그1", "태그2"))
 
         val actual = storyService.create(user, request)
 
         // TODO : image 관계 테이블 생성 후 셋팅 테스트
         assertEquals(actual.perfume.id, perfume.id)
-        assertEquals(actual.contents, request.contents)
+        assertEquals(actual.image.id, image.id)
         assertEquals(actual.user.id, user.id)
     }
+
 }

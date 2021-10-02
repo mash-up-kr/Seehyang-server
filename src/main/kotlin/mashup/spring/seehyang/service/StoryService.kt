@@ -7,7 +7,9 @@ import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 @Service
 class StoryService(
     val storyRepository: StoryRepository,
@@ -21,11 +23,12 @@ class StoryService(
         val image = imageRepository.findById(storyCreateRequest.imageId).get()
 
         val story = Story(
-            contents = storyCreateRequest.contents,
             perfume = perfume,
-            user=user
+            user=user,
+            image = image
         )
         storyRepository.save(story)
         return story
     }
+
 }

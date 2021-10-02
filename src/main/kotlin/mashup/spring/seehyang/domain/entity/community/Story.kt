@@ -1,16 +1,25 @@
 package mashup.spring.seehyang.domain.entity.community
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
+import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.user.User
 import javax.persistence.*
 
 @Entity
 class Story(
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    val contents: String,
+
+    /**
+     * ========== One to One =========
+     */
+
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    val image: Image,
 
     /**
      * ========== One to Many ==========
@@ -33,7 +42,7 @@ class Story(
      * story는 여러개의 Tag를 가질 수 있다.
      */
     @OneToMany(mappedBy = "story")
-    val storys: MutableList<StoryTag> = mutableListOf(),
+    val storyTags: MutableList<StoryTag> = mutableListOf(),
 
 
 
