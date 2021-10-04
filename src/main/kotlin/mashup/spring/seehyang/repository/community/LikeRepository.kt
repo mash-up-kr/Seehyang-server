@@ -12,7 +12,7 @@ interface LikeRepository : JpaRepository<Like, Long> {
 
     @Query("select count(l) " +
                    "from Like l " +
-                   "join fetch l.story s " +
+                   "join l.story s " +
                    "where s.id = :storyId")
     fun countByStoryId(@Param("storyId") storyId: Long) : Long
 }

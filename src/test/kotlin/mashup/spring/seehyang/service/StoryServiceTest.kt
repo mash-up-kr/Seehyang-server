@@ -12,6 +12,8 @@ import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
+import mashup.spring.seehyang.repository.community.StoryTagRepository
+import mashup.spring.seehyang.repository.community.TagRepository
 import mashup.spring.seehyang.repository.perfume.BrandRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import mashup.spring.seehyang.repository.user.UserRepository
@@ -28,7 +30,9 @@ class StoryServiceTest  @Autowired constructor(
     val imageRepository: ImageRepository,
     val brandRepository: BrandRepository,
     val storyRepository: StoryRepository,
-    val perfumeRepository: PerfumeRepository
+    val perfumeRepository: PerfumeRepository,
+    val storyTagRepository: StoryTagRepository,
+    val tagRepository: TagRepository
 ) {
 
     private lateinit var user: User
@@ -36,8 +40,8 @@ class StoryServiceTest  @Autowired constructor(
     private lateinit var perfume: Perfume
     private lateinit var image: Image
 
-    private val storyService: StoryService = StoryService(storyRepository, imageRepository, perfumeRepository)
-
+    private val tagService : TagService = TagService(tagRepository, storyTagRepository)
+    private val storyService: StoryService = StoryService(storyRepository, imageRepository, perfumeRepository, storyTagRepository,tagService)
     @BeforeEach
     fun setUp() {
         user = userRepository.save(createTestUser())

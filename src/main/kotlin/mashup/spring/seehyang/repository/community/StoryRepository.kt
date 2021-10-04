@@ -14,30 +14,30 @@ interface StoryRepository : JpaRepository<Story, Long>{
 
     @Query("select s " +
            "from Story s " +
-               "join fetch s.user u " +
-               "join fetch u.profileImage pi " +
-               "join fetch s.perfume p " +
-               "join fetch s.image i " +
+               "join s.user u " +
+               "join u.profileImage pi " +
+               "join s.perfume p " +
+               "join s.image i " +
            "where p.id = :perfumeId " +
            "order by s.likeCount DESC")
     fun findByPerfumeIdOrderByLike(@Param("perfumeId") perfumeId: Long, pageable: Pageable) : Page<Story>
 
     @Query("select s " +
                    "from Story s " +
-                   "join fetch s.user u " +
-                   "join fetch u.profileImage pi " +
-                   "join fetch s.perfume p " +
-                   "join fetch s.image i " +
+                   "join s.user u " +
+                   "join u.profileImage pi " +
+                   "join s.perfume p " +
+                   "join s.image i " +
                    "where p.id = :perfumeId " +
                    "order by s.createdAt DESC")
     fun findByPerfumeIdOrderByDate(@Param("perfumeId") perfumeId: Long, pageable: Pageable) : Page<Story>
 
     @Query("select s " +
                    "from Story s " +
-                   "join fetch s.user u " +
-                   "join fetch u.profileImage pi " +
-                   "join fetch s.perfume p " +
-                   "join fetch s.image i " +
+                   "join s.user u " +
+                   "join u.profileImage pi " +
+                   "join s.perfume p " +
+                   "join s.image i " +
                    "where p.id = :perfumeId " +
                    "order by s.commentCount DESC")
     fun findByPerfumeIdOrderByComment(@Param("perfumeId") perfumeId: Long, pageable: Pageable) : Page<Story>
