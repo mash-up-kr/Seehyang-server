@@ -9,6 +9,7 @@ class Perfume(
     val id: Long? = null,
     val name: String,
     val koreanName: String,
+    @Enumerated(EnumType.STRING)
     val type: PerfumeType,
     @Enumerated(EnumType.STRING)
     val gender: Gender,

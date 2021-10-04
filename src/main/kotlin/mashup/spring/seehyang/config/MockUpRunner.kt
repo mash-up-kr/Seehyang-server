@@ -14,10 +14,10 @@ class MockUpRunner (
 
     override fun run(args: ApplicationArguments?) {
 
-        val adam = User(gender = Gender.M, age = 25, nickname = "Adam", email= "ILoveEve@naver.com")
-        val eve = User(gender = Gender.W, age = 23, nickname = "Eve", email= "ILoveAdam@naver.com" )
-        userRepository.save(adam)
-        userRepository.save(eve)
+//        val adam = User(gender = Gender.M, age = 25, nickname = "Adam", email= "ILoveEve@naver.com")
+//        val eve = User(gender = Gender.W, age = 23, nickname = "Eve", email= "ILoveAdam@naver.com" )
+//        userRepository.save(adam)
+//        userRepository.save(eve)
 
     }
 }
