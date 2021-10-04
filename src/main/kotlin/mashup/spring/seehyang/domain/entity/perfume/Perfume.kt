@@ -7,8 +7,8 @@ import javax.persistence.*
 class Perfume(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val name: String,
-    val koreanName: String,
+    var name: String,
+    var koreanName: String,
     @Enumerated(EnumType.STRING)
     val type: PerfumeType,
     @Enumerated(EnumType.STRING)
