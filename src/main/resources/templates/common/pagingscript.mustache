@@ -1,0 +1,15 @@
+<script>
+    let pageInput = document.getElementById("page-input")
+    let pageButton = document.getElementById("page-move")
+
+    pageButton.addEventListener("click", function () {
+        let page = pageInput.value;
+        let url = new URL(location.href);
+        let search_params = url.searchParams;
+
+        search_params.set('page', page);
+        url.search = search_params.toString();
+
+        location.href = url
+    });
+</script>

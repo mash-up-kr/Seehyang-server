@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Seehyang</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/black-dashboard.css">
+</head>
+<body>
+<div class="wrapper">
+    {{>common/sidebar}}
+    <div class="main-panel">
+        {{>common/navbar}}
+        <div class="content">
+            <div class="header-title">Perfumes</div>
+            <br>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="table-dark">Id</th>
+                        <th>Brand</th>
+                        <th>Name</th>
+                        <th>Korean Name</th>
+                        <th>Type</th>
+                        <th>Gender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#items}}
+                        <tr>
+                            <td class="table-dark">{{id}}</td>
+                            <td>{{brand.name}}</td>
+                            <td><a href="/tteokbokki/entity/Perfume/{{id}}">{{name}}</a></td>
+                            <td>{{koreanName}}</td>
+                            <td>{{^type}}입력하지 않음{{/type}}</td>
+                            <td>{{gender}}</td>
+                        </tr>
+                    {{/items}}
+                </tbody>
+            </table>
+
+            <div class="card">
+                페이지 이동
+                <input id="page-input" class="input-group-sm" value="{{currentPage}}"> / {{maxPage}}
+                <button id="page-move">이동</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+{{>common/commonscript}}
+{{>common/pagingscript}}
+</body>
+</html>
