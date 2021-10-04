@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.domain.entity.user
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
+import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.community.Comment
 import mashup.spring.seehyang.domain.entity.community.Like
 import mashup.spring.seehyang.domain.entity.community.Story
@@ -27,7 +28,6 @@ class User(
      * Post, Like, Comment
      */
 
-
     /**
      * User는 여러 개의 Post를 쓸 수 있다.
      */
@@ -44,7 +44,16 @@ class User(
      * User는 여러 개의 Comment를 가질 수 있다.
      */
     @OneToMany(mappedBy = "user")
-    val comments: MutableList<Comment> = mutableListOf()
+    val comments: MutableList<Comment> = mutableListOf(),
+
+
+    /**
+     * ============== One to One =============
+     */
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    val profileImage: Image? = null
+
 
 
 ) : BaseTimeEntity()

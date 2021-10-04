@@ -12,12 +12,15 @@ class Story(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
+    val likeCount: Int = 0,
+    val commentCount: Int = 0,
+
 
     /**
      * ========== One to One =========
      */
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     val image: Image,
 
@@ -65,4 +68,6 @@ class Story(
     @JoinColumn(name = "user_id")
     val user : User
 
-) : BaseTimeEntity()
+) : BaseTimeEntity(){
+
+}
