@@ -13,9 +13,9 @@ class CommentService(
     val commentRepository: CommentRepository
 ) {
 
-    fun addComment(storyId: Long){
-        commentRepository.
-    }
+    //fun addComment(storyId: Long){
+        //commentRepository.
+    //}
 
     @Transactional(readOnly = true)
     fun getTopLevelComment(storyId: Long, pageable: Pageable)
