@@ -13,31 +13,25 @@
     <div class="main-panel">
         {{>common/navbar}}
         <div class="content">
-            <div class="header-title">Perfumes</div>
+            <div class="header-title">Brands</div>
             <br>
 
             <table class="table">
                 <thead>
-                    <tr>
-                        <th class="table-dark">Id</th>
-                        <th>Brand</th>
-                        <th>Name</th>
-                        <th>Korean Name</th>
-                        <th>Type</th>
-                        <th>Gender</th>
-                    </tr>
+                <tr>
+                    <th class="table-dark">Id</th>
+                    <th>Name</th>
+                    <th>Korean Name</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {{#items}}
-                        <tr>
-                            <td class="table-dark">{{id}}</td>
-                            <td>{{brand.name}}</td>
-                            <td><a href="/tteokbokki/entity/Perfume/{{id}}?page={{currentPage}}">{{name}}</a></td>
-                            <td>{{koreanName}}</td>
-                            <td>{{^type}}입력하지 않음{{/type}}</td>
-                            <td>{{gender}}</td>
-                        </tr>
-                    {{/items}}
+                {{#items}}
+                    <tr>
+                        <td class="table-dark">{{id}}</td>
+                        <td><a href="/tteokbokki/entity/Brand/{{id}}?page={{currentPage}}">{{name}}</a></td>
+                        <td>{{koreanName}}</td>
+                    </tr>
+                {{/items}}
                 </tbody>
             </table>
 
