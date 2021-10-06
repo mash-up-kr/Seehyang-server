@@ -27,13 +27,18 @@ class StoryService(
     val tagService: TagService
 ) {
 
+    fun getStory(id: Long): Story {
+        val story = storyRepository.findById(id).get()
+        return story
+    }
+
     /**
      * StoryCreateRequest
      * perfumeId : Long
      * imageId : Long
      * tags : MutableList<String>
      */
-    fun create(user: User, storyCreateRequest: StoryCreateRequest): Story {
+    fun create(user: User, storyCreateRequest: StoryCreateRequest): StoryDto {
 
         // TODO : Entity Not Found 에러 핸들링
         val perfume = perfumeRepository.findById(storyCreateRequest.perfumeId).get()
@@ -50,7 +55,7 @@ class StoryService(
 
         tagService.addTagsToStory(savedStory, tags)
 
-        return savedStory
+        return StoryDto(savedStory)
     }
 
 

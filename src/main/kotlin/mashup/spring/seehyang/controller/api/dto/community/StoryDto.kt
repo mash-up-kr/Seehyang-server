@@ -2,6 +2,7 @@ package mashup.spring.seehyang.controller.api.dto.community
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import mashup.spring.seehyang.domain.entity.community.Story
+import mashup.spring.seehyang.domain.entity.community.Tag
 import java.time.LocalDateTime
 
 data class StoryDto(
@@ -9,8 +10,8 @@ data class StoryDto(
     val story: Story,
     val id: Long = story.id!!,
     val image: String = story.image.url,
-    val perfumeImageUrl : String = story.perfume.thumbnailUrl,
-    val tags: MutableList<TagDto> = mutableListOf()
+    val perfumeImageUrl: String = story.perfume.thumbnailUrl,
+    val tags: List<TagDto> = story.storyTags.map { TagDto(it.tag) }
 )
 
 data class StoryDetailDto(

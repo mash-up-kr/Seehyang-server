@@ -70,4 +70,8 @@ class Story(
 
 ) : BaseTimeEntity(){
 
+    fun addStoryTag(storyTag: StoryTag) {
+        storyTags.add(storyTag)
+    }
+
 }
