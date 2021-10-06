@@ -8,6 +8,7 @@ data class PerfumeDto(
     val perfume: Perfume,
     val id: Long? = perfume.id,
     val name: String = perfume.name,
+    val thumbnailUrl: String = perfume.thumbnailUrl,
     val koreanName: String = perfume.koreanName,
     val brandId: Long? = perfume.brand.id,
     val brandName: String = perfume.brand.koreanName,
@@ -22,6 +23,7 @@ data class PerfumeDto(
         return "PerfumeDto(" +
                 "id=$id, " +
                 "name=$name, " +
+                "thumbnailUrl=$thumbnailUrl, " +
                 "brandId=$brandId, " +
                 "brandName=$brandName, " +
                 "koreanName=$koreanName, " +

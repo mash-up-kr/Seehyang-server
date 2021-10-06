@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Seehyang</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/black-dashboard.css">
+</head>
+<body>
+<div class="wrapper">
+    {{>common/sidebar}}
+    <div class="main-panel">
+        {{>common/navbar}}
+        <div class="content">
+            <a href="/tteokbokki/entity/Perfume?page={{prevPage}}"><p class="text-primary font-weight-bold"><- 뒤로가기</p></a>
+            <h1>{{item.name}}</h1>
+
+            <div class="card-image">
+                <img src="https://elasticbeanstalk-ap-northeast-2-306614265263.s3.ap-northeast-2.amazonaws.com/application/image/perfume/{{item.thumbnailUrl}}">
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">이름</h3>
+                    </div>
+                    <div class="card-body">
+                        <input id="nameInput" value="{{item.name}}" class="input-group-sm">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">번역이름</h3>
+                    </div>
+                    <div class="card-body">
+                        <input id="koreanNameInput"value="{{item.koreanName}}" class="input-group-sm">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">브랜드 번역 이름</h3>
+                    </div>
+                    <div class="card-body">
+                        <input value="{{item.brandName}}" disabled class="input-group-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <button id="saveButton" class="ui-button" onclick="save({{item.id}})">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{>common/commonscript}}
+<script src="/js/perfume/perfume-detail.js"></script>
+</body>
+</html>

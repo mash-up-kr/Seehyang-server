@@ -7,8 +7,8 @@ import javax.persistence.*
 class Brand(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val name: String,
-    val koreanName: String,
+    var name: String,
+    var koreanName: String,
     @OneToMany(mappedBy = "brand")
     val perfumes : MutableList<Perfume> = mutableListOf()
 ) : BaseTimeEntity()
