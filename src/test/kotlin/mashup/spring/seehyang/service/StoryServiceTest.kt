@@ -35,6 +35,9 @@ class StoryServiceTest  @Autowired constructor(
     val tagRepository: TagRepository
 ) {
 
+    private val expectedTag: String ="태그1"
+    private val expectedTag2: String ="태그2"
+
     private lateinit var user: User
     private lateinit var brand: Brand
     private lateinit var perfume: Perfume
@@ -52,14 +55,12 @@ class StoryServiceTest  @Autowired constructor(
 
     @Test
     fun storyCreateTest() {
-        val request = StoryCreateRequest(perfume.id!!, image.id!!, mutableListOf("태그1", "태그2"))
+        val request = StoryCreateRequest(perfume.id!!, image.id!!, mutableListOf(expectedTag, expectedTag2))
 
         val actual = storyService.create(user, request)
-
-        // TODO : image 관계 테이블 생성 후 셋팅 테스트
-        assertEquals(actual.perfume.id, perfume.id)
-        assertEquals(actual.image.id, image.id)
-        assertEquals(actual.user.id, user.id)
+        
+        assertEquals(expectedTag, actual.tags[0].contents)
+        assertEquals(expectedTag2, actual.tags[1].contents)
     }
 
 }
