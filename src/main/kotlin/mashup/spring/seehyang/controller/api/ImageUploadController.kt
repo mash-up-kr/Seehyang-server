@@ -18,7 +18,6 @@ class ImageUploadController(
     fun upload(@RequestParam("image") multipartFile: MultipartFile): SeehyangResponse<Long> {
         //TODO: 에러 핸들링 imageUrl NPE?
         val imageUrl = awsS3UploadService.upload(multipartFile, "application/image/post")
-        println(imageUrl)
         val image = Image(url = imageUrl!!)
         imageRepository.save(image)
         return SeehyangResponse(image.id!!)

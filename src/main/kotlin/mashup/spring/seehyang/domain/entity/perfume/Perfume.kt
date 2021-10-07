@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.domain.entity.perfume
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
+import mashup.spring.seehyang.domain.entity.community.Story
 import javax.persistence.*
 
 @Entity
@@ -21,4 +22,6 @@ class Perfume(
     val accords: MutableList<PerfumeAccord> = mutableListOf(),
     @OneToMany(mappedBy = "perfume")
     val notes: MutableList<PerfumeNote> = mutableListOf(),
+    @OneToMany(mappedBy = "perfume")
+    val stories: MutableList<Story> = mutableListOf(),
 ) : BaseTimeEntity()
