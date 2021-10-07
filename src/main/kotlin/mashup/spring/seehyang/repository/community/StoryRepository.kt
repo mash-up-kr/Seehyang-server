@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.repository.community
 
 import mashup.spring.seehyang.domain.entity.community.Story
+import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
@@ -41,5 +42,7 @@ interface StoryRepository : JpaRepository<Story, Long>{
                    "where p.id = :perfumeId " +
                    "order by s.commentCount DESC")
     fun findByPerfumeIdOrderByComment(@Param("perfumeId") perfumeId: Long, pageable: Pageable) : Page<Story>
+
+    fun findTop10ByPerfumeIdOrderByLikeCountDesc(perfumeId: Long?): List<Story>
 
 }
