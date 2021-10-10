@@ -45,4 +45,7 @@ interface StoryRepository : JpaRepository<Story, Long>{
 
     fun findTop10ByPerfumeIdOrderByLikeCountDesc(perfumeId: Long?): List<Story>
 
+    // 임시 메소드
+    fun findTop10By() : List<Story>
+
 }
