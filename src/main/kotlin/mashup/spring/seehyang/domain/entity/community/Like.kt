@@ -4,6 +4,7 @@ import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import javax.persistence.*
 
 @Entity
+@Table(name = "like_table")
 class Like(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
