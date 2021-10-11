@@ -57,3 +57,12 @@ spring:
     show-sql: true
 
 
+
+
+# ===================================================================
+# JWT PROPERTIES
+# ===================================================================
+jwt:
+  tokenSecretKey: ${JWT_TOKEN_SECRET_KEY}
+  tokenIssuer: ${JWT_TOKEN_ISSUER}
+  tokenType: ${JWT_TOKEN_TYPE}

@@ -4,6 +4,7 @@ import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.community.Comment
 import mashup.spring.seehyang.domain.entity.community.Like
+import mashup.spring.seehyang.domain.entity.community.OAuthType
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import javax.persistence.*
@@ -15,13 +16,16 @@ class User(
     val id: Long? = null,
 
     @Enumerated(EnumType.STRING)
-    val gender: Gender,
+    var gender: Gender? = null,
 
-    val age: Short,
+    var age: Short? = null,
 
-    val nickname: String,
+    var nickname: String? = null,
 
     val email: String,
+
+    @Enumerated(EnumType.STRING)
+    val oAuthType: OAuthType,
 
     /**
      * ========== One to Many ==========
