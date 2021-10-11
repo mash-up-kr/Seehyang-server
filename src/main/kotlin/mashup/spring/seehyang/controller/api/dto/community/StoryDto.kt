@@ -18,7 +18,7 @@ data class StoryDto(
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class StoryDetailDto(
     val id: Long,
-    val userNickname: String,
+    val userNickname: String?,
     val userProfileUrl: String,
     val commentCount: Int? = null,
     val likeCount: Int,
