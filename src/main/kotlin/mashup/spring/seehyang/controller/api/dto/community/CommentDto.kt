@@ -9,7 +9,7 @@ data class CommentDto (
     val comment: Comment,
 
     val id: Long = comment.id!!,
-    val nickname: String = comment.user.nickname,
+    val nickname: String? = comment.user.nickname,
     val createdAt : LocalDateTime = comment.createdAt,
     val contents: String = comment.contents,
     val replyCount: Int = comment.numOfReply,

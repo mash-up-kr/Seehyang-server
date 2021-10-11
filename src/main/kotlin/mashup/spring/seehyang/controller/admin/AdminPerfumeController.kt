@@ -26,11 +26,11 @@ class AdminPerfumeController(
         model : Model,
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ): String {
-        val pageRequest = PageRequest.of(page - 1, 20)
+        val pageRequest = PageRequest.of(page - 1, 30)
         val items = perfumeRepository.findAll(pageRequest).content
         val count = perfumeRepository.count()
 
-        val maxPage = if (count%20L==0L) count/20 else count/20 + 1
+        val maxPage = if (count%30L==0L) count/30 else count/30 + 1
 
         model.addAttribute("items", items)
         model.addAttribute("currentPage", page)

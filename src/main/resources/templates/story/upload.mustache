@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Seehyang</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/black-dashboard.css">
+</head>
+<body>
+<div class="wrapper">
+    {{>common/sidebar}}
+    <div class="main-panel">
+        {{>common/navbar}}
+        <div class="content">
+            <div class="header-title">스토리 업로드</div>
+
+            <form action="/tteokbokki/story/create.do" method="post" enctype="multipart/form-data">
+                <input type="file" name="image">
+                <p>태그를 콤마를 사용해서 구분 해 주세요. 띄어쓰기 및 특수문자 X</p>
+                <input type="text" placeholder="태그" name="tags">
+                <p>향수 ID를 적어주세요</p>
+                <input type="text" placeholder="향수 ID" name="perfumeId">
+                <input type="submit">
+            </form>
+            <button></button>
+
+        </div>
+    </div>
+</div>
+{{>common/commonscript}}
+{{>common/pagingscript}}
+</body>
+</html>
