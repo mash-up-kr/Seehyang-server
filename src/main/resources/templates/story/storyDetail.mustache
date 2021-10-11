@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Seehyang</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/black-dashboard.css">
+</head>
+<body>
+<div class="wrapper">
+    {{>common/sidebar}}
+    <div class="main-panel">
+        {{>common/navbar}}
+        <div class="content">
+            <a href="/tteokbokki/entity/Story?page={{prevPage}}"><p class="text-primary font-weight-bold"><- 뒤로가기</p></a>
+
+            스토리 이미지
+            <div class="card-image">
+                <img src="https://elasticbeanstalk-ap-northeast-2-306614265263.s3.ap-northeast-2.amazonaws.com/{{item.image}}" style="height: 500px; width: 400px">
+            </div>
+
+            <br>
+
+            향수 이미지
+            <div class="card-image">
+                <img src="https://elasticbeanstalk-ap-northeast-2-306614265263.s3.ap-northeast-2.amazonaws.com/application/image/perfume/{{item.perfumeImageUrl}}">
+            </div>
+
+            <div class="row">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">태그</h3>
+                    </div>
+                    {{#item.tags}}
+                    <div class="card-body">
+                        <input id="nameInput" value="{{contents}}" class="input-group-sm" disabled>
+                    </div>
+                    {{/item.tags}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{>common/commonscript}}
+<script src="/js/perfume/perfume-detail.js"></script>
+</body>
+</html>
