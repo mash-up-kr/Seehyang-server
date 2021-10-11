@@ -2,7 +2,6 @@ package mashup.spring.seehyang.controller.api
 
 import mashup.spring.seehyang.controller.api.dto.user.*
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
-import mashup.spring.seehyang.domain.entity.community.User
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest

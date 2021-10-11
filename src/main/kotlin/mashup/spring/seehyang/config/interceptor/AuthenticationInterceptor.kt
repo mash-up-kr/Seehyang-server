@@ -1,7 +1,7 @@
 package mashup.spring.seehyang.config.interceptor
 
 import mashup.spring.seehyang.controller.api.Authenticated
-import mashup.spring.seehyang.domain.entity.community.User
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.service.UserJwtService
 import mashup.spring.seehyang.service.UserService
 import org.springframework.stereotype.Component

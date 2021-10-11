@@ -3,7 +3,7 @@ package mashup.spring.seehyang.service
 import io.jsonwebtoken.Header
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import mashup.spring.seehyang.domain.entity.community.User
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.user.UserRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service

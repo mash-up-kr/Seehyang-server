@@ -24,6 +24,6 @@ data class TodayStory(
     val id: Long,
     val imageUrl: String,
     val userProfileImage: String?,
-    val userNickname: String,
+    val userNickname: String?,
     val likeCount: Int
 )
