@@ -1,5 +1,6 @@
 package mashup.spring.seehyang.controller.api
 
+import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.service.AwsS3UploadService
@@ -14,11 +15,11 @@ class ImageUploadController(
     private val imageRepository: ImageRepository
 ) {
     @PostMapping("/image")
-    fun upload(@RequestParam("image") multipartFile: MultipartFile): Long {
+    fun upload(@RequestParam("image") multipartFile: MultipartFile): SeehyangResponse<Long> {
         //TODO: 에러 핸들링 imageUrl NPE?
-        val imageUrl = awsS3UploadService.upload(multipartFile, "application/post")
+        val imageUrl = awsS3UploadService.upload(multipartFile, "application/image/post")
         val image = Image(url = imageUrl!!)
         imageRepository.save(image)
-        return image.id!!
+        return SeehyangResponse(image.id!!)
     }
 }

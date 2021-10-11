@@ -29,12 +29,14 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
 	// spring
+	implementation("org.springframework.boot:spring-boot-starter-mustache")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 
 	// library
     implementation("io.jsonwebtoken:jjwt:0.9.1")
+	implementation("org.mariadb.jdbc:mariadb-java-client:2.4.1")
 
 	// test
 	runtimeOnly("com.h2database:h2")

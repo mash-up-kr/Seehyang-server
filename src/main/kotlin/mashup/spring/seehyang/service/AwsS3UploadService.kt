@@ -28,10 +28,10 @@ class AwsS3UploadService(
 
     // S3로 파일 업로드하기
     private fun upload(uploadFile: File?, dirName: String): String? {
-        val fileName = dirName + "/" + UUID.randomUUID() + uploadFile?.name // S3에 저장된 파일 이름
+        val fileName = dirName + "/" + UUID.randomUUID() // S3에 저장된 파일 이름
         val uploadImageUrl = uploadFile?.let { putS3(it, fileName) } // s3로 업로드
         uploadFile?.let { removeNewFile(it) }
-        return uploadImageUrl
+        return fileName
     }
 
     // S3로 업로드

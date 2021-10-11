@@ -12,5 +12,7 @@ class PerfumeNote(
     val perfume: Perfume,
     @ManyToOne
     @JoinColumn(name = "note_id")
-    val note: Note
+    val note: Note,
+    @Enumerated(EnumType.STRING)
+    val type: NoteType
 ) : BaseTimeEntity()

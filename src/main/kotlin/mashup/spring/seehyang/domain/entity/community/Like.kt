@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.domain.entity.community
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
+import mashup.spring.seehyang.domain.entity.user.User
 import javax.persistence.*
 
 @Entity
@@ -19,7 +20,7 @@ class Like(
     val user : User,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    val post: Post
+    @JoinColumn(name = "story_id")
+    val story: Story
 
 ) : BaseTimeEntity()

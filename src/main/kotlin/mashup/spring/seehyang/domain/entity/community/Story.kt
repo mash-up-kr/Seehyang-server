@@ -1,38 +1,51 @@
 package mashup.spring.seehyang.domain.entity.community
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
+import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
+import mashup.spring.seehyang.domain.entity.user.User
 import javax.persistence.*
 
 @Entity
-class Post(
+class Story(
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    val contents: String,
+    val likeCount: Int = 0,
+    val commentCount: Int = 0,
+
+
+    /**
+     * ========== One to One =========
+     */
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    val image: Image,
 
     /**
      * ========== One to Many ==========
-     * Like, Comment, TagPost
+     * Like, Comment, Tagstory
      */
 
     /**
-     * Post는 여러개의 Like를 가질 수 있다.
+     * story는 여러개의 Like를 가질 수 있다.
      */
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "story")
     val likes : MutableList<Like> = mutableListOf(),
 
     /**
-     * Post는 여러개의 Comments를 가질 수 있다.
+     * story는 여러개의 Comments를 가질 수 있다.
      */
-//    @OneToMany(mappedBy = "post")
-//    val comments : MutableList<Comment> = mutableListOf(),
+    @OneToMany(mappedBy = "story")
+    val comments : MutableList<Comment> = mutableListOf(),
 
     /**
-     * Post는 여러개의 Tag를 가질 수 있다.
+     * story는 여러개의 Tag를 가질 수 있다.
      */
-    @OneToMany(mappedBy = "post")
-    val posts: MutableList<TagPost> = mutableListOf(),
+    @OneToMany(mappedBy = "story")
+    val storyTags: MutableList<StoryTag> = mutableListOf(),
 
 
 
@@ -55,4 +68,10 @@ class Post(
     @JoinColumn(name = "user_id")
     val user : User
 
-) : BaseTimeEntity()
+) : BaseTimeEntity(){
+
+    fun addStoryTag(storyTag: StoryTag) {
+        storyTags.add(storyTag)
+    }
+
+}

@@ -41,6 +41,7 @@ class BrandTest @Autowired constructor(
         val testPerfume = Perfume(
             name = "theBestPerfume",
             koreanName = "최고의향수",
+            type = PerfumeType.EAU_DE,
             gender = Gender.BOTH,
             thumbnailUrl = "best/best.jpg",
             brand = testBrand

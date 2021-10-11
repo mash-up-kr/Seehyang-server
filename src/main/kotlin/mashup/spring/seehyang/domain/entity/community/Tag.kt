@@ -8,9 +8,10 @@ class Tag(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
+    @Column(unique = true)
     val contents : String,
 
     @OneToMany(mappedBy = "tag")
-    val tagPosts: MutableList<TagPost> = mutableListOf()
+    val storyTags: MutableList<StoryTag> = mutableListOf()
 
 ):BaseTimeEntity()

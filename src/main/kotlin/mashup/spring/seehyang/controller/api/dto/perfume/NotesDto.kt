@@ -15,7 +15,7 @@ data class NotesDto(
 ) {
     init {
         perfume.notes.forEach {
-            when(it.note.type) {
+            when(it.type) {
                 NoteType.TOP -> top.add(NoteDto(it.note))
                 NoteType.MIDDLE -> middle.add(NoteDto(it.note))
                 NoteType.BASE -> base.add(NoteDto(it.note))

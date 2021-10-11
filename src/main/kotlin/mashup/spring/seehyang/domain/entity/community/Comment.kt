@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.domain.entity.community
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
+import mashup.spring.seehyang.domain.entity.user.User
 import javax.persistence.*
 
 @Entity
@@ -10,16 +11,18 @@ class Comment(
 
     val contents: String,
 
-    val numOfLike: Int,
+    val numOfLike: Int = 0,
 
-    val numOfDislike: Int,
+    val numOfDislike: Int = 0,
+
+    val numOfReply: Int = 0,
 
     /**
      * Comment Self-Join
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
-    val parent : Comment,
+    val parent : Comment?,
 
     @OneToMany(mappedBy = "parent")
     val children : MutableList<Comment> = mutableListOf(),
@@ -30,8 +33,8 @@ class Comment(
      */
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    val post: Post,
+    @JoinColumn(name = "story_id")
+    val story: Story,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

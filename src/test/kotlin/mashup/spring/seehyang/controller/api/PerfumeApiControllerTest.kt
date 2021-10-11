@@ -39,14 +39,14 @@ class PerfumeApiControllerTest @Autowired constructor(
 
     fun testPerfume() :Perfume {
         val brand = Brand(1L, "Chanel", "샤넬")
-        val baseNote = Note(1L, "base", "베이스", NoteType.BASE)
-        val middleNote = Note(2L, "top", "탑", NoteType.MIDDLE)
+        val baseNote = Note(1L, "base", "베이스")
+        val middleNote = Note(2L, "top", "탑")
         val accord = Accord(1L, "white", "화이트")
-        val perfume = Perfume(1L, "perfume", "향수", Gender.BOTH, "", brand)
+        val perfume = Perfume(1L, "perfume", "향수", type = PerfumeType.EAU_DE, Gender.BOTH, "", brand)
 
         perfume.accords.add(PerfumeAccord(1L, perfume, accord))
-        perfume.notes.add(PerfumeNote(1L, perfume, baseNote))
-        perfume.notes.add(PerfumeNote(2L, perfume, middleNote))
+        perfume.notes.add(PerfumeNote(1L, perfume, baseNote, NoteType.MIDDLE))
+        perfume.notes.add(PerfumeNote(2L, perfume, middleNote, NoteType.BASE))
 
         return perfume
     }

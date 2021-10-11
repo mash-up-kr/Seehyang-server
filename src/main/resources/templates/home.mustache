@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Seehyang</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/black-dashboard.css">
+</head>
+<body>
+    <div class="wrapper">
+        {{>common/sidebar}}
+        <div class="main-panel">
+            {{>common/navbar}}
+            <div class="content">
+                <div class="header-title">엔터티 목록</div>
+                <br>
+                <div class="row">
+                    {{#entities}}
+                        <div class="col-lg-4">
+                            <a href="/tteokbokki/entity/{{.}}">
+                                <div class="card card-chart">
+                                    <div class="card-header">
+                                        <h3 class="card-title"><i class="fas fa-item"></i>{{.}}</h3>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {{/entities}}
+                </div>
+                <div class="header-title">기능 목록</div>
+                <br>
+                <div class="row">
+                        <div class="col-lg-4">
+                            <a href="/tteokbokki/story/upload">
+                                <div class="card card-chart">
+                                    <div class="card-header">
+                                        <h3 class="card-title"><i class="fas fa-item"></i>스토리 업로드</h3>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{>common/commonscript}}
+</body>
+</html>
