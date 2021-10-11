@@ -11,19 +11,21 @@ class User(
     val id: Long? = null,
 
     @Enumerated(EnumType.STRING)
-    val gender: Gender,
+    var gender: Gender? = null,
 
-    val age: Short,
+    var age: Short? = null,
 
-    val nickname: String,
+    var nickname: String? = null,
 
     val email: String,
+
+    @Enumerated(EnumType.STRING)
+    val oAuthType: OAuthType,
 
     /**
      * ========== One to Many ==========
      * Post, Like, Comment
      */
-
 
     /**
      * User는 여러 개의 Post를 쓸 수 있다.
