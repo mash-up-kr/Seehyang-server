@@ -17,5 +17,5 @@ data class HotStoryDetailDto(
     val perfumeImageUrl: String = story.perfume.thumbnailUrl,
     val thumbnailUrl: String = story.image.url,
     val userProfileImageUrl: String? = story.user.profileImage?.url,
-    val userNickname: String = story.user.nickname
+    val userNickname: String? = story.user.nickname
 )

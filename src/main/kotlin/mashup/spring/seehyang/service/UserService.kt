@@ -1,7 +1,7 @@
 package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.user.*
-import mashup.spring.seehyang.domain.entity.community.User
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

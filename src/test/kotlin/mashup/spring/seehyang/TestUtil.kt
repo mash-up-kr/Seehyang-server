@@ -1,6 +1,7 @@
 package mashup.spring.seehyang
 
 import mashup.spring.seehyang.domain.entity.Image
+import mashup.spring.seehyang.domain.entity.community.OAuthType
 import mashup.spring.seehyang.domain.entity.perfume.Brand
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
@@ -12,7 +13,8 @@ fun createTestUser() : User{
         gender = Gender.BOTH,
         age = 99,
         nickname = "test",
-        email = "test@test.com"
+        email = "test@test.com",
+        oAuthType = OAuthType.GOOGLE
     )
 }
 
