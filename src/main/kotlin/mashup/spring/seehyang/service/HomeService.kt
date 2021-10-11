@@ -26,4 +26,8 @@ class HomeService(
         val todaySeehyangStories = storyRepository.findTop10ByPerfumeIdOrderByLikeCountDesc(randId)
         return todaySeehyangStories
     }
+
+    fun hotStory() : List<Story> {
+        return storyRepository.findTop10By()
+    }
 }
