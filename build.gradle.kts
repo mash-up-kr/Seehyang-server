@@ -27,6 +27,7 @@ dependencies {
 	// kotlin
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
 	// spring
 	implementation("org.springframework.boot:spring-boot-starter-mustache")
@@ -38,7 +39,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt:0.9.1")
 	implementation("org.mariadb.jdbc:mariadb-java-client:2.4.1")
 
-	// test
+    // test
 	runtimeOnly("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
