@@ -5,6 +5,7 @@ import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import javax.servlet.http.HttpServletRequest
 import kotlin.RuntimeException
 
 @Service
@@ -45,9 +46,9 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun getUserById(id: Long): UserResponse {
-        return UserResponse(user = userRepository.findById(id)
-            .orElseThrow { RuntimeException("Not found user...") })
+    fun getUser(request: HttpServletRequest): User {
+        return userRepository.findById(request.getAttribute("userId").toString().toLong())
+            .orElseThrow { RuntimeException("Not found user...") }
     }
 
     @Transactional(readOnly = true)

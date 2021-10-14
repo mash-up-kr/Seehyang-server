@@ -22,7 +22,7 @@ class Comment(
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
-    val parent : Comment?,
+    val parent : Comment? = null,
 
     @OneToMany(mappedBy = "parent")
     val children : MutableList<Comment> = mutableListOf(),

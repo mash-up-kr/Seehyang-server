@@ -1,8 +1,11 @@
 package mashup.spring.seehyang.service
 
+import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.domain.entity.community.Comment
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.community.CommentRepository
+import mashup.spring.seehyang.repository.community.StoryRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,12 +13,19 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @Service
 class CommentService(
+    val storyRepository: StoryRepository,
     val commentRepository: CommentRepository
 ) {
 
-    //fun addComment(storyId: Long){
-        //commentRepository.
-    //}
+    fun addComment(
+        user: User,
+        storyId: Long,
+        commentContents: String
+    ): Comment{
+        val story = storyRepository.findById(storyId).orElseThrow { RuntimeException("Entity Not Fount: Story") }
+        val comment = Comment(contents = commentContents, story = story, user = user)
+        return commentRepository.save(comment)
+    }
 
     @Transactional(readOnly = true)
     fun getTopLevelComment(storyId: Long, pageable: Pageable)

@@ -13,12 +13,12 @@ class UserController(
     @Authenticated
     @GetMapping("/user")
     fun getUser(
-        req: HttpServletRequest,
+        request: HttpServletRequest,
     ): SeehyangResponse<UserResponse> =
         SeehyangResponse(
-            userService.getUserById(
-                req.getAttribute("userId").toString().toLong())
+            UserResponse(userService.getUser(request)
         )
+    )
 
     @PostMapping("/user")
     fun signUpUser(
