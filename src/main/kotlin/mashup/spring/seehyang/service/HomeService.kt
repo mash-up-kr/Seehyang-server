@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.domain.entity.community.Story
+import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
@@ -29,5 +30,10 @@ class HomeService(
 
     fun hotStory() : List<Story> {
         return storyRepository.findTop10By()
+    }
+
+    fun weeklyRanking(): List<Perfume>{
+        val perfumes = perfumeRepository.findByStoryLengthGreaterThan()
+        return perfumes
     }
 }
