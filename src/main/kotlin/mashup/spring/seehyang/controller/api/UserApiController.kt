@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
 
 @ApiV1
-class UserController(
+class UserApiController(
     private val userService: UserService,
 ) {
     @Authenticated
