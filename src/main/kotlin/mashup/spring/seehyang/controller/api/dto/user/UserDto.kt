@@ -5,7 +5,7 @@ import mashup.spring.seehyang.domain.entity.community.OAuthType
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import mashup.spring.seehyang.domain.entity.user.User
 
-class UserDto(
+data class UserDto(
     val id: Long,
     var gender: Gender? = null,
     var age: Short? = null,
