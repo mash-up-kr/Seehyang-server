@@ -13,7 +13,7 @@ class Story(
     val id: Long? = null,
 
     val likeCount: Int = 0,
-    val commentCount: Int = 0,
+    var commentCount: Int = 0,
 
 
     /**
@@ -72,6 +72,10 @@ class Story(
 
     fun addStoryTag(storyTag: StoryTag) {
         storyTags.add(storyTag)
+    }
+
+    fun addCommentCount() {
+        this.commentCount += 1
     }
 
 }

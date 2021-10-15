@@ -26,6 +26,9 @@ class CommentService(
     ): Comment{
         val story = storyRepository.findById(storyId).orElseThrow { RuntimeException("Entity Not Fount: Story") }
         val comment = Comment(contents = commentContents, story = story, user = user)
+
+        // 동시성 및 잠금에 대해서 생각 해보기
+        story.addCommentCount()
         return commentRepository.save(comment)
     }
 
@@ -42,6 +45,9 @@ class CommentService(
     ): Comment{
         val comment = commentRepository.findById(commentId).orElseThrow { RuntimeException("Entity Not Fount: Story") }
         val replyComment = Comment(contents = commentContents, parent = comment, story = comment.story, user = user)
+
+        // 동시성 및 잠금에 대해서 생각 해보기
+        comment.story.addCommentCount()
         return commentRepository.save(replyComment)
     }
 
