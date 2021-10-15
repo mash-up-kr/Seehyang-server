@@ -13,16 +13,16 @@ class UserController(
     @Authenticated
     @GetMapping("/user")
     fun getUser(
-        req: HttpServletRequest,
+        request: HttpServletRequest,
     ): SeehyangResponse<UserResponse> =
         SeehyangResponse(
-            userService.getUserById(
-                req.getAttribute("userId").toString().toLong())
+            UserResponse(userService.getUser(request)
         )
+    )
 
     @PostMapping("/user")
     fun signUpUser(
-        @RequestBody req : SignUpRequest,
+        req : SignUpRequest,
     ): SeehyangResponse<SignUpResponse> =
         SeehyangResponse(userService.signUpUser(req))
 
@@ -30,7 +30,7 @@ class UserController(
     @PutMapping("/user")
     fun registerUserDetailInfo(
         req: HttpServletRequest,
-        @RequestBody body : RegisterUserDetailRequest,
+        body : RegisterUserDetailRequest,
     ): SeehyangResponse<RegisterUserDetailResponse> =
         SeehyangResponse(
             userService.registerUserDetail(

@@ -10,19 +10,19 @@ import org.springframework.stereotype.Repository
 @Repository
 interface CommentRepository: JpaRepository<Comment, Long> {
 
-    @Query("select c from Comment c " +
-                   "join fetch c.story s " +
-                   "join fetch c.user u " +
-                   "join fetch c.parent p " +
-           "where c.parent is null and s.id = :storyId")
-    fun findFirstLevelCommentsByStoryId(@Param("storyId") storyId: Long, pageable: Pageable) : List<Comment>
+    @Query(nativeQuery = true,
+           value = "select * from comment " +
+                        "where parent_id is null and story_id = :storyId and id < :cursor " +
+                        "order by id desc " +
+                        "limit :limit")
+    fun findCommentsByStoryId(@Param("storyId") storyId: Long, @Param("cursor") cursor: Long, @Param("limit") limit: Int) : List<Comment>
+    fun findTop20ByStoryIdOrderByIdDesc(storyId: Long) : List<Comment>
 
-    @Query("select c from Comment c " +
-                   "join fetch c.story s " +
-                   "join fetch c.user u " +
-                   "join fetch c.parent p " +
-           "where p.id = :commentId")
-    fun findSecondLevelCommentsByCommentId(@Param("commentId") commentId: Long, pageable: Pageable) : List<Comment>
-
-
+    @Query(nativeQuery = true,
+        value = "select * from comment " +
+                "where parent_id = :parentId and id < :cursor " +
+                "order by id desc " +
+                "limit :limit")
+    fun findReplyCommentsByStoryId(@Param("parentId") parentId: Long, @Param("cursor") cursor: Long, @Param("limit") limit: Int) : List<Comment>
+    fun findTop20ByParentIdOrderByIdDesc(parentId: Long) : List<Comment>
 }
