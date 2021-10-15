@@ -1,9 +1,8 @@
 package mashup.spring.seehyang.config.interceptor
 
 import mashup.spring.seehyang.controller.api.Authenticated
-import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.service.UserJwtService
-import mashup.spring.seehyang.service.UserService
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
@@ -13,9 +12,12 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class AuthenticationInterceptor(
     private val userJwtService: UserJwtService,
-) : HandlerInterceptor{
+): HandlerInterceptor{
 
-    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+    override fun preHandle(request: HttpServletRequest,
+                           response: HttpServletResponse,
+                           handler: Any
+    ): Boolean {
         if(isNeedAuthentication(handler)) {
             request.setAttribute("userId", authenticate(request).id)
         }
@@ -36,10 +38,9 @@ class AuthenticationInterceptor(
     /**
      * 해당 인증이 올바른지 체크
      */
-    private fun authenticate(req: HttpServletRequest): User {
+    private fun authenticate(req: HttpServletRequest): UserDto {
         val token = req.getHeader("Authorization")
             ?: throw RuntimeException("Not allow user")
         return userJwtService.decode(token)
-            ?: throw RuntimeException("Token is not valid")
     }
 }

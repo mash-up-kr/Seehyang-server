@@ -1,6 +1,5 @@
 package mashup.spring.seehyang.controller.api.dto.user
 
-import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 
 data class RegisterUserDetailRequest(
@@ -10,5 +9,5 @@ data class RegisterUserDetailRequest(
 )
 
 data class RegisterUserDetailResponse(
-    val user: User,
+    val user: UserDto,
 )

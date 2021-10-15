@@ -5,7 +5,7 @@ interface JwtService<T> {
         private const val PREFIX_BEARER = "Bearer"
     }
     fun encode(target: T): String
-    fun decode(target: String): T?
+    fun decode(target: String): T
 
     fun removeTokenPrefix(type: String?, token: String): String {
         return when(type) {

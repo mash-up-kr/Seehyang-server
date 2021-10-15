@@ -3,8 +3,10 @@ package mashup.spring.seehyang.service
 import io.jsonwebtoken.Header
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import mashup.spring.seehyang.domain.entity.user.User
-import mashup.spring.seehyang.repository.user.UserRepository
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
+import mashup.spring.seehyang.domain.entity.Image
+import mashup.spring.seehyang.domain.entity.community.OAuthType
+import mashup.spring.seehyang.domain.entity.perfume.Gender
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,11 +20,9 @@ class UserJwtService(
     private val jwtSecretKey: String? = null,
     @Value("\${jwt.token-type}")
     private val jwtTokenType: String? = null,
+): JwtService<UserDto>{
 
-    private val userRepository: UserRepository,
-) : JwtService<User>{
-
-    override fun encode(target: User): String {
+    override fun encode(target: UserDto): String {
         return Jwts.builder()
             .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
             .setIssuer(tokenIssuer)
@@ -32,12 +32,13 @@ class UserJwtService(
             .claim("nickname", target.nickname)
             .claim("email", target.email)
             .claim("oAuthType", target.oAuthType)
+            .claim("profileImage", target.profileImage)
             .signWith(SignatureAlgorithm.HS256, jwtSecretKey)
             .compact()
     }
 
     @Transactional(readOnly = true)
-    override fun decode(target: String): User? {
+    override fun decode(target: String): UserDto {
         val decoded: Map<String, Any> = try {
             Jwts.parser()
                 .setSigningKey(jwtSecretKey)
@@ -45,7 +46,14 @@ class UserJwtService(
         } catch (err: RuntimeException) {
             throw RuntimeException(err.message)
         }
-        return userRepository.findById(decoded["id"].toString().toLong())
-            .orElse(null)
+        return UserDto(
+            id = decoded["id"].toString().toLong(),
+            gender = Gender.valueOf((decoded["gender"] ?: Gender.BOTH).toString()),
+            age = decoded["age"]?.toString()?.toShort(),
+            nickname = decoded["nickname"]?.toString(),
+            email = decoded["email"].toString(),
+            oAuthType = OAuthType.valueOf(decoded["oAuthType"].toString()),
+            profileImage = decoded["profileImage"] as? Image
+        )
     }
 }

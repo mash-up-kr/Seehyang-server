@@ -13,29 +13,25 @@ class UserApiController(
     @Authenticated
     @GetMapping("/user")
     fun getUser(
-        request: HttpServletRequest,
-    ): SeehyangResponse<UserResponse> =
-        SeehyangResponse(
-            UserResponse(userService.getUser(request)
-        )
-    )
+        req: HttpServletRequest
+    ): SeehyangResponse<UserDto> =
+        SeehyangResponse(UserDto.from(userService.getUser(req)))
 
     @PostMapping("/user")
     fun signUpUser(
-        req : SignUpRequest,
+        @RequestBody body : SignUpRequest,
     ): SeehyangResponse<SignUpResponse> =
-        SeehyangResponse(userService.signUpUser(req))
+        SeehyangResponse(userService.signUpUser(body))
 
     @Authenticated
     @PutMapping("/user")
     fun registerUserDetailInfo(
         req: HttpServletRequest,
-        body : RegisterUserDetailRequest,
+        @RequestBody body : RegisterUserDetailRequest,
     ): SeehyangResponse<RegisterUserDetailResponse> =
         SeehyangResponse(
             userService.registerUserDetail(
-                req.getAttribute("userId").toString().toLong(),
-                body))
+                req.getAttribute("userId").toString().toLong(), body))
 
     @GetMapping("/user/{nickname}")
     fun validDuplicateNickname(

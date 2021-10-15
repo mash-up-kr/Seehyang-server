@@ -11,50 +11,49 @@ import kotlin.RuntimeException
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val userJwtService: JwtService<User>,
+    private val userJwtService: JwtService<UserDto>,
 ) {
 
     @Transactional
     fun signUpUser(req: SignUpRequest): SignUpResponse {
-        userRepository.findByEmail(req.email).isPresent
-        val user =
-            if(userRepository.findByEmail(req.email).isPresent)
-                throw RuntimeException("Already Sign up user")
-            else userRepository.save(User(email = req.email, oAuthType = req.oAuthType))
-        return SignUpResponse(userJwtService.encode(user))
+        val user: User = userRepository.findByEmail(req.email)
+            ?: userRepository.save(User(email = req.email, oAuthType = req.oAuthType))
+        return SignUpResponse(userJwtService.encode(UserDto.from(user)))
     }
 
     @Transactional
     fun registerUserDetail(id: Long,
-                           req: RegisterUserDetailRequest)
-    : RegisterUserDetailResponse {
-        val user: User = userRepository.findById(id).orElseThrow {
-            RuntimeException("Not Found User..") }
+                           req: RegisterUserDetailRequest
+    ): RegisterUserDetailResponse {
+        val user: User = userRepository.findById(id)
+            .orElseThrow { RuntimeException("Not Found User..") }
         user.age = req.age
         user.gender = req.gender
         user.nickname = req.nickname
-        return RegisterUserDetailResponse(user)
+        return RegisterUserDetailResponse(UserDto.from(user))
     }
 
     @Transactional(readOnly = true)
-    fun isDuplicateNickname(nickname: String)
-    : DuplicateNicknameResponse {
+    fun isDuplicateNickname(nickname: String
+    ): DuplicateNicknameResponse {
         return DuplicateNicknameResponse(
-            isDuplicated = userRepository.findByNickname(nickname)
-                .orElse(null) != null
+            isDuplicated = userRepository.findByNickname(nickname) != null
         )
     }
 
     @Transactional(readOnly = true)
     fun getUser(request: HttpServletRequest): User {
-        return userRepository.findById(request.getAttribute("userId").toString().toLong())
+        return userRepository
+            .findById(
+                request.getAttribute("userId").toString().toLong()
+            )
             .orElseThrow { RuntimeException("Not found user...") }
     }
 
     @Transactional(readOnly = true)
     fun signInUser(req: SignInRequest): SignInResponse {
         val user: User = userRepository.findByEmail(req.email)
-            .orElseThrow { RuntimeException("Not found user...") }
-        return SignInResponse(token = userJwtService.encode(user))
+            ?: throw RuntimeException("Not found user...")
+        return SignInResponse(token = userJwtService.encode(UserDto.from(user)))
     }
 }
