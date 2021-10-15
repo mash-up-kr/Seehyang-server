@@ -24,5 +24,11 @@ interface CommentRepository: JpaRepository<Comment, Long> {
            "where p.id = :commentId")
     fun findSecondLevelCommentsByCommentId(@Param("commentId") commentId: Long, pageable: Pageable) : List<Comment>
 
-
+    @Query(nativeQuery = true,
+           value = "select * from comment " +
+                        "where parent_id is null and story_id = :storyId and id < :cursor " +
+                        "order by id desc " +
+                        "limit :limit")
+    fun findCommentsByStoryId(@Param("storyId") storyId: Long, @Param("cursor") cursor: Long, @Param("limit") limit: Int) : List<Comment>
+    fun findTop20ByStoryIdOrderByIdDesc(storyId: Long) : List<Comment>
 }

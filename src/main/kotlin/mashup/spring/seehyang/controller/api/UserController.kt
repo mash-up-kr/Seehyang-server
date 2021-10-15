@@ -22,7 +22,7 @@ class UserController(
 
     @PostMapping("/user")
     fun signUpUser(
-        @RequestBody req : SignUpRequest,
+        req : SignUpRequest,
     ): SeehyangResponse<SignUpResponse> =
         SeehyangResponse(userService.signUpUser(req))
 
@@ -30,7 +30,7 @@ class UserController(
     @PutMapping("/user")
     fun registerUserDetailInfo(
         req: HttpServletRequest,
-        @RequestBody body : RegisterUserDetailRequest,
+        body : RegisterUserDetailRequest,
     ): SeehyangResponse<RegisterUserDetailResponse> =
         SeehyangResponse(
             userService.registerUserDetail(

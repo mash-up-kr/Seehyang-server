@@ -17,6 +17,8 @@ class CommentService(
     val commentRepository: CommentRepository
 ) {
 
+    private val PAGE_SIZE: Int = 20
+
     fun addComment(
         user: User,
         storyId: Long,
@@ -27,6 +29,13 @@ class CommentService(
         return commentRepository.save(comment)
     }
 
+    // QueryDSL 이었다면...
+    @Transactional(readOnly = true)
+    fun getComments(storyId: Long, cursor: Long?): List<Comment>
+            = if (cursor == null) commentRepository.findTop20ByStoryIdOrderByIdDesc(storyId)
+    else commentRepository.findCommentsByStoryId(storyId, cursor, PAGE_SIZE)
+
+
     @Transactional(readOnly = true)
     fun getTopLevelComment(storyId: Long, pageable: Pageable)
     = commentRepository.findFirstLevelCommentsByStoryId(storyId, pageable).map { CommentDto(it) }
@@ -34,6 +43,4 @@ class CommentService(
     @Transactional(readOnly = true)
     fun getSecondLevelComment(commentId:Long, pageable: Pageable)
     = commentRepository.findSecondLevelCommentsByCommentId(commentId, pageable).map{CommentDto(it)}
-
-
 }
