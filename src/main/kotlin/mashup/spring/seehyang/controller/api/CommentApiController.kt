@@ -20,7 +20,7 @@ class CommentApiController(
 
     @Authenticated
     @PostMapping("/story/{id}/comment")
-    fun create(
+    fun createComment(
         @PathVariable(value = "id") storyId: Long,
         requestDto: CommentCreateRequest,
         request: HttpServletRequest
@@ -30,7 +30,7 @@ class CommentApiController(
         val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
 
         val savedComment = commentService.addComment(user, storyId, commentContents)
-        return SeehyangResponse(CommentCreateResponse(savedComment.id!!))
+        return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
     }
 
     @GetMapping("/story/{id}/comments")
@@ -41,5 +41,30 @@ class CommentApiController(
         val comments = commentService.getComments(storyId, cursor)
         val commentDtos = comments.map { CommentDto(it) }
         return SeehyangResponse(commentDtos)
+    }
+
+    @Authenticated
+    @PostMapping("/comment/{id}/reply")
+    fun createReplyComment(
+        @PathVariable(value = "id") commentId: Long,
+        requestDto: CommentCreateRequest,
+        request: HttpServletRequest
+    ): SeehyangResponse<CommentCreateResponse> {
+        val user = userService.getUser(request)
+
+        val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
+
+        val savedComment = commentService.addReplyComment(user, commentId, commentContents)
+        return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
+    }
+
+    @GetMapping("/comment/{id}/reply")
+    fun replyComments(
+        @PathVariable(value = "id") parentCommentId: Long,
+        @RequestParam(value = "cursor") cursor: Long? = null,
+    ): SeehyangResponse<List<CommentDto>>{
+        val replyComments = commentService.getReplyComments(parentCommentId, cursor)
+        val replyCommentDtos = replyComments.map { CommentDto(it) }
+        return SeehyangResponse(replyCommentDtos)
     }
 }

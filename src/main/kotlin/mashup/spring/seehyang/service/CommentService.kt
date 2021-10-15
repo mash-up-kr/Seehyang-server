@@ -35,12 +35,18 @@ class CommentService(
             = if (cursor == null) commentRepository.findTop20ByStoryIdOrderByIdDesc(storyId)
     else commentRepository.findCommentsByStoryId(storyId, cursor, PAGE_SIZE)
 
+    fun addReplyComment(
+        user: User,
+        commentId: Long,
+        commentContents: String
+    ): Comment{
+        val comment = commentRepository.findById(commentId).orElseThrow { RuntimeException("Entity Not Fount: Story") }
+        val replyComment = Comment(contents = commentContents, parent = comment, story = comment.story, user = user)
+        return commentRepository.save(replyComment)
+    }
 
     @Transactional(readOnly = true)
-    fun getTopLevelComment(storyId: Long, pageable: Pageable)
-    = commentRepository.findFirstLevelCommentsByStoryId(storyId, pageable).map { CommentDto(it) }
-
-    @Transactional(readOnly = true)
-    fun getSecondLevelComment(commentId:Long, pageable: Pageable)
-    = commentRepository.findSecondLevelCommentsByCommentId(commentId, pageable).map{CommentDto(it)}
+    fun getReplyComments(parentCommentId: Long, cursor: Long?): List<Comment>
+            = if (cursor == null) commentRepository.findTop20ByParentIdOrderByIdDesc(parentCommentId)
+    else commentRepository.findReplyCommentsByStoryId(parentCommentId, cursor, PAGE_SIZE)
 }
