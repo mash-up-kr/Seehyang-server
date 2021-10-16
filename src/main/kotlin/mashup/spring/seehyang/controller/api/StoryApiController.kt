@@ -24,7 +24,7 @@ class StoryApiController(
     fun getStory(
         @PathVariable id : Long
     ): SeehyangResponse<StoryDto> {
-        val story = storyService.getStory(id)
+        val story = storyService.getStoryDetail(id)
         return SeehyangResponse(StoryDto(story))
     }
 
@@ -44,11 +44,24 @@ class StoryApiController(
     @GetMapping("/perfume/{id}/story")
     fun getStoryByPerfume(
         @PathVariable(value = "id") perfumeId: Long,
-        @RequestParam(value = "cursor") cursor: Long
+        @RequestParam(value = "cursor") cursor: Long? = null
     ): SeehyangResponse<List<StoryListItemDto>>{
-        val stories = storyService.getStory(perfumeId, cursor)
+        val stories = storyService.getStories(perfumeId, cursor)
         val storyListDto = stories.map { StoryListItemDto(it) }
         return SeehyangResponse(storyListDto)
+    }
+
+    @Authenticated
+    @PostMapping("/story/{id}/like")
+    fun likeStory(
+        @PathVariable id : Long,
+        request: HttpServletRequest
+    ): SeehyangResponse<Map<String, Boolean>> {
+        val user = userService.getUser(request)
+
+        val isLike = storyService.likeStory(user, id)
+
+        return SeehyangResponse(mutableMapOf(Pair("isLike", isLike)))
     }
 
 }

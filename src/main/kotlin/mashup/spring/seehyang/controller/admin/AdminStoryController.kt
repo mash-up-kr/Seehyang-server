@@ -50,7 +50,7 @@ class AdminStoryController(
         @PathVariable id: Long,
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ) : String{
-        val story = storyService.getStory(id)
+        val story = storyService.getStoryDetail(id)
         model.addAttribute("item", StoryDto(story))
         model.addAttribute("prevPage", page)
         return "story/storyDetail"

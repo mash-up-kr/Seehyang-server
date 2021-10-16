@@ -12,7 +12,7 @@ class Story(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    val likeCount: Int = 0,
+    var likeCount: Int = 0,
     var commentCount: Int = 0,
 
 
@@ -75,7 +75,15 @@ class Story(
     }
 
     fun addCommentCount() {
-        this.commentCount += 1
+        this.commentCount ++
+    }
+
+    fun like() {
+        this.likeCount ++
+    }
+
+    fun cancleLike() {
+        this.likeCount --
     }
 
 }
