@@ -58,6 +58,16 @@ class User(
     @JoinColumn(name = "image_id")
     val profileImage: Image? = null
 
+) : BaseTimeEntity() {
 
+    companion object {
+        fun empty(): User =
+            User(
+                email = "",
+                oAuthType = OAuthType.UNKNOWN
+            )
+    }
 
-) : BaseTimeEntity()
+    fun isLogin(): Boolean =
+        this.email.isNotEmpty() && this.oAuthType != OAuthType.UNKNOWN
+}

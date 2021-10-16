@@ -5,18 +5,15 @@ import mashup.spring.seehyang.controller.api.dto.community.StoryCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryListItemDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
-import mashup.spring.seehyang.repository.user.UserRepository
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.service.StoryService
-import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
-import javax.servlet.http.HttpServletRequest
 
 @ApiV1
 class StoryApiController(
-    private val userService: UserService,
     private val storyService: StoryService
 ) {
 
@@ -28,14 +25,12 @@ class StoryApiController(
         return SeehyangResponse(StoryDto(story))
     }
 
-    @Authenticated
     @PostMapping("/story")
     fun createStory(
         createRequest: StoryCreateRequest,
-        request: HttpServletRequest
+        user: User,
     ) : SeehyangResponse<StoryCreateResponse> {
-        val user = userService.getUser(request)
-
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
         val story = storyService.create(user, createRequest)
 
         return SeehyangResponse(StoryCreateResponse(story))
@@ -51,14 +46,12 @@ class StoryApiController(
         return SeehyangResponse(storyListDto)
     }
 
-    @Authenticated
     @PostMapping("/story/{id}/like")
     fun likeStory(
+        user: User,
         @PathVariable id : Long,
-        request: HttpServletRequest
     ): SeehyangResponse<Map<String, Boolean>> {
-        val user = userService.getUser(request)
-
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
         val isLike = storyService.likeStory(user, id)
 
         return SeehyangResponse(mutableMapOf(Pair("isLike", isLike)))

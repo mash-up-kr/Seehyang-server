@@ -2,20 +2,21 @@ package mashup.spring.seehyang.controller.api
 
 import mashup.spring.seehyang.controller.api.dto.user.*
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.*
-import javax.servlet.http.HttpServletRequest
 
 @ApiV1
 class UserApiController(
     private val userService: UserService,
 ) {
-    @Authenticated
     @GetMapping("/user")
     fun getUser(
-        req: HttpServletRequest
-    ): SeehyangResponse<UserDto> =
-        SeehyangResponse(UserDto.from(userService.getUser(req)))
+        user: User,
+    ): SeehyangResponse<UserDto> {
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
+        return SeehyangResponse(UserDto.from(user))
+    }
 
     @PostMapping("/user")
     fun signUpUser(
@@ -23,15 +24,14 @@ class UserApiController(
     ): SeehyangResponse<SignUpResponse> =
         SeehyangResponse(userService.signUpUser(body))
 
-    @Authenticated
     @PutMapping("/user")
     fun registerUserDetailInfo(
-        req: HttpServletRequest,
+        user: User,
         @RequestBody body : RegisterUserDetailRequest,
-    ): SeehyangResponse<RegisterUserDetailResponse> =
-        SeehyangResponse(
-            userService.registerUserDetail(
-                req.getAttribute("userId").toString().toLong(), body))
+    ): SeehyangResponse<RegisterUserDetailResponse> {
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
+        return SeehyangResponse(userService.registerUserDetail(user.id!!, body))
+    }
 
     @GetMapping("/user/{nickname}")
     fun validDuplicateNickname(

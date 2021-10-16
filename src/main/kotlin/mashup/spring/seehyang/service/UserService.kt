@@ -5,20 +5,19 @@ import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.servlet.http.HttpServletRequest
 import kotlin.RuntimeException
 
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val userJwtService: JwtService<UserDto>,
+    private val userJwtService: JwtService<Long>,
 ) {
 
     @Transactional
     fun signUpUser(req: SignUpRequest): SignUpResponse {
         val user: User = userRepository.findByEmail(req.email)
             ?: userRepository.save(User(email = req.email, oAuthType = req.oAuthType))
-        return SignUpResponse(userJwtService.encode(UserDto.from(user)))
+        return SignUpResponse(userJwtService.encode(user.id!!))
     }
 
     @Transactional
@@ -42,11 +41,8 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun getUser(request: HttpServletRequest): User {
-        return userRepository
-            .findById(
-                request.getAttribute("userId").toString().toLong()
-            )
+    fun getUser(id: Long): User {
+        return userRepository.findById(id)
             .orElseThrow { RuntimeException("Not found user...") }
     }
 
@@ -54,6 +50,6 @@ class UserService(
     fun signInUser(req: SignInRequest): SignInResponse {
         val user: User = userRepository.findByEmail(req.email)
             ?: throw RuntimeException("Not found user...")
-        return SignInResponse(token = userJwtService.encode(UserDto.from(user)))
+        return SignInResponse(token = userJwtService.encode(user.id!!))
     }
 }

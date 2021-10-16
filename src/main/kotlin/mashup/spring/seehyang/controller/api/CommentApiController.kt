@@ -4,28 +4,26 @@ import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.service.CommentService
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
-import javax.servlet.http.HttpServletRequest
 
 @ApiV1
 class CommentApiController(
-    private val userService: UserService,
     private val commentService: CommentService
 ) {
-
-    @Authenticated
+    // TODO 유저 널 체크!
     @PostMapping("/story/{id}/comment")
     fun createComment(
+        user: User,
         @PathVariable(value = "id") storyId: Long,
         requestDto: CommentCreateRequest,
-        request: HttpServletRequest
     ): SeehyangResponse<CommentCreateResponse> {
-        val user = userService.getUser(request)
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
 
         val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
 
@@ -43,14 +41,13 @@ class CommentApiController(
         return SeehyangResponse(commentDtos)
     }
 
-    @Authenticated
     @PostMapping("/comment/{id}/reply")
     fun createReplyComment(
+        user: User,
         @PathVariable(value = "id") commentId: Long,
         requestDto: CommentCreateRequest,
-        request: HttpServletRequest
     ): SeehyangResponse<CommentCreateResponse> {
-        val user = userService.getUser(request)
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
 
         val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
 
