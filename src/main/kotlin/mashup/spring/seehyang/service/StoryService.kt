@@ -70,7 +70,7 @@ class StoryService(
         val story = storyRepository.findById(storyId).orElseThrow { RuntimeException("Entity Not Found : Story") }
         val like = likeRepository.findByUserAndStory(user, story)
 
-        val isLike = if (like.isPresent) {
+        return if (like.isPresent) {
             likeRepository.delete(like.get())
             story.cancleLike()
             false
@@ -79,8 +79,6 @@ class StoryService(
             story.like()
             true
         }
-
-        return isLike
     }
 
 
