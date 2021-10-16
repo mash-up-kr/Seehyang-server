@@ -1,10 +1,8 @@
 package mashup.spring.seehyang.repository.community
 
 import mashup.spring.seehyang.domain.entity.community.Story
-import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -47,5 +45,13 @@ interface StoryRepository : JpaRepository<Story, Long>{
 
     // 임시 메소드
     fun findTop10By() : List<Story>
+
+    @Query(nativeQuery = true,
+        value = "select * from story " +
+                "where perfume_id = :perfumeId and id < :cursor " +
+                "order by id desc " +
+                "limit :limit")
+    fun findStoryByPerfumeId(@Param("perfumeId") perfumeId: Long, @Param("cursor") cursor: Long, @Param("limit") limit: Int) : List<Story>
+    fun findTop20ByPerfumeIdOrderByIdDesc(perfumeId: Long) : List<Story>
 
 }

@@ -3,6 +3,7 @@ package mashup.spring.seehyang.controller.api
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.dto.community.StoryListItemDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.repository.user.UserRepository
 import mashup.spring.seehyang.service.StoryService
@@ -10,6 +11,7 @@ import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import javax.servlet.http.HttpServletRequest
 
 @ApiV1
@@ -37,6 +39,16 @@ class StoryApiController(
         val story = storyService.create(user, createRequest)
 
         return SeehyangResponse(StoryCreateResponse(story))
+    }
+
+    @GetMapping("/perfume/{id}/story")
+    fun getStoryByPerfume(
+        @PathVariable(value = "id") perfumeId: Long,
+        @RequestParam(value = "cursor") cursor: Long
+    ): SeehyangResponse<List<StoryListItemDto>>{
+        val stories = storyService.getStory(perfumeId, cursor)
+        val storyListDto = stories.map { StoryListItemDto(it) }
+        return SeehyangResponse(storyListDto)
     }
 
 }
