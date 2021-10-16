@@ -1,18 +1,17 @@
 package mashup.spring.seehyang.controller.api
 
+import mashup.spring.seehyang.config.resolver.Logined
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryListItemDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
-import mashup.spring.seehyang.repository.user.UserRepository
 import mashup.spring.seehyang.service.StoryService
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
-import javax.servlet.http.HttpServletRequest
 
 @ApiV1
 class StoryApiController(
@@ -28,13 +27,12 @@ class StoryApiController(
         return SeehyangResponse(StoryDto(story))
     }
 
-    @Authenticated
     @PostMapping("/story")
     fun createStory(
         createRequest: StoryCreateRequest,
-        request: HttpServletRequest
+        @Logined userId: Long?,
     ) : SeehyangResponse<StoryCreateResponse> {
-        val user = userService.getUser(request)
+        val user = userService.getUser(userId!!)
 
         val story = storyService.create(user, createRequest)
 

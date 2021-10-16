@@ -1,5 +1,6 @@
 package mashup.spring.seehyang.controller.api
 
+import mashup.spring.seehyang.config.resolver.Logined
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
-import javax.servlet.http.HttpServletRequest
 
 @ApiV1
 class CommentApiController(
@@ -18,14 +18,13 @@ class CommentApiController(
     private val commentService: CommentService
 ) {
 
-    @Authenticated
     @PostMapping("/story/{id}/comment")
     fun createComment(
+        @Logined userId: Long?,
         @PathVariable(value = "id") storyId: Long,
         requestDto: CommentCreateRequest,
-        request: HttpServletRequest
     ): SeehyangResponse<CommentCreateResponse> {
-        val user = userService.getUser(request)
+        val user = userService.getUser(userId!!)
 
         val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
 
@@ -43,14 +42,13 @@ class CommentApiController(
         return SeehyangResponse(commentDtos)
     }
 
-    @Authenticated
     @PostMapping("/comment/{id}/reply")
     fun createReplyComment(
+        @Logined userId: Long,
         @PathVariable(value = "id") commentId: Long,
         requestDto: CommentCreateRequest,
-        request: HttpServletRequest
     ): SeehyangResponse<CommentCreateResponse> {
-        val user = userService.getUser(request)
+        val user = userService.getUser(userId)
 
         val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
 

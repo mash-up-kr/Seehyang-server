@@ -1,21 +1,20 @@
 package mashup.spring.seehyang.controller.api
 
+import mashup.spring.seehyang.config.resolver.Logined
 import mashup.spring.seehyang.controller.api.dto.user.*
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.*
-import javax.servlet.http.HttpServletRequest
 
 @ApiV1
 class UserApiController(
     private val userService: UserService,
 ) {
-    @Authenticated
     @GetMapping("/user")
     fun getUser(
-        req: HttpServletRequest
+        @Logined userId: Long?,
     ): SeehyangResponse<UserDto> =
-        SeehyangResponse(UserDto.from(userService.getUser(req)))
+        SeehyangResponse(UserDto.from(userService.getUser(userId!!)))
 
     @PostMapping("/user")
     fun signUpUser(
@@ -23,15 +22,12 @@ class UserApiController(
     ): SeehyangResponse<SignUpResponse> =
         SeehyangResponse(userService.signUpUser(body))
 
-    @Authenticated
     @PutMapping("/user")
     fun registerUserDetailInfo(
-        req: HttpServletRequest,
+        @Logined userId: Long?,
         @RequestBody body : RegisterUserDetailRequest,
     ): SeehyangResponse<RegisterUserDetailResponse> =
-        SeehyangResponse(
-            userService.registerUserDetail(
-                req.getAttribute("userId").toString().toLong(), body))
+        SeehyangResponse(userService.registerUserDetail(userId!!, body))
 
     @GetMapping("/user/{nickname}")
     fun validDuplicateNickname(
