@@ -33,6 +33,6 @@ class HomeService(
     }
 
     fun weeklyRanking(): List<Perfume>{
-        return perfumeRepository.findByStoryLengthGreaterThan()
+        return perfumeRepository.findTop10ByOrderByLikeCountDesc()
     }
 }
