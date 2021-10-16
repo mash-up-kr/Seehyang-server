@@ -22,10 +22,10 @@ class User(
 
     var nickname: String? = null,
 
-    val email: String,
+    val email: String = "",
 
     @Enumerated(EnumType.STRING)
-    val oAuthType: OAuthType,
+    val oAuthType: OAuthType = OAuthType.UNKNOWN,
 
     /**
      * ========== One to Many ==========
@@ -58,6 +58,8 @@ class User(
     @JoinColumn(name = "image_id")
     val profileImage: Image? = null
 
+) : BaseTimeEntity() {
 
-
-) : BaseTimeEntity()
+    fun isLogin(): Boolean =
+        this.email.isNotEmpty() && this.oAuthType != OAuthType.UNKNOWN
+}

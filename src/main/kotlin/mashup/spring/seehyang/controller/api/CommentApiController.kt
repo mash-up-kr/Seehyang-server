@@ -5,6 +5,7 @@ import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.service.CommentService
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,14 +18,14 @@ class CommentApiController(
     private val userService: UserService,
     private val commentService: CommentService
 ) {
-
+    // TODO 유저 널 체크!
     @PostMapping("/story/{id}/comment")
     fun createComment(
-        @Logined userId: Long?,
+        @Logined user: User,
         @PathVariable(value = "id") storyId: Long,
         requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
-        val user = userService.getUser(userId!!)
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
 
         val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
 
@@ -44,11 +45,11 @@ class CommentApiController(
 
     @PostMapping("/comment/{id}/reply")
     fun createReplyComment(
-        @Logined userId: Long,
+        @Logined user: User,
         @PathVariable(value = "id") commentId: Long,
         requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
-        val user = userService.getUser(userId)
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
 
         val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
 

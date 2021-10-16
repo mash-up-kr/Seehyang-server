@@ -6,6 +6,7 @@ import mashup.spring.seehyang.controller.api.dto.community.StoryCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryListItemDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.service.StoryService
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @ApiV1
 class StoryApiController(
-    private val userService: UserService,
     private val storyService: StoryService
 ) {
 
@@ -30,10 +30,9 @@ class StoryApiController(
     @PostMapping("/story")
     fun createStory(
         createRequest: StoryCreateRequest,
-        @Logined userId: Long?,
+        @Logined user: User,
     ) : SeehyangResponse<StoryCreateResponse> {
-        val user = userService.getUser(userId!!)
-
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
         val story = storyService.create(user, createRequest)
 
         return SeehyangResponse(StoryCreateResponse(story))
@@ -51,11 +50,10 @@ class StoryApiController(
 
     @PostMapping("/story/{id}/like")
     fun likeStory(
-        @Logined userId: Long?,
+        @Logined user: User,
         @PathVariable id : Long,
     ): SeehyangResponse<Map<String, Boolean>> {
-        val user = userService.getUser(userId!!)
-
+        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
         val isLike = storyService.likeStory(user, id)
 
         return SeehyangResponse(mutableMapOf(Pair("isLike", isLike)))
