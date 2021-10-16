@@ -33,7 +33,7 @@ class Story(
      * story는 여러개의 Like를 가질 수 있다.
      */
     @OneToMany(mappedBy = "story")
-    val likes : MutableList<Like> = mutableListOf(),
+    val storyLikes : MutableList<StoryLike> = mutableListOf(),
 
     /**
      * story는 여러개의 Comments를 가질 수 있다.

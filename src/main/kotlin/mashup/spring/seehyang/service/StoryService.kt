@@ -1,27 +1,22 @@
 package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
-import mashup.spring.seehyang.controller.api.dto.community.StoryDetailDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
-import mashup.spring.seehyang.domain.entity.community.Like
+import mashup.spring.seehyang.domain.entity.community.StoryLike
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.ImageRepository
-import mashup.spring.seehyang.repository.community.LikeRepository
+import mashup.spring.seehyang.repository.community.StoryLikeRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.community.StoryTagRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.streams.toList
 
 @Transactional
 @Service
 class StoryService(
-    val likeRepository: LikeRepository,
+    val storyLikeRepository: StoryLikeRepository,
     val storyRepository: StoryRepository,
     val imageRepository: ImageRepository,
     val perfumeRepository: PerfumeRepository,
@@ -68,14 +63,14 @@ class StoryService(
 
     fun likeStory(user: User, storyId: Long): Boolean {
         val story = storyRepository.findById(storyId).orElseThrow { RuntimeException("Entity Not Found : Story") }
-        val like = likeRepository.findByUserAndStory(user, story)
+        val like = storyLikeRepository.findByUserAndStory(user, story)
 
         return if (like.isPresent) {
-            likeRepository.delete(like.get())
+            storyLikeRepository.delete(like.get())
             story.cancleLike()
             false
         } else {
-            likeRepository.save(Like(user = user, story = story))
+            storyLikeRepository.save(StoryLike(user = user, story = story))
             story.like()
             true
         }

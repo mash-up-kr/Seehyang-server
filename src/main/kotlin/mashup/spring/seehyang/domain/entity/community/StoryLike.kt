@@ -6,7 +6,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "like_table")
-class Like(
+class StoryLike(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
