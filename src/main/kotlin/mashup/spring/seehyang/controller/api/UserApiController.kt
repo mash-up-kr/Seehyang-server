@@ -1,6 +1,5 @@
 package mashup.spring.seehyang.controller.api
 
-import mashup.spring.seehyang.config.resolver.Logined
 import mashup.spring.seehyang.controller.api.dto.user.*
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.domain.entity.user.User
@@ -13,7 +12,7 @@ class UserApiController(
 ) {
     @GetMapping("/user")
     fun getUser(
-        @Logined user: User,
+        user: User,
     ): SeehyangResponse<UserDto> {
         if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
         return SeehyangResponse(UserDto.from(user))
@@ -27,7 +26,7 @@ class UserApiController(
 
     @PutMapping("/user")
     fun registerUserDetailInfo(
-        @Logined user: User,
+        user: User,
         @RequestBody body : RegisterUserDetailRequest,
     ): SeehyangResponse<RegisterUserDetailResponse> {
         if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")

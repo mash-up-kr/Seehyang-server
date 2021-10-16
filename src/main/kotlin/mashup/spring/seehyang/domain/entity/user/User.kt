@@ -22,10 +22,10 @@ class User(
 
     var nickname: String? = null,
 
-    val email: String = "",
+    val email: String,
 
     @Enumerated(EnumType.STRING)
-    val oAuthType: OAuthType = OAuthType.UNKNOWN,
+    val oAuthType: OAuthType,
 
     /**
      * ========== One to Many ==========
@@ -59,6 +59,14 @@ class User(
     val profileImage: Image? = null
 
 ) : BaseTimeEntity() {
+
+    companion object {
+        fun empty(): User =
+            User(
+                email = "",
+                oAuthType = OAuthType.UNKNOWN
+            )
+    }
 
     fun isLogin(): Boolean =
         this.email.isNotEmpty() && this.oAuthType != OAuthType.UNKNOWN

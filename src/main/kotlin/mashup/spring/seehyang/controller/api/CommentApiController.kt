@@ -1,6 +1,5 @@
 package mashup.spring.seehyang.controller.api
 
-import mashup.spring.seehyang.config.resolver.Logined
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
@@ -15,13 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @ApiV1
 class CommentApiController(
-    private val userService: UserService,
     private val commentService: CommentService
 ) {
     // TODO 유저 널 체크!
     @PostMapping("/story/{id}/comment")
     fun createComment(
-        @Logined user: User,
+        user: User,
         @PathVariable(value = "id") storyId: Long,
         requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
@@ -45,7 +43,7 @@ class CommentApiController(
 
     @PostMapping("/comment/{id}/reply")
     fun createReplyComment(
-        @Logined user: User,
+        user: User,
         @PathVariable(value = "id") commentId: Long,
         requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {

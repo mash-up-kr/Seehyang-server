@@ -16,8 +16,10 @@ class UserArgumentResolver(
     private val userService: UserService,
 ): HandlerMethodArgumentResolver {
 
-    override fun supportsParameter(parameter: MethodParameter): Boolean =
-        parameter.hasParameterAnnotation(Logined::class.java)
+    override fun supportsParameter(parameter: MethodParameter): Boolean {
+        if(parameter.parameterType == User::class.java) return true
+        return false
+    }
 
     override fun resolveArgument(
         parameter: MethodParameter,
@@ -25,8 +27,8 @@ class UserArgumentResolver(
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
     ): Any? {
-        val token = webRequest.getHeader("Authorization") ?: return User()
-        if(token.isBlank()) return User()
+        val token = webRequest.getHeader("Authorization") ?: return User.empty()
+        if(token.isBlank()) return User.empty()
         return userService.getUser(userJwtService.decode(token))
     }
 }

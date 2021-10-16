@@ -1,6 +1,5 @@
 package mashup.spring.seehyang.controller.api
 
-import mashup.spring.seehyang.config.resolver.Logined
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
@@ -8,7 +7,6 @@ import mashup.spring.seehyang.controller.api.dto.community.StoryListItemDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.service.StoryService
-import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -30,7 +28,7 @@ class StoryApiController(
     @PostMapping("/story")
     fun createStory(
         createRequest: StoryCreateRequest,
-        @Logined user: User,
+        user: User,
     ) : SeehyangResponse<StoryCreateResponse> {
         if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
         val story = storyService.create(user, createRequest)
@@ -50,7 +48,7 @@ class StoryApiController(
 
     @PostMapping("/story/{id}/like")
     fun likeStory(
-        @Logined user: User,
+        user: User,
         @PathVariable id : Long,
     ): SeehyangResponse<Map<String, Boolean>> {
         if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
