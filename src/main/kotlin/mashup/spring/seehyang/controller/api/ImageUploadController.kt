@@ -15,11 +15,11 @@ class ImageUploadController(
     private val imageRepository: ImageRepository
 ) {
     @PostMapping("/image")
-    fun upload(@RequestParam("image") multipartFile: MultipartFile): SeehyangResponse<Long> {
+    fun upload(@RequestParam("image") multipartFile: MultipartFile): SeehyangResponse<Map<String, Long>> {
         //TODO: 에러 핸들링 imageUrl NPE?
         val imageUrl = awsS3UploadService.upload(multipartFile, "application/image/post")
         val image = Image(url = imageUrl!!)
         imageRepository.save(image)
-        return SeehyangResponse(image.id!!)
+        return SeehyangResponse(mutableMapOf(Pair("imageId", image.id!!)))
     }
 }

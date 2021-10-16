@@ -11,13 +11,13 @@ class HomeApiController(
     val homeService: HomeService
 ) {
 
-    @GetMapping("/today")
+    @GetMapping("/home/today")
     fun today() : SeehyangResponse<TodaySeehyangDto> {
         val stories = homeService.todaySeehyang()
         return SeehyangResponse(TodaySeehyangDto(stories[0].perfume, stories))
     }
 
-    @GetMapping("/hot-story")
+    @GetMapping("/home/hot-story")
     fun hotStory(): SeehyangResponse<HotStoryDto> {
         val stories = homeService.hotStory()
         return SeehyangResponse(HotStoryDto(stories))
