@@ -4,6 +4,7 @@ import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.domain.entity.perfume.*
 import mashup.spring.seehyang.service.PerfumeService
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.domain.entity.user.User
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -27,7 +28,7 @@ class PerfumeApiControllerTest @Autowired constructor(
         val testPerfume = testPerfume()
         given(perfumeService.get(anyLong())).willReturn(testPerfume)
 
-        val actual: SeehyangResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L)
+        val actual: SeehyangResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L, User.empty())
 
         assertEquals(actual.data!!.id, testPerfume.id)
         assertEquals(actual.data!!.brandId, testPerfume.brand.id)
