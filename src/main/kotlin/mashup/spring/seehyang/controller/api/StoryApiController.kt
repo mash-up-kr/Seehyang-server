@@ -49,13 +49,12 @@ class StoryApiController(
         return SeehyangResponse(storyListDto)
     }
 
-    @Authenticated
     @PostMapping("/story/{id}/like")
     fun likeStory(
+        @Logined userId: Long?,
         @PathVariable id : Long,
-        request: HttpServletRequest
     ): SeehyangResponse<Map<String, Boolean>> {
-        val user = userService.getUser(request)
+        val user = userService.getUser(userId!!)
 
         val isLike = storyService.likeStory(user, id)
 
