@@ -3,6 +3,7 @@ package mashup.spring.seehyang.service
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryDetailDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.domain.entity.community.Like
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.ImageRepository
@@ -20,6 +21,7 @@ import kotlin.streams.toList
 @Transactional
 @Service
 class StoryService(
+    val likeRepository: LikeRepository,
     val storyRepository: StoryRepository,
     val imageRepository: ImageRepository,
     val perfumeRepository: PerfumeRepository,
@@ -29,9 +31,8 @@ class StoryService(
 
     private val PAGE_SIZE: Int = 20
 
-    fun getStory(id: Long): Story {
-        val story = storyRepository.findById(id).get()
-        return story
+    fun getStoryDetail(id: Long): Story {
+        return storyRepository.findById(id).get()
     }
 
     /**
@@ -61,36 +62,51 @@ class StoryService(
     }
 
     @Transactional(readOnly = true)
-    fun getStory(perfumeId: Long, cursor: Long): List<Story>
+    fun getStories(perfumeId: Long, cursor: Long?): List<Story>
         = if (cursor == null) storyRepository.findTop20ByPerfumeIdOrderByIdDesc(perfumeId)
             else storyRepository.findStoryByPerfumeId(perfumeId, cursor, PAGE_SIZE)
 
+    fun likeStory(user: User, storyId: Long): Boolean {
+        val story = storyRepository.findById(storyId).orElseThrow { RuntimeException("Entity Not Found : Story") }
+        val like = likeRepository.findByUserAndStory(user, story)
 
-    @Transactional(readOnly = true)
-    fun getStories(perfumeId: Long, sorting: SortingType, pageable: Pageable): List<StoryDetailDto> {
-
-        val stories = when (sorting) {
-            SortingType.NEW -> storyRepository.findByPerfumeIdOrderByDate(perfumeId, pageable)
-            SortingType.COMMENT -> storyRepository.findByPerfumeIdOrderByComment(perfumeId, pageable)
-            SortingType.LIKE -> storyRepository.findByPerfumeIdOrderByLike(perfumeId, pageable)
+        return if (like.isPresent) {
+            likeRepository.delete(like.get())
+            story.cancleLike()
+            false
+        } else {
+            likeRepository.save(Like(user = user, story = story))
+            story.like()
+            true
         }
-
-        return stories.stream()
-            .map { it ->
-                StoryDetailDto(
-                    id = it.id!!,
-                    userNickname = it.user.nickname,
-                    userProfileUrl = it.user.profileImage?.url ?: "",
-                    commentCount = it.commentCount,
-                    likeCount = it.likeCount,
-                    storyImageUrl = it.image.url,
-                    tags = storyTagRepository.findByStoryId(it.id!!)
-                                                .stream()
-                                                .map { it.tag.contents }
-                                                .toList()
-                )
-            }
-            .toList()
     }
+
+
+//    @Transactional(readOnly = true)
+//    fun getStories(perfumeId: Long, sorting: SortingType, pageable: Pageable): List<StoryDetailDto> {
+//
+//        val stories = when (sorting) {
+//            SortingType.NEW -> storyRepository.findByPerfumeIdOrderByDate(perfumeId, pageable)
+//            SortingType.COMMENT -> storyRepository.findByPerfumeIdOrderByComment(perfumeId, pageable)
+//            SortingType.LIKE -> storyRepository.findByPerfumeIdOrderByLike(perfumeId, pageable)
+//        }
+//
+//        return stories.stream()
+//            .map { it ->
+//                StoryDetailDto(
+//                    id = it.id!!,
+//                    userNickname = it.user.nickname,
+//                    userProfileUrl = it.user.profileImage?.url ?: "",
+//                    commentCount = it.commentCount,
+//                    likeCount = it.likeCount,
+//                    storyImageUrl = it.image.url,
+//                    tags = storyTagRepository.findByStoryId(it.id!!)
+//                                                .stream()
+//                                                .map { it.tag.contents }
+//                                                .toList()
+//                )
+//            }
+//            .toList()
+//    }
 
 }
