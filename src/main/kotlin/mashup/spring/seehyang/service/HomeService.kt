@@ -33,7 +33,6 @@ class HomeService(
     }
 
     fun weeklyRanking(): List<Perfume>{
-        val perfumes = perfumeRepository.findByStoryLengthGreaterThan()
-        return perfumes
+        return perfumeRepository.findByStoryLengthGreaterThan()
     }
 }
