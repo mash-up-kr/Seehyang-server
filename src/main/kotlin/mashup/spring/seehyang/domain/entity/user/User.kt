@@ -3,7 +3,7 @@ package mashup.spring.seehyang.domain.entity.user
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.community.Comment
-import mashup.spring.seehyang.domain.entity.community.Like
+import mashup.spring.seehyang.domain.entity.community.StoryLike
 import mashup.spring.seehyang.domain.entity.community.OAuthType
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Gender
@@ -42,7 +42,7 @@ class User(
      * User는 여러개의 like를 가질 수 있다.
      */
     @OneToMany(mappedBy = "user")
-    val likes: MutableList<Like> = mutableListOf(),
+    val storyLikes: MutableList<StoryLike> = mutableListOf(),
 
     /**
      * User는 여러 개의 Comment를 가질 수 있다.

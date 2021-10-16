@@ -1,6 +1,6 @@
 package mashup.spring.seehyang.repository.community
 
-import mashup.spring.seehyang.domain.entity.community.Like
+import mashup.spring.seehyang.domain.entity.community.StoryLike
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
 import org.springframework.data.jpa.repository.JpaRepository
@@ -10,13 +10,13 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface LikeRepository : JpaRepository<Like, Long> {
+interface StoryLikeRepository : JpaRepository<StoryLike, Long> {
 
     @Query("select count(l) " +
-                   "from Like l " +
+            "from StoryLike l " +
                    "join l.story s " +
                    "where s.id = :storyId")
     fun countByStoryId(@Param("storyId") storyId: Long) : Long
 
-    fun findByUserAndStory(user: User, story: Story) : Optional<Like>
+    fun findByUserAndStory(user: User, story: Story) : Optional<StoryLike>
 }
