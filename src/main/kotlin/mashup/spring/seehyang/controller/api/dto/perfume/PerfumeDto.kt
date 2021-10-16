@@ -13,7 +13,8 @@ data class PerfumeDto(
     val brandId: Long? = perfume.brand.id,
     val brandName: String = perfume.brand.koreanName,
     val notes: NotesDto = NotesDto(perfume),
-    val accords: MutableList<AccordDto> = mutableListOf()
+    val accords: MutableList<AccordDto> = mutableListOf(),
+    val isLiked: Boolean = false
 ) {
     init {
         perfume.accords.forEach { accords.add(AccordDto(it.accord)) }

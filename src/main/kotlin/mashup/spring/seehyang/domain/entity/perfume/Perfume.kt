@@ -2,6 +2,7 @@ package mashup.spring.seehyang.domain.entity.perfume
 
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.community.Story
+import mashup.spring.seehyang.domain.entity.community.StoryLike
 import javax.persistence.*
 
 @Entity
@@ -15,6 +16,7 @@ class Perfume(
     @Enumerated(EnumType.STRING)
     val gender: Gender,
     val thumbnailUrl: String,
+    var likeCount: Int = 0,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     val brand: Brand,
@@ -24,4 +26,14 @@ class Perfume(
     val notes: MutableList<PerfumeNote> = mutableListOf(),
     @OneToMany(mappedBy = "perfume")
     val stories: MutableList<Story> = mutableListOf(),
-) : BaseTimeEntity()
+    @OneToMany(mappedBy = "perfume")
+    val perfumeLikes : MutableList<PerfumeLike> = mutableListOf(),
+) : BaseTimeEntity() {
+    fun like() {
+        this.likeCount ++
+    }
+
+    fun cancleLike() {
+        this.likeCount --
+    }
+}

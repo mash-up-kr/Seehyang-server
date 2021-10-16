@@ -2,6 +2,9 @@ package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeEditRequest
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
+import mashup.spring.seehyang.domain.entity.perfume.PerfumeLike
+import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -9,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @Service
 class PerfumeService(
-    private val perfumeRepository: PerfumeRepository
+    private val perfumeRepository: PerfumeRepository,
+    private val perfumeLikeRepository: PerfumeLikeRepository
 ) {
     @Transactional(readOnly = true)
     fun get(id: Long) : Perfume {
@@ -22,5 +26,20 @@ class PerfumeService(
         perfume.name = request.name!!
         perfume.koreanName = request.koreanName!!
         return perfume
+    }
+
+    fun likePerfume(user: User, perfumeId: Long): Boolean {
+        val perfume = perfumeRepository.findById(perfumeId).orElseThrow { RuntimeException("Entity Not Found : Perfume") }
+        val like = perfumeLikeRepository.findByUserAndPerfume(user, perfume)
+
+        return if (like.isPresent) {
+            perfumeLikeRepository.delete(like.get())
+            perfume.cancleLike()
+            false
+        } else {
+            perfumeLikeRepository.save(PerfumeLike(user = user, perfume = perfume))
+            perfume.like()
+            true
+        }
     }
 }

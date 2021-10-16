@@ -4,6 +4,7 @@ import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.domain.entity.perfume.*
 import mashup.spring.seehyang.service.PerfumeService
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.domain.entity.user.User
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -27,7 +28,7 @@ class PerfumeApiControllerTest @Autowired constructor(
         val testPerfume = testPerfume()
         given(perfumeService.get(anyLong())).willReturn(testPerfume)
 
-        val actual: SeehyangResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L)
+        val actual: SeehyangResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L, User.empty())
 
         assertEquals(actual.data!!.id, testPerfume.id)
         assertEquals(actual.data!!.brandId, testPerfume.brand.id)
@@ -42,7 +43,7 @@ class PerfumeApiControllerTest @Autowired constructor(
         val baseNote = Note(1L, "base", "베이스")
         val middleNote = Note(2L, "top", "탑")
         val accord = Accord(1L, "white", "화이트")
-        val perfume = Perfume(1L, "perfume", "향수", type = PerfumeType.EAU_DE, Gender.BOTH, "", brand)
+        val perfume = Perfume(1L, "perfume", "향수", type = PerfumeType.EAU_DE, Gender.BOTH, "", brand = brand)
 
         perfume.accords.add(PerfumeAccord(1L, perfume, accord))
         perfume.notes.add(PerfumeNote(1L, perfume, baseNote, NoteType.MIDDLE))
