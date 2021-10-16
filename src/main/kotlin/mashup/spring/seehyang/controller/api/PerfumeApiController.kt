@@ -14,10 +14,12 @@ class PerfumeApiController(
 
     @GetMapping("/perfume/{id}")
     fun getPerfumeDetail(
-        @PathVariable id: Long
+        @PathVariable id: Long,
+        user: User
     ) : SeehyangResponse<PerfumeDto> {
         val perfume = perfumeService.get(id)
-        return SeehyangResponse(PerfumeDto(perfume))
+        val liked = perfume.perfumeLikes.stream().filter { it.user.id == user.id }.findFirst().isPresent
+        return SeehyangResponse(PerfumeDto(perfume, isLiked = liked))
     }
 
     @PutMapping("/perfume/{id}")
