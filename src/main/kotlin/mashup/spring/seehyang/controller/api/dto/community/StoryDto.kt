@@ -26,3 +26,15 @@ data class StoryDetailDto(
     val tags: List<String>? = null,
     val storyImageUrl: String
 )
+
+data class StoryListItemDto(
+    @JsonIgnore
+    val story: Story,
+    val id: Long = story.id!!,
+    val image: String = story.image.url,
+    val userNickname: String = story.user.nickname!!,
+    val userProfileImageUrl: String? = story.user.profileImage?.url,
+    val commentCount: Int = story.commentCount,
+    val likeCount: Int = story.likeCount,
+    val tags: List<TagDto> = story.storyTags.map { TagDto(it.tag) }
+)

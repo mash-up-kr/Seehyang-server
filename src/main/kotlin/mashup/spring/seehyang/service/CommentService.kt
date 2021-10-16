@@ -1,12 +1,10 @@
 package mashup.spring.seehyang.service
 
-import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
-import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.domain.entity.community.Comment
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.community.CommentRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
-import org.springframework.data.domain.Pageable
+
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

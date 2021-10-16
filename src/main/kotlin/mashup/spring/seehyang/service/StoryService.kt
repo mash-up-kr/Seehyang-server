@@ -27,6 +27,8 @@ class StoryService(
     val tagService: TagService
 ) {
 
+    private val PAGE_SIZE: Int = 20
+
     fun getStory(id: Long): Story {
         val story = storyRepository.findById(id).get()
         return story
@@ -57,6 +59,11 @@ class StoryService(
 
         return StoryDto(savedStory)
     }
+
+    @Transactional(readOnly = true)
+    fun getStory(perfumeId: Long, cursor: Long): List<Story>
+        = if (cursor == null) storyRepository.findTop20ByPerfumeIdOrderByIdDesc(perfumeId)
+            else storyRepository.findStoryByPerfumeId(perfumeId, cursor, PAGE_SIZE)
 
 
     @Transactional(readOnly = true)
