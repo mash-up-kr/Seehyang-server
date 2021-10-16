@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository
 interface PerfumeRepository : JpaRepository<Perfume, Long>{
     @Query("select p from Perfume p where size(p.stories) >= 5")
     fun findByStoryLengthGreaterThan(): List<Perfume>
+
+    fun findTop10ByOrderByLikeCountDesc(): List<Perfume>
 }
