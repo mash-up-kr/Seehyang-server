@@ -11,6 +11,7 @@ import mashup.spring.seehyang.domain.entity.perfume.Gender
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.ImageRepository
+import mashup.spring.seehyang.repository.community.LikeRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.community.StoryTagRepository
 import mashup.spring.seehyang.repository.community.TagRepository
@@ -26,6 +27,7 @@ import javax.persistence.EntityManager
 
 @DataJpaTest
 class StoryServiceTest  @Autowired constructor(
+    val likeRepository: LikeRepository,
     val userRepository: UserRepository,
     val imageRepository: ImageRepository,
     val brandRepository: BrandRepository,
@@ -44,7 +46,7 @@ class StoryServiceTest  @Autowired constructor(
     private lateinit var image: Image
 
     private val tagService : TagService = TagService(tagRepository, storyTagRepository)
-    private val storyService: StoryService = StoryService(storyRepository, imageRepository, perfumeRepository, storyTagRepository,tagService)
+    private val storyService: StoryService = StoryService(likeRepository, storyRepository, imageRepository, perfumeRepository, storyTagRepository,tagService)
     @BeforeEach
     fun setUp() {
         user = userRepository.save(createTestUser())
