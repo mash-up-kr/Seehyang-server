@@ -23,9 +23,9 @@ class PerfumeApiController(
         return SeehyangResponse(PerfumeDto(perfume, isLiked = liked))
     }
 
-    @GetMapping("/perfume/list/{name}")
+    @GetMapping("/perfume/list")
     fun getPerfumeByName(
-        @PathVariable name: String,
+        @RequestParam(value = "name") name: String,
         @RequestParam(value = "cursor") cursor: Long? = null,
     ): SeehyangResponse<List<BasicPerfumeDto>>{
         val perfumeDtoList = perfumeService.getByName(name,cursor).map{BasicPerfumeDto(it)}.toList()
