@@ -3,6 +3,8 @@ package mashup.spring.seehyang.service
 import io.jsonwebtoken.Header
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
+import mashup.spring.seehyang.exception.UnauthorizedException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import kotlin.RuntimeException
@@ -32,7 +34,7 @@ class UserJwtService(
                 .setSigningKey(jwtSecretKey)
                 .parseClaimsJws(removeTokenPrefix(jwtTokenType, target)).body
         } catch (err: RuntimeException) {
-            throw RuntimeException(err.message)
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_INVALID_TOKEN)
         }
         return decoded["id"].toString().toLong()
     }

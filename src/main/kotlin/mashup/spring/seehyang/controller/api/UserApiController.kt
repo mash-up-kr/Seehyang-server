@@ -2,7 +2,9 @@ package mashup.spring.seehyang.controller.api
 
 import mashup.spring.seehyang.controller.api.dto.user.*
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.*
 
@@ -14,7 +16,8 @@ class UserApiController(
     fun getUser(
         user: User,
     ): SeehyangResponse<UserDto> {
-        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
+        if(user.isLogin().not())
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         return SeehyangResponse(UserDto.from(user))
     }
 
@@ -29,7 +32,8 @@ class UserApiController(
         user: User,
         @RequestBody body : RegisterUserDetailRequest,
     ): SeehyangResponse<RegisterUserDetailResponse> {
-        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
+        if(user.isLogin().not())
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         return SeehyangResponse(userService.registerUserDetail(user.id!!, body))
     }
 
