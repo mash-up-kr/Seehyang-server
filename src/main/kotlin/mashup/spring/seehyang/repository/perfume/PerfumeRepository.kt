@@ -29,6 +29,6 @@ interface PerfumeRepository : JpaRepository<Perfume, Long>{
 
     fun findTop10ByOrderByLikeCountDesc(): List<Perfume>
 
-    fun findTop10ByKoreanNameContainsOrderByLikeCountDesc(name: String): List<Perfume>
-    fun findTop10ByNameContainsIgnoreCaseOrderByLikeCountDesc(name: String): List<Perfume>
+    fun findTop10ByKoreanNameContainsOrderByIdDesc(name: String): List<Perfume>
+    fun findTop10ByNameContainsIgnoreCaseOrderByIdDesc(name: String): List<Perfume>
 }

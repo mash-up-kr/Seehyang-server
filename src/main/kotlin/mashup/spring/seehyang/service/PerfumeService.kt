@@ -27,8 +27,8 @@ class PerfumeService(
     fun getByName(name : String, cursor: Long?) : List<Perfume> {
         val perfumes : MutableList<Perfume> = mutableListOf()
         if(cursor == null){
-            perfumes.addAll(perfumeRepository.findTop10ByKoreanNameContainsOrderByLikeCountDesc(name))
-            perfumes.addAll(perfumeRepository.findTop10ByNameContainsIgnoreCaseOrderByLikeCountDesc(name))
+            perfumes.addAll(perfumeRepository.findTop10ByKoreanNameContainsOrderByIdDesc(name))
+            perfumes.addAll(perfumeRepository.findTop10ByNameContainsIgnoreCaseOrderByIdDesc(name))
         }else{
             perfumes.addAll(perfumeRepository.findByKoreanName(name, cursor, PAGE_SIZE))
             perfumes.addAll(perfumeRepository.findByEngName(name, cursor, PAGE_SIZE))
