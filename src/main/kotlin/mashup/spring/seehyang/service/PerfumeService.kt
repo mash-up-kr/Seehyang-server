@@ -15,9 +15,22 @@ class PerfumeService(
     private val perfumeRepository: PerfumeRepository,
     private val perfumeLikeRepository: PerfumeLikeRepository
 ) {
+
+    private val PAGE_SIZE: Int = 10
+
     @Transactional(readOnly = true)
     fun get(id: Long) : Perfume {
         return perfumeRepository.getById(id)
+    }
+
+    @Transactional(readOnly = true)
+    fun getByName(name : String, cursor: Long?) : List<Perfume> {
+        return if(cursor == null){
+            perfumeRepository.findTop10ByKoreanNameOrderByLikeCountDesc(name)
+        }else{
+            perfumeRepository.findByKoreanName(name, cursor, PAGE_SIZE)
+        }
+
     }
 
     fun edit(id: Long, request: PerfumeEditRequest): Perfume{

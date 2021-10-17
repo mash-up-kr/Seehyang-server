@@ -1,5 +1,6 @@
 package mashup.spring.seehyang.controller.api
 
+import mashup.spring.seehyang.controller.api.dto.perfume.BasicPerfumeDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeEditRequest
 import mashup.spring.seehyang.service.PerfumeService
@@ -20,6 +21,15 @@ class PerfumeApiController(
         val perfume = perfumeService.get(id)
         val liked = perfume.perfumeLikes.stream().filter { it.user.id == user.id }.findFirst().isPresent
         return SeehyangResponse(PerfumeDto(perfume, isLiked = liked))
+    }
+
+    @GetMapping("/perfume/{name}")
+    fun getPerfumeByName(
+        @PathVariable name: String,
+        @RequestParam(value = "cursor") cursor: Long? = null,
+    ): SeehyangResponse<List<BasicPerfumeDto>>{
+        val perfumeDtoList = perfumeService.getByName(name,cursor).map{BasicPerfumeDto(it)}.toList()
+        return SeehyangResponse(perfumeDtoList)
     }
 
     @PutMapping("/perfume/{id}")
