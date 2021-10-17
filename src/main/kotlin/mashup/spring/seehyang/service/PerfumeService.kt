@@ -25,12 +25,16 @@ class PerfumeService(
 
     @Transactional(readOnly = true)
     fun getByName(name : String, cursor: Long?) : List<Perfume> {
-        return if(cursor == null){
-            perfumeRepository.findTop10ByKoreanNameOrderByLikeCountDesc(name)
+        val perfumes : MutableList<Perfume> = mutableListOf()
+        if(cursor == null){
+            perfumes.addAll(perfumeRepository.findTop10ByKoreanNameOrderByLikeCountDesc(name))
+            perfumes.addAll(perfumeRepository.findTop10ByNameOrderByLikeCountDesc(name))
         }else{
-            perfumeRepository.findByKoreanName(name, cursor, PAGE_SIZE)
+            perfumes.addAll(perfumeRepository.findByKoreanName(name, cursor, PAGE_SIZE))
+            perfumes.addAll(perfumeRepository.findByEngName(name, cursor, PAGE_SIZE))
         }
 
+        return perfumes
     }
 
     fun edit(id: Long, request: PerfumeEditRequest): Perfume{
