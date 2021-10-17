@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.*
+import org.mockito.internal.matchers.Null
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -36,6 +37,16 @@ class PerfumeApiControllerTest @Autowired constructor(
         assertEquals(actual.data!!.notes.middle.size, 1)
         assertEquals(actual.data!!.notes.top.size, 0)
         assertEquals(actual.data!!.accords.size, 1)
+    }
+
+    @Test
+    fun getPerfumeByName(){
+        val testPerfume = testPerfume()
+        given(perfumeService.getByName(anyString(), anyLong())).willReturn(listOf(testPerfume))
+
+        val actual = perfumeApiController.getPerfumeByName("향수",1000L)
+
+        assertEquals(actual.data!![0].name, testPerfume.name)
     }
 
     fun testPerfume() :Perfume {

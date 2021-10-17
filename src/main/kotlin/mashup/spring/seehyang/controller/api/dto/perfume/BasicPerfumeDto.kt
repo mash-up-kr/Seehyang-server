@@ -9,6 +9,7 @@ data class BasicPerfumeDto(
     val id: Long? = perfume.id,
     val thumbnailUrl: String = perfume.thumbnailUrl,
     val koreanName: String = perfume.koreanName,
+    val name: String = perfume.name,
     val brandName: String = perfume.brand.koreanName,
 ) {
 }
