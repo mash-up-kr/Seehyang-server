@@ -23,7 +23,7 @@ class PerfumeApiController(
         return SeehyangResponse(PerfumeDto(perfume, isLiked = liked))
     }
 
-    @GetMapping("/perfume/{name}")
+    @GetMapping("/perfume/list/{name}")
     fun getPerfumeByName(
         @PathVariable name: String,
         @RequestParam(value = "cursor") cursor: Long? = null,
