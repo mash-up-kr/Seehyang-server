@@ -11,5 +11,6 @@ data class BasicPerfumeDto(
     val koreanName: String = perfume.koreanName,
     val name: String = perfume.name,
     val brandName: String = perfume.brand.koreanName,
+    val likeCount: Int = perfume.likeCount
 ) {
 }

@@ -14,7 +14,7 @@ interface PerfumeRepository : JpaRepository<Perfume, Long>{
 
     @Query(nativeQuery = true,
            value = "select * from perfume " +
-                   "where korean_name like %" +":name"+"% and id < :cursor " +
+                   "where korean_name like '%'||:name||'%' and id < :cursor " +
                    "order by id desc " +
                    "limit :limit")
     fun findByKoreanName(@Param("name") name: String, @Param("cursor") cursor: Long, @Param("limit") limit: Int): List<Perfume>
