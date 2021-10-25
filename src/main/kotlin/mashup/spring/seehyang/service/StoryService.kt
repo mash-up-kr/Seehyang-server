@@ -76,32 +76,4 @@ class StoryService(
         }
     }
 
-
-//    @Transactional(readOnly = true)
-//    fun getStories(perfumeId: Long, sorting: SortingType, pageable: Pageable): List<StoryDetailDto> {
-//
-//        val stories = when (sorting) {
-//            SortingType.NEW -> storyRepository.findByPerfumeIdOrderByDate(perfumeId, pageable)
-//            SortingType.COMMENT -> storyRepository.findByPerfumeIdOrderByComment(perfumeId, pageable)
-//            SortingType.LIKE -> storyRepository.findByPerfumeIdOrderByLike(perfumeId, pageable)
-//        }
-//
-//        return stories.stream()
-//            .map { it ->
-//                StoryDetailDto(
-//                    id = it.id!!,
-//                    userNickname = it.user.nickname,
-//                    userProfileUrl = it.user.profileImage?.url ?: "",
-//                    commentCount = it.commentCount,
-//                    likeCount = it.likeCount,
-//                    storyImageUrl = it.image.url,
-//                    tags = storyTagRepository.findByStoryId(it.id!!)
-//                                                .stream()
-//                                                .map { it.tag.contents }
-//                                                .toList()
-//                )
-//            }
-//            .toList()
-//    }
-
 }
