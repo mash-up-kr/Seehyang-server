@@ -4,9 +4,11 @@ import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.CommentService
-import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,16 +18,18 @@ import org.springframework.web.bind.annotation.RequestParam
 class CommentApiController(
     private val commentService: CommentService
 ) {
-    // TODO 유저 널 체크!
+
     @PostMapping("/story/{id}/comment")
     fun createComment(
         user: User,
         @PathVariable(value = "id") storyId: Long,
         requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
-        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
+        if(user.isLogin().not())
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
-        val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
+        val commentContents = requestDto.contents
+            ?: throw NotFoundException(SeehyangStatus.NOT_FOUNT_COMMENT)
 
         val savedComment = commentService.addComment(user, storyId, commentContents)
         return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
@@ -47,9 +51,11 @@ class CommentApiController(
         @PathVariable(value = "id") commentId: Long,
         requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
-        if(user.isLogin().not()) throw RuntimeException("Not Authorization user..")
+        if(user.isLogin().not())
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
-        val commentContents = requestDto.contents?: throw RuntimeException("내용을 작성 해야 합니다.")
+        val commentContents = requestDto.contents
+            ?: throw NotFoundException(SeehyangStatus.NOT_FOUNT_COMMENT)
 
         val savedComment = commentService.addReplyComment(user, commentId, commentContents)
         return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
