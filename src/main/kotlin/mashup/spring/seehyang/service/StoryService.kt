@@ -57,7 +57,12 @@ class StoryService(
     }
 
     @Transactional(readOnly = true)
-    fun getStories(perfumeId: Long, cursor: Long?): List<Story>
+    fun getStories(idList: List<Long>) : List<Story>
+        = storyRepository.findByIds(idList.toSet().toList())
+
+
+    @Transactional(readOnly = true)
+    fun getStoriesByPerfume(perfumeId: Long, cursor: Long?): List<Story>
         = if (cursor == null) storyRepository.findTop20ByPerfumeIdOrderByIdDesc(perfumeId)
             else storyRepository.findStoryByPerfumeId(perfumeId, cursor, PAGE_SIZE)
 
