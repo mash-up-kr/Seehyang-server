@@ -14,7 +14,7 @@ class HomeService(
     val storyRepository: StoryRepository,
     val perfumeRepository: PerfumeRepository
 ) {
-
+    private val STEADY_PAGE_SIZE = 6;
     /**
      * 1. 스토리가 5개 이상 올라온 향수를 찾는다.
      * 2. 찾은 향수 중 랜덤으로 하나를 선택 한다.
@@ -34,5 +34,14 @@ class HomeService(
 
     fun weeklyRanking(): List<Perfume>{
         return perfumeRepository.findTop10ByOrderByLikeCountDesc()
+    }
+
+    fun getSteadyPerfumes(idCursor: Long?, likeCursor: Int?): List<Perfume>{
+
+        return if(idCursor == null || likeCursor == null) {
+            perfumeRepository.findTop6ByOrderByLikeCountDescIdDesc()
+        }else{
+            perfumeRepository.findSteadyPerfume(idCursor, likeCursor, STEADY_PAGE_SIZE)
+        }
     }
 }

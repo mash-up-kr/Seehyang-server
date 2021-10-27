@@ -19,7 +19,6 @@ interface PerfumeRepository : JpaRepository<Perfume, Long>{
                    "limit :limit")
     fun findByKoreanName(@Param("name") name: String, @Param("cursor") cursor: Long, @Param("limit") limit: Int): List<Perfume>
 
-    //where name like CONCAT('%',:name,'%') and id < :cursor
     @Query(nativeQuery = true,
            value = "select * from perfume " +
                    "where upper(name) like concat('%', upper(:name),'%') and id < :cursor " +
@@ -27,8 +26,16 @@ interface PerfumeRepository : JpaRepository<Perfume, Long>{
                    "limit :limit")
     fun findByEngName(@Param("name") name: String, @Param("cursor") cursor: Long, @Param("limit") limit: Int): List<Perfume>
 
-    fun findTop10ByOrderByLikeCountDesc(): List<Perfume>
 
+    @Query(nativeQuery = true,
+           value = "select * from perfume " +
+                   "where  (like_count < :likeCursor or (like_count = :like_count and id < :idCursor)) " +
+                   "order by like_count desc, id desc " +
+                   "limit :limit")
+    fun findSteadyPerfume(@Param("idCursor") idCursor: Long, @Param("likeCursor") likeCursor: Int, @Param("limit") limit: Int): List<Perfume>
+
+    fun findTop10ByOrderByLikeCountDesc(): List<Perfume>
+    fun findTop6ByOrderByLikeCountDescIdDesc(): List<Perfume>
     fun findTop10ByKoreanNameContainsOrderByIdDesc(name: String): List<Perfume>
     fun findTop10ByNameContainsIgnoreCaseOrderByIdDesc(name: String): List<Perfume>
 }
