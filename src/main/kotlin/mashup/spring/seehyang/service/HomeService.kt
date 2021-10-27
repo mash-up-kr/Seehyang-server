@@ -1,7 +1,9 @@
 package mashup.spring.seehyang.service
 
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
+import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
@@ -38,9 +40,11 @@ class HomeService(
 
     fun getSteadyPerfumes(idCursor: Long?, likeCursor: Int?): List<Perfume>{
 
-        return if(idCursor == null || likeCursor == null) {
+        return if(idCursor == null && likeCursor == null) {
             perfumeRepository.findTop6ByOrderByLikeCountDescIdDesc()
-        }else{
+        }else if(idCursor == null || likeCursor == null){
+            throw BadRequestException(SeehyangStatus.INVALID_CURSOR_PARAMETER)
+        }else {
             perfumeRepository.findSteadyPerfume(idCursor, likeCursor, STEADY_PAGE_SIZE)
         }
     }

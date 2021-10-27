@@ -12,6 +12,7 @@ enum class SeehyangStatus(
 
     NOT_FOUNT_USER(4040, "The user does not exist."),
     NOT_FOUNT_COMMENT(4041, "You need to write the content."),
+    INVALID_CURSOR_PARAMETER(4042, "You need like cursor and id cursor both"),
 
     INTERNAL_SERVER_ERROR(5000, "This request cannot be proceed.");
 
