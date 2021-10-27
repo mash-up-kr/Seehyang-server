@@ -2,9 +2,12 @@ package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.StoryLike
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryLikeRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
@@ -78,6 +81,17 @@ class StoryService(
             storyLikeRepository.save(StoryLike(user = user, story = story))
             story.like()
             true
+        }
+    }
+
+    fun deleteStory(user: User, id:Long): Long{
+        val userId = user.id!!
+        val userIdInStory = storyRepository.findById(id).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_STORY)}.id!!
+        if (userId == userIdInStory) {
+            storyRepository.deleteById(id)
+            return id;
+        } else {
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
     }
 

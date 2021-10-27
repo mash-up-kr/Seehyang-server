@@ -27,7 +27,7 @@ class CommentApiController(
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
         val commentContents = requestDto.contents
-            ?: throw NotFoundException(SeehyangStatus.NOT_FOUNT_COMMENT)
+            ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
 
         val savedComment = commentService.addComment(user, storyId, commentContents)
         return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
@@ -53,7 +53,7 @@ class CommentApiController(
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
         val commentContents = requestDto.contents
-            ?: throw NotFoundException(SeehyangStatus.NOT_FOUNT_COMMENT)
+            ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
 
         val savedComment = commentService.addReplyComment(user, commentId, commentContents)
         return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))

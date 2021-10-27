@@ -73,4 +73,16 @@ class StoryApiController(
         return SeehyangResponse(mutableMapOf(Pair("isLike", isLike)))
     }
 
+    @DeleteMapping("/story/{id}")
+    fun deleteStory(
+        user: User,
+        @PathVariable id: Long
+    ): SeehyangResponse<Map<String, Long>>{
+        if(user.isLogin().not())
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+        val deletedId = storyService.deleteStory(user,id)
+
+        return SeehyangResponse(mutableMapOf(Pair("id", deletedId)))
+    }
+
 }
