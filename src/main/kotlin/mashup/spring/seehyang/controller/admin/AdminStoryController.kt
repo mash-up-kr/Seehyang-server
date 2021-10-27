@@ -1,9 +1,7 @@
 package mashup.spring.seehyang.controller.admin
 
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
-import mashup.spring.seehyang.controller.api.dto.community.StoryDetailDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
-import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
