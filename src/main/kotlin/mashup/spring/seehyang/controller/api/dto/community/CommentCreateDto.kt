@@ -16,3 +16,7 @@ data class CommentCreateResponse(
     val contents: String = comment.contents,
     val createdAt: LocalDateTime = comment.createdAt
 )
+
+data class CommentDeleteResponse(
+    val commentId: Long
+)

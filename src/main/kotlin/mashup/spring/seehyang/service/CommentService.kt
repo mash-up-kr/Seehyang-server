@@ -1,7 +1,11 @@
 package mashup.spring.seehyang.service
 
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Comment
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.BadRequestException
+import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.community.CommentRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 
@@ -53,4 +57,17 @@ class CommentService(
     fun getReplyComments(parentCommentId: Long, cursor: Long?): List<Comment>
             = if (cursor == null) commentRepository.findTop20ByParentIdOrderByIdDesc(parentCommentId)
     else commentRepository.findReplyCommentsByStoryId(parentCommentId, cursor, PAGE_SIZE)
+
+
+    fun deleteComment(user: User, id: Long): Long {
+        val comment = commentRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUNT_COMMENT) }
+
+        if (comment.user.id == user.id) {
+            commentRepository.deleteById(id)
+        } else {
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+        }
+
+        return comment.id!!
+    }
 }
