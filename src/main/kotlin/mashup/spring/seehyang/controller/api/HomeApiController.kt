@@ -1,6 +1,6 @@
 package mashup.spring.seehyang.controller.api
 
-import mashup.spring.seehyang.controller.api.dto.home.HotStoryDto
+import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.home.TodaySeehyangDto
 import mashup.spring.seehyang.controller.api.dto.home.WeeklyDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
@@ -19,9 +19,9 @@ class HomeApiController(
     }
 
     @GetMapping("/home/hot-story")
-    fun hotStory(): SeehyangResponse<HotStoryDto> {
-        val stories = homeService.hotStory()
-        return SeehyangResponse(HotStoryDto(stories))
+    fun hotStory(): SeehyangResponse<List<StoryDto>> {
+        val stories = homeService.hotStory().map{StoryDto(it)}
+        return SeehyangResponse(stories)
     }
 
     @GetMapping("/home/weekly-ranking")
