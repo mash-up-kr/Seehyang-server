@@ -1,4 +1,4 @@
-package mashup.spring.seehyang.service
+package mashup.spring.seehyang.batch
 
 import mashup.spring.seehyang.cache.CacheRepository
 import mashup.spring.seehyang.cache.CacheType
