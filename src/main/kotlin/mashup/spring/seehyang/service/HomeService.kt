@@ -1,5 +1,7 @@
 package mashup.spring.seehyang.service
 
+import mashup.spring.seehyang.cache.CacheRepository
+import mashup.spring.seehyang.cache.CacheType
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
@@ -14,7 +16,8 @@ import kotlin.random.Random
 @Service
 class HomeService(
     val storyRepository: StoryRepository,
-    val perfumeRepository: PerfumeRepository
+    val perfumeRepository: PerfumeRepository,
+    val cacheRepository: CacheRepository
 ) {
     private val STEADY_PAGE_SIZE = 6;
     /**
@@ -31,11 +34,26 @@ class HomeService(
     }
 
     fun hotStory() : List<Story> {
-        return storyRepository.findTop10By()
+        val cacheType = CacheType.HOT_STORY
+
+        val storyIds = mutableListOf<Long>()
+        for(i in 1..10){
+            storyIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Hot Story at ${i+1}"))
+        }
+
+        return storyRepository.findByIds(storyIds)
     }
 
     fun weeklyRanking(): List<Perfume>{
-        return perfumeRepository.findTop10ByOrderByLikeCountDesc()
+        val cacheType = CacheType.WEEKLY_RANKING
+
+        val perfumeIds = mutableListOf<Long>()
+        for(i in 1..10){
+            perfumeIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Weekly Ranking at ${i+1}"))
+        }
+
+        return perfumeRepository.findByIds(perfumeIds)
+
     }
 
     fun getSteadyPerfumes(idCursor: Long?, likeCursor: Int?): List<Perfume>{

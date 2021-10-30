@@ -59,10 +59,6 @@ class StoryService(
         return StoryDto(savedStory)
     }
 
-    @Transactional(readOnly = true)
-    fun getStories(idList: List<Long>) : List<Story>
-        = storyRepository.findByIds(idList.toSet().toList())
-
 
     @Transactional(readOnly = true)
     fun getStoriesByPerfume(perfumeId: Long, cursor: Long?): List<Story>
