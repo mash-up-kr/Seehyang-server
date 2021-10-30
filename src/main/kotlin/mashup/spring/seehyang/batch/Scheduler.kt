@@ -36,8 +36,14 @@ class Scheduler(
                 to = to,
                 Pageable.ofSize(10)
             )
-        for (i in 1..10) {
-            cacheRepository.save(CacheType.HOT_STORY, i.toString(), storyIds[i])
+        if(storyIds.size < 10){
+            for(i in 1..storyIds.size){
+                cacheRepository.save(CacheType.HOT_STORY, i.toString(), storyIds[i])
+            }
+        }else {
+            for (i in 1..10) {
+                cacheRepository.save(CacheType.HOT_STORY, i.toString(), storyIds[i])
+            }
         }
     }
 
@@ -50,8 +56,14 @@ class Scheduler(
                 to = to,
                 Pageable.ofSize(10)
             )
-        for (i in 1..10) {
-            cacheRepository.save(CacheType.WEEKLY_RANKING, i.toString(), perfumeIds[i])
+        if(perfumeIds.size < 10){
+            for(i in 1..perfumeIds.size){
+                cacheRepository.save(CacheType.WEEKLY_RANKING, i.toString(), perfumeIds[i])
+            }
+        }else {
+            for (i in 1..10) {
+                cacheRepository.save(CacheType.WEEKLY_RANKING, i.toString(), perfumeIds[i])
+            }
         }
     }
 

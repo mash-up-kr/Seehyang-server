@@ -40,6 +40,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt:0.9.1")
 	implementation("org.mariadb.jdbc:mariadb-java-client:2.4.1")
 	implementation("com.github.ben-manes.caffeine:caffeine:2.8.5")
+	implementation("io.springfox:springfox-boot-starter:3.0.0")
 
     // test
 	runtimeOnly("com.h2database:h2")
