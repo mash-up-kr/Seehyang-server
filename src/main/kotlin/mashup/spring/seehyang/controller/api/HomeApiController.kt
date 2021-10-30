@@ -27,9 +27,9 @@ class HomeApiController(
     }
 
     @GetMapping("/home/weekly-ranking")
-    fun weeklyRanking(): SeehyangResponse<WeeklyDto> {
-        val perfumes = homeService.weeklyRanking()
-        return SeehyangResponse(WeeklyDto(perfumes))
+    fun weeklyRanking(): SeehyangResponse<List<PerfumeDto>> {
+        val perfumes = homeService.weeklyRanking().map{PerfumeDto(it)}
+        return SeehyangResponse(perfumes)
     }
 
     @GetMapping("/home/steady-perfume")
