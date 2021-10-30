@@ -8,8 +8,8 @@ class CacheRepository(
     val cacheManager: CacheManager
 ) {
 
-    fun <T> getCache(cacheType: CacheType, key: String, type: Class<T>): T? {
-        return when (cacheType) {
+    fun <T> getCache(cacheType: CacheType, key: String, type: Class<T>): T?
+        = when (cacheType) {
             CacheType.WEEKLY_RANKING -> {
                 val cache = cacheManager.getCache(CacheType.WEEKLY_RANKING.cacheName) ?: throw RuntimeException("Weekly Ranking Cache Not Found")
                 cache.get(key, type)
@@ -19,10 +19,10 @@ class CacheRepository(
                 cache.get(key, type)
             }
         }
-    }
 
-    fun save(cacheType: CacheType, key: String, objects: Any?) {
-        when (cacheType) {
+
+    fun save(cacheType: CacheType, key: String, objects: Any?)
+        = when (cacheType) {
             CacheType.WEEKLY_RANKING -> {
                 val cache = cacheManager.getCache(CacheType.WEEKLY_RANKING.cacheName) ?: throw RuntimeException("Weekly Ranking Cache Not Found")
                 cache.put(key, objects)
@@ -32,5 +32,5 @@ class CacheRepository(
                 cache.put(key, objects)
             }
         }
-    }
+
 }

@@ -19,20 +19,29 @@ class CacheConfig {
         val cacheTypes = CacheType.values()
         val cacheList = mutableListOf<Cache>()
 
-        for(type in cacheTypes){
-            when(type){
-                CacheType.WEEKLY_RANKING -> {
-
-                    val cache = CaffeineCache(
-                        type.cacheName,
-                        Caffeine.newBuilder()
-                            .initialCapacity(type.maximumSize!!.toInt())
-                            .maximumSize(type.maximumSize!!)
-                            .build()
-                    )
-                    cacheList.add(cache)
+        for (type in cacheTypes) {
+            cacheList.add(
+                when (type) {
+                    CacheType.WEEKLY_RANKING -> {
+                        CaffeineCache(
+                            type.cacheName,
+                            Caffeine.newBuilder()
+                                .initialCapacity(type.maximumSize!!.toInt())
+                                .maximumSize(type.maximumSize!!)
+                                .build()
+                        )
+                    }
+                    CacheType.HOT_STORY -> {
+                        CaffeineCache(
+                            type.cacheName,
+                            Caffeine.newBuilder()
+                                .initialCapacity(type.maximumSize!!.toInt())
+                                .maximumSize(type.maximumSize!!)
+                                .build()
+                        )
+                    }
                 }
-            }
+            )
         }
 
         cacheManager.setCaches(cacheList)
