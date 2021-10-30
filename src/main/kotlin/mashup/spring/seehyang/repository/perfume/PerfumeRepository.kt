@@ -1,5 +1,6 @@
 package mashup.spring.seehyang.repository.perfume
 
+import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -38,4 +39,7 @@ interface PerfumeRepository : JpaRepository<Perfume, Long>{
     fun findTop6ByOrderByLikeCountDescIdDesc(): List<Perfume>
     fun findTop10ByKoreanNameContainsOrderByIdDesc(name: String): List<Perfume>
     fun findTop10ByNameContainsIgnoreCaseOrderByIdDesc(name: String): List<Perfume>
+
+    @Query("select p from Perfume p where p.id in :ids")
+    fun findByIds(@Param("ids") storyIds: List<Long>): List<Perfume>
 }
