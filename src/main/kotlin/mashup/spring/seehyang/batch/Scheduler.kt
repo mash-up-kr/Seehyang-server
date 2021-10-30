@@ -18,26 +18,41 @@ class Scheduler(
 
     @Scheduled(cron = "0 0 0/1 * *")
     fun updateHotStory(): Unit{
-        val storyIds = storyLikeRepository
-            .findStoryIdByRecentLike(from = LocalDateTime.now().minusDays(1),
-                                     to = LocalDateTime.now(),
-                                     Pageable.ofSize(10))
-        for(i in 1..10){
-            cacheRepository.save(CacheType.HOT_STORY, i.toString(), storyIds[i])
-        }
-
+        saveHotStory(LocalDateTime.now().minusHours(1), LocalDateTime.now())
     }
 
     @Scheduled(cron = "0 0 0 * * MON")
     fun updateWeeklyRanking(): Unit{
+        saveWeeklyRanking(from = LocalDateTime.now().minusWeeks(1),
+                          to = LocalDateTime.now())
+
+    }
+
+    fun saveHotStory(from: LocalDateTime, to: LocalDateTime) {
+        val storyIds
+        = storyLikeRepository
+            .findStoryIdByRecentLike(
+                from = from,
+                to = to,
+                Pageable.ofSize(10)
+            )
+        for (i in 1..10) {
+            cacheRepository.save(CacheType.HOT_STORY, i.toString(), storyIds[i])
+        }
+    }
+
+
+
+    fun saveWeeklyRanking(from: LocalDateTime, to: LocalDateTime) {
         val perfumeIds = perfumeLikeRepository
-            .findPerfumeIdByRecentLike(from = LocalDateTime.now().minusWeeks(1),
-                                       to = LocalDateTime.now(),
-                                       Pageable.ofSize(10))
-        for(i in 1..10){
+            .findPerfumeIdByRecentLike(
+                from = from,
+                to = to,
+                Pageable.ofSize(10)
+            )
+        for (i in 1..10) {
             cacheRepository.save(CacheType.WEEKLY_RANKING, i.toString(), perfumeIds[i])
         }
-
     }
 
 }
