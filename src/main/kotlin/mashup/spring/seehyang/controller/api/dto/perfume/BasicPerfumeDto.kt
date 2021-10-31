@@ -7,9 +7,9 @@ data class BasicPerfumeDto(
     @JsonIgnore
     val perfume: Perfume,
     val id: Long? = perfume.id,
-    val thumbnailUrl: String = perfume.thumbnailUrl,
-    val koreanName: String = perfume.koreanName,
     val name: String = perfume.name,
+    val koreanName: String = perfume.koreanName,
+    val thumbnailUrl: String = perfume.thumbnailUrl,
     val brandName: String = perfume.brand.koreanName,
     val likeCount: Int = perfume.likeCount
 ) {
