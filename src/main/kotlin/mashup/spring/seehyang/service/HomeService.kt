@@ -38,7 +38,7 @@ class HomeService(
 
         val storyIds = mutableListOf<Long>()
         for(i in 1..10){
-            storyIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Hot Story at ${i+1}"))
+            storyIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Hot Story at ${i}"))
         }
 
         return storyRepository.findByIds(storyIds)
@@ -49,7 +49,7 @@ class HomeService(
 
         val perfumeIds = mutableListOf<Long>()
         for(i in 1..10){
-            perfumeIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Weekly Ranking at ${i+1}"))
+            perfumeIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Weekly Ranking at ${i}"))
         }
 
         return perfumeRepository.findByIds(perfumeIds)
