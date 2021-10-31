@@ -10,7 +10,7 @@ data class StoryDto(
     @JsonIgnore
     val story: Story,
     val id: Long = story.id!!,
-    val image: String = story.image.url,
+    val imageUrl: String = story.image.url,
     val userId : Long = story.user.id!!,
     val userNickname: String = story.user.nickname!!,
     val userProfileImageUrl: String? = story.user.profileImage?.url,
