@@ -2,6 +2,7 @@ package mashup.spring.seehyang.controller.api
 
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
+import mashup.spring.seehyang.controller.api.dto.community.CommentDeleteResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
@@ -9,10 +10,7 @@ import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.CommentService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 
 @ApiV1
 class CommentApiController(
@@ -29,7 +27,7 @@ class CommentApiController(
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
         val commentContents = requestDto.contents
-            ?: throw NotFoundException(SeehyangStatus.NOT_FOUNT_COMMENT)
+            ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
 
         val savedComment = commentService.addComment(user, storyId, commentContents)
         return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
@@ -55,7 +53,7 @@ class CommentApiController(
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
         val commentContents = requestDto.contents
-            ?: throw NotFoundException(SeehyangStatus.NOT_FOUNT_COMMENT)
+            ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
 
         val savedComment = commentService.addReplyComment(user, commentId, commentContents)
         return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
@@ -70,4 +68,18 @@ class CommentApiController(
         val replyCommentDtos = replyComments.map { CommentDto(it) }
         return SeehyangResponse(replyCommentDtos)
     }
+
+    @DeleteMapping("/comment/{id}")
+    fun deleteComment(
+        @PathVariable(value = "id") commentId: Long,
+        user : User
+    ): SeehyangResponse<CommentDeleteResponse>{
+        if(user.isLogin().not())
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+
+        val deletedId: Long = commentService.deleteComment(user, commentId)
+
+        return SeehyangResponse(CommentDeleteResponse(deletedId))
+    }
+
 }

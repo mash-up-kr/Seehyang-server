@@ -2,9 +2,12 @@ package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.StoryLike
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryLikeRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
@@ -56,8 +59,9 @@ class StoryService(
         return StoryDto(savedStory)
     }
 
+
     @Transactional(readOnly = true)
-    fun getStories(perfumeId: Long, cursor: Long?): List<Story>
+    fun getStoriesByPerfume(perfumeId: Long, cursor: Long?): List<Story>
         = if (cursor == null) storyRepository.findTop20ByPerfumeIdOrderByIdDesc(perfumeId)
             else storyRepository.findStoryByPerfumeId(perfumeId, cursor, PAGE_SIZE)
 
@@ -76,32 +80,15 @@ class StoryService(
         }
     }
 
-
-//    @Transactional(readOnly = true)
-//    fun getStories(perfumeId: Long, sorting: SortingType, pageable: Pageable): List<StoryDetailDto> {
-//
-//        val stories = when (sorting) {
-//            SortingType.NEW -> storyRepository.findByPerfumeIdOrderByDate(perfumeId, pageable)
-//            SortingType.COMMENT -> storyRepository.findByPerfumeIdOrderByComment(perfumeId, pageable)
-//            SortingType.LIKE -> storyRepository.findByPerfumeIdOrderByLike(perfumeId, pageable)
-//        }
-//
-//        return stories.stream()
-//            .map { it ->
-//                StoryDetailDto(
-//                    id = it.id!!,
-//                    userNickname = it.user.nickname,
-//                    userProfileUrl = it.user.profileImage?.url ?: "",
-//                    commentCount = it.commentCount,
-//                    likeCount = it.likeCount,
-//                    storyImageUrl = it.image.url,
-//                    tags = storyTagRepository.findByStoryId(it.id!!)
-//                                                .stream()
-//                                                .map { it.tag.contents }
-//                                                .toList()
-//                )
-//            }
-//            .toList()
-//    }
+    fun deleteStory(user: User, id:Long): Long{
+        val userId = user.id!!
+        val userIdInStory = storyRepository.findById(id).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_STORY)}.id!!
+        if (userId == userIdInStory) {
+            storyRepository.deleteById(id)
+            return id;
+        } else {
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+        }
+    }
 
 }

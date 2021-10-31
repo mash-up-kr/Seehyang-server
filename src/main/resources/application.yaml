@@ -56,6 +56,27 @@ spring:
         default_batch_fetch_size: 1000
     show-sql: true
 
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:mysql://localhost:3306/seehyang
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    password: 1234
+
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+    show-sql: true
 
 
 

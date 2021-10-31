@@ -11,27 +11,7 @@ data class StoryDto(
     val story: Story,
     val id: Long = story.id!!,
     val image: String = story.image.url,
-    val perfumeImageUrl: String = story.perfume.thumbnailUrl,
-    val tags: List<TagDto> = story.storyTags.map { TagDto(it.tag) }
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class StoryDetailDto(
-    val id: Long,
-    val userNickname: String?,
-    val userProfileUrl: String,
-    val commentCount: Int? = null,
-    val likeCount: Int,
-    val perfumeName: String? = null,
-    val tags: List<String>? = null,
-    val storyImageUrl: String
-)
-
-data class StoryListItemDto(
-    @JsonIgnore
-    val story: Story,
-    val id: Long = story.id!!,
-    val image: String = story.image.url,
+    val userId : Long = story.user.id!!,
     val userNickname: String = story.user.nickname!!,
     val userProfileImageUrl: String? = story.user.profileImage?.url,
     val commentCount: Int = story.commentCount,

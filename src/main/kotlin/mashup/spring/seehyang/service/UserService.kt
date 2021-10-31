@@ -7,7 +7,6 @@ import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.repository.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.RuntimeException
 
 @Service
 class UserService(
@@ -27,7 +26,7 @@ class UserService(
                            req: RegisterUserDetailRequest
     ): RegisterUserDetailResponse {
         val user: User = userRepository.findById(id)
-            .orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUNT_USER) }
+            .orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_USER) }
         user.age = req.age
         user.gender = req.gender
         user.nickname = req.nickname
@@ -45,13 +44,13 @@ class UserService(
     @Transactional(readOnly = true)
     fun getUser(id: Long): User {
         return userRepository.findById(id)
-            .orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUNT_USER) }
+            .orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_USER) }
     }
 
     @Transactional(readOnly = true)
     fun signInUser(req: SignInRequest): SignInResponse {
         val user: User = userRepository.findByEmail(req.email)
-            ?: throw NotFoundException(SeehyangStatus.NOT_FOUNT_USER)
+            ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_USER)
         return SignInResponse(token = userJwtService.encode(user.id!!))
     }
 }

@@ -1,7 +1,11 @@
 package mashup.spring.seehyang.service
 
+import mashup.spring.seehyang.cache.CacheRepository
+import mashup.spring.seehyang.cache.CacheType
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
+import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
@@ -12,9 +16,10 @@ import kotlin.random.Random
 @Service
 class HomeService(
     val storyRepository: StoryRepository,
-    val perfumeRepository: PerfumeRepository
+    val perfumeRepository: PerfumeRepository,
+    val cacheRepository: CacheRepository
 ) {
-
+    private val STEADY_PAGE_SIZE = 6;
     /**
      * 1. 스토리가 5개 이상 올라온 향수를 찾는다.
      * 2. 찾은 향수 중 랜덤으로 하나를 선택 한다.
@@ -29,10 +34,36 @@ class HomeService(
     }
 
     fun hotStory() : List<Story> {
-        return storyRepository.findTop10By()
+        val cacheType = CacheType.HOT_STORY
+
+        val storyIds = mutableListOf<Long>()
+        for(i in 1..10){
+            storyIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Hot Story at ${i}"))
+        }
+
+        return storyRepository.findByIds(storyIds)
     }
 
     fun weeklyRanking(): List<Perfume>{
-        return perfumeRepository.findTop10ByOrderByLikeCountDesc()
+        val cacheType = CacheType.WEEKLY_RANKING
+
+        val perfumeIds = mutableListOf<Long>()
+        for(i in 1..10){
+            perfumeIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Weekly Ranking at ${i}"))
+        }
+
+        return perfumeRepository.findByIds(perfumeIds)
+
+    }
+
+    fun getSteadyPerfumes(idCursor: Long?, likeCursor: Int?): List<Perfume>{
+
+        return if(idCursor == null && likeCursor == null) {
+            perfumeRepository.findTop6ByOrderByLikeCountDescIdDesc()
+        }else if(idCursor == null || likeCursor == null){
+            throw BadRequestException(SeehyangStatus.INVALID_CURSOR_PARAMETER)
+        }else {
+            perfumeRepository.findSteadyPerfume(idCursor, likeCursor, STEADY_PAGE_SIZE)
+        }
     }
 }
