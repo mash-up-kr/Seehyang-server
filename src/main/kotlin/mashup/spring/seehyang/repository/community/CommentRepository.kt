@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface CommentRepository: JpaRepository<Comment, Long> {
 
+    //TODO to One 관계 fetch join으로 수정하기
     @Query(nativeQuery = true,
            value = "select * from comment " +
                         "where parent_id is null and story_id = :storyId and id < :cursor " +

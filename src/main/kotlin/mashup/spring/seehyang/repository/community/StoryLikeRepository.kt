@@ -21,7 +21,12 @@ interface StoryLikeRepository : JpaRepository<StoryLike, Long> {
                    "where s.id = :storyId")
     fun countByStoryId(@Param("storyId") storyId: Long) : Long
 
-    fun findByUserAndStory(user: User, story: Story) : Optional<StoryLike>
+    @Query("select st " +
+                   "from StoryLike st " +
+                   "join fetch st.story s " +
+                   "join fetch st.user u " +
+                   "where u = :user and s = :story")
+    fun findByUserAndStory(@Param("user") user: User, @Param("story") story: Story) : Optional<StoryLike>
 
     @Query("select s.id " +
                    "from StoryLike l join l.story s " +

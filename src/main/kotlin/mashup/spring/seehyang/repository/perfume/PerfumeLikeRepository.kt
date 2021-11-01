@@ -14,7 +14,13 @@ import java.util.*
 
 @Repository
 interface PerfumeLikeRepository : JpaRepository<PerfumeLike, Long> {
-    fun findByUserAndPerfume(user: User, perfume: Perfume) : Optional<PerfumeLike>
+
+    @Query("select pl " +
+                   "from PerfumeLike pl " +
+                   "join fetch pl.user u " +
+                   "join fetch pl.perfume p " +
+                   "where u =:user and p =:perfume")
+    fun findByUserAndPerfume(@Param("user") user: User,@Param("perfume") perfume: Perfume) : Optional<PerfumeLike>
 
     @Query("select p.id " +
                    "from PerfumeLike l join l.perfume p " +
