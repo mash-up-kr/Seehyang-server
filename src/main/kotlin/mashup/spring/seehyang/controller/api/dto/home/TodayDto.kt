@@ -16,14 +16,14 @@ data class TodaySeehyangDto(
 
 data class TodayPerfume(
     val id: Long,
-    val thumbnail: String,
-    val name: String
+    val thumbnailUrl: String,
+    val koreanName: String
 )
 
 data class TodayStory(
     val id: Long,
     val imageUrl: String,
-    val userProfileImage: String?,
+    val userProfileImageUrl: String?,
     val userNickname: String?,
     val likeCount: Int
 )
