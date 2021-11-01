@@ -2,14 +2,13 @@ package mashup.spring.seehyang.cache
 
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Component
-import kotlin.reflect.KClass
 
 @Component
 class CacheRepository(
     val cacheManager: CacheManager
 ) {
 
-    fun <T:Any> getCache(cacheType: CacheType, key: String, type: KClass<T>): T
+    fun <T:Any> getCache(cacheType: CacheType, key: String): T
         = when (cacheType) {
             CacheType.WEEKLY_RANKING -> {
                 val cache = cacheManager.getCache(CacheType.WEEKLY_RANKING.cacheName) ?: throw RuntimeException("Weekly Ranking Cache Not Found")

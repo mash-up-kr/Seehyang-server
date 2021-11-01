@@ -17,8 +17,14 @@ class SeehyangApplicationRunner(
     }
 
     private fun initCache(){
-        scheduler.saveWeeklyRanking(LocalDateTime.now().with(DayOfWeek.MONDAY), LocalDateTime.now())
-        scheduler.saveHotStory(LocalDateTime.now().minusMinutes(LocalDateTime.now().minute.toLong()), LocalDateTime.now())
+        val mondayOfThisWeek = LocalDateTime.now().with(DayOfWeek.MONDAY)
+        scheduler.saveWeeklyRanking(from = mondayOfThisWeek
+                                            .minusWeeks(1),
+                                    to = LocalDateTime.now()
+                                            .with(DayOfWeek.MONDAY))
+
+        val oCLockOfThisHour = LocalDateTime.now().minusMinutes(LocalDateTime.now().minute.toLong())
+        scheduler.saveHotStory(oCLockOfThisHour.minusHours(1), oCLockOfThisHour)
     }
 
 

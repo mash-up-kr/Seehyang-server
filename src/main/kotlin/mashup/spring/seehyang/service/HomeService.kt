@@ -2,6 +2,7 @@ package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.cache.CacheRepository
 import mashup.spring.seehyang.cache.CacheType
+import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
@@ -37,10 +38,10 @@ class HomeService(
         val cacheType = CacheType.HOT_STORY
 
         val storyIds = mutableListOf<Long>()
-        for(i in 1..10){
-            storyIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Hot Story at ${i}"))
+        for(i in 1..cacheType.maximumSize!!){
+            storyIds.add(cacheRepository.getCache(cacheType, i.toString()))
         }
-
+        val stories = storyRepository.findByIds(storyIds).map { StoryDto(it) }
         return storyRepository.findByIds(storyIds)
     }
 
@@ -48,8 +49,8 @@ class HomeService(
         val cacheType = CacheType.WEEKLY_RANKING
 
         val perfumeIds = mutableListOf<Long>()
-        for(i in 1..10){
-            perfumeIds.add(cacheRepository.getCache(cacheType, i.toString(), Long::class.java)?: throw RuntimeException("Not Found Weekly Ranking at ${i}"))
+        for(i in 1..cacheType.maximumSize!!){
+            perfumeIds.add(cacheRepository.getCache(cacheType, i.toString()))
         }
 
         return perfumeRepository.findByIds(perfumeIds)
