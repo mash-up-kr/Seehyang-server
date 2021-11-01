@@ -21,7 +21,7 @@ class CommentApiController(
     fun createComment(
         user: User,
         @PathVariable(value = "id") storyId: Long,
-        requestDto: CommentCreateRequest,
+        @RequestBody requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
@@ -47,7 +47,7 @@ class CommentApiController(
     fun createReplyComment(
         user: User,
         @PathVariable(value = "id") commentId: Long,
-        requestDto: CommentCreateRequest,
+        @RequestBody requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)

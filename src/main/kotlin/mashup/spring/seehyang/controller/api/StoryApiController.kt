@@ -49,7 +49,7 @@ class StoryApiController(
 
     @PostMapping("/story")
     fun createStory(
-        createRequest: StoryCreateRequest,
+        @RequestBody createRequest: StoryCreateRequest,
         user: User,
     ) : SeehyangResponse<StoryCreateResponse> {
         if(user.isLogin().not())
