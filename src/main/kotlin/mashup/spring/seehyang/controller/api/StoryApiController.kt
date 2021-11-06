@@ -1,5 +1,8 @@
 package mashup.spring.seehyang.controller.api
 
+import io.swagger.annotations.ApiParam
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.Parameters
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
@@ -9,6 +12,7 @@ import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.StoryService
 import org.springframework.web.bind.annotation.*
+import springfox.documentation.annotations.ApiIgnore
 
 /**
  * Story Api Controller
@@ -40,7 +44,7 @@ class StoryApiController(
     @GetMapping("/perfume/{id}/story")
     fun getStoryByPerfume(
         @PathVariable(value = "id") perfumeId: Long,
-        @RequestParam(value = "cursor") cursor: Long? = null
+        @RequestParam(value = "cursor", required = false)cursor: Long? = null
     ): SeehyangResponse<List<StoryDto>>{
         val stories = storyService.getStoriesByPerfume(perfumeId, cursor)
         val storyListDto = stories.map { StoryDto(it) }
@@ -50,7 +54,7 @@ class StoryApiController(
     @PostMapping("/story")
     fun createStory(
         @RequestBody createRequest: StoryCreateRequest,
-        user: User,
+        @ApiIgnore user: User,
     ) : SeehyangResponse<StoryCreateResponse> {
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
@@ -63,7 +67,7 @@ class StoryApiController(
 
     @PostMapping("/story/{id}/like")
     fun likeStory(
-        user: User,
+        @ApiIgnore user: User,
         @PathVariable id : Long,
     ): SeehyangResponse<Map<String, Boolean>> {
         if(user.isLogin().not())
@@ -75,7 +79,7 @@ class StoryApiController(
 
     @DeleteMapping("/story/{id}")
     fun deleteStory(
-        user: User,
+        @ApiIgnore user: User,
         @PathVariable id: Long
     ): SeehyangResponse<Map<String, Long>>{
         if(user.isLogin().not())

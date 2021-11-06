@@ -1,5 +1,6 @@
 package mashup.spring.seehyang.controller.api
 
+import io.swagger.annotations.ApiParam
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDeleteResponse
@@ -11,6 +12,7 @@ import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.CommentService
 import org.springframework.web.bind.annotation.*
+import springfox.documentation.annotations.ApiIgnore
 
 @ApiV1
 class CommentApiController(
@@ -19,7 +21,7 @@ class CommentApiController(
 
     @PostMapping("/story/{id}/comment")
     fun createComment(
-        user: User,
+        @ApiIgnore user: User,
         @PathVariable(value = "id") storyId: Long,
         @RequestBody requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
@@ -36,7 +38,7 @@ class CommentApiController(
     @GetMapping("/story/{id}/comments")
     fun comments(
         @PathVariable(value = "id") storyId: Long,
-        @RequestParam(value = "cursor") cursor: Long? = null,
+        @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
         val comments = commentService.getComments(storyId, cursor)
         val commentDtos = comments.map { CommentDto(it) }
@@ -45,7 +47,7 @@ class CommentApiController(
 
     @PostMapping("/comment/{id}/reply")
     fun createReplyComment(
-        user: User,
+        @ApiIgnore user: User,
         @PathVariable(value = "id") commentId: Long,
         @RequestBody requestDto: CommentCreateRequest,
     ): SeehyangResponse<CommentCreateResponse> {
@@ -62,7 +64,7 @@ class CommentApiController(
     @GetMapping("/comment/{id}/reply")
     fun replyComments(
         @PathVariable(value = "id") parentCommentId: Long,
-        @RequestParam(value = "cursor") cursor: Long? = null,
+        @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
         val replyComments = commentService.getReplyComments(parentCommentId, cursor)
         val replyCommentDtos = replyComments.map { CommentDto(it) }
@@ -72,7 +74,7 @@ class CommentApiController(
     @DeleteMapping("/comment/{id}")
     fun deleteComment(
         @PathVariable(value = "id") commentId: Long,
-        user : User
+        @ApiIgnore user : User
     ): SeehyangResponse<CommentDeleteResponse>{
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)

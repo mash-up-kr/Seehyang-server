@@ -1,5 +1,6 @@
 package mashup.spring.seehyang.controller.api
 
+import io.swagger.annotations.ApiParam
 import mashup.spring.seehyang.controller.api.dto.user.*
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
@@ -7,6 +8,7 @@ import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.UserService
 import org.springframework.web.bind.annotation.*
+import springfox.documentation.annotations.ApiIgnore
 
 @ApiV1
 class UserApiController(
@@ -14,7 +16,7 @@ class UserApiController(
 ) {
     @GetMapping("/user")
     fun getUser(
-        user: User,
+        @ApiIgnore user: User,
     ): SeehyangResponse<UserDto> {
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
@@ -29,7 +31,7 @@ class UserApiController(
 
     @PutMapping("/user")
     fun registerUserDetailInfo(
-        user: User,
+        @ApiIgnore user: User,
         @RequestBody body : RegisterUserDetailRequest,
     ): SeehyangResponse<RegisterUserDetailResponse> {
         if(user.isLogin().not())
