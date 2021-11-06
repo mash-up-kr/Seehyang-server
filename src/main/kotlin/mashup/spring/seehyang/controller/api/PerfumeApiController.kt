@@ -36,15 +36,6 @@ class PerfumeApiController(
         return SeehyangResponse(perfumeDtoList)
     }
 
-    @PutMapping("/perfume/{id}")
-    fun savePerfume(
-        @PathVariable id: Long,
-        @RequestBody perfumeEditRequest: PerfumeEditRequest
-    ): SeehyangResponse<String> {
-        perfumeService.edit(id, perfumeEditRequest)
-        return SeehyangResponse("OK")
-    }
-
     @PostMapping("/perfume/{id}/like")
     fun likePerfume(
         @PathVariable id: Long,
@@ -55,5 +46,14 @@ class PerfumeApiController(
         val isLiked = perfumeService.likePerfume(user, id)
 
         return SeehyangResponse(mutableMapOf(Pair("isLiked", isLiked)))
+    }
+
+    @PutMapping("/perfume/{id}")
+    fun savePerfume(
+        @PathVariable id: Long,
+        @RequestBody perfumeEditRequest: PerfumeEditRequest
+    ): SeehyangResponse<String> {
+        perfumeService.edit(id, perfumeEditRequest)
+        return SeehyangResponse("OK")
     }
 }

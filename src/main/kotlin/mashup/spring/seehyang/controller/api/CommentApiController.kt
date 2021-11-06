@@ -19,6 +19,26 @@ class CommentApiController(
     private val commentService: CommentService
 ) {
 
+    @GetMapping("/story/{id}/comments")
+    fun comments(
+        @PathVariable(value = "id") storyId: Long,
+        @RequestParam(value = "cursor", required = false) cursor: Long? = null,
+    ): SeehyangResponse<List<CommentDto>>{
+        val comments = commentService.getComments(storyId, cursor)
+        val commentDtos = comments.map { CommentDto(it) }
+        return SeehyangResponse(commentDtos)
+    }
+
+    @GetMapping("/comment/{id}/reply")
+    fun replyComments(
+        @PathVariable(value = "id") parentCommentId: Long,
+        @RequestParam(value = "cursor", required = false) cursor: Long? = null,
+    ): SeehyangResponse<List<CommentDto>>{
+        val replyComments = commentService.getReplyComments(parentCommentId, cursor)
+        val replyCommentDtos = replyComments.map { CommentDto(it) }
+        return SeehyangResponse(replyCommentDtos)
+    }
+
     @PostMapping("/story/{id}/comment")
     fun createComment(
         @ApiIgnore user: User,
@@ -35,15 +55,7 @@ class CommentApiController(
         return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
     }
 
-    @GetMapping("/story/{id}/comments")
-    fun comments(
-        @PathVariable(value = "id") storyId: Long,
-        @RequestParam(value = "cursor", required = false) cursor: Long? = null,
-    ): SeehyangResponse<List<CommentDto>>{
-        val comments = commentService.getComments(storyId, cursor)
-        val commentDtos = comments.map { CommentDto(it) }
-        return SeehyangResponse(commentDtos)
-    }
+
 
     @PostMapping("/comment/{id}/reply")
     fun createReplyComment(
@@ -61,15 +73,7 @@ class CommentApiController(
         return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
     }
 
-    @GetMapping("/comment/{id}/reply")
-    fun replyComments(
-        @PathVariable(value = "id") parentCommentId: Long,
-        @RequestParam(value = "cursor", required = false) cursor: Long? = null,
-    ): SeehyangResponse<List<CommentDto>>{
-        val replyComments = commentService.getReplyComments(parentCommentId, cursor)
-        val replyCommentDtos = replyComments.map { CommentDto(it) }
-        return SeehyangResponse(replyCommentDtos)
-    }
+
 
     @DeleteMapping("/comment/{id}")
     fun deleteComment(

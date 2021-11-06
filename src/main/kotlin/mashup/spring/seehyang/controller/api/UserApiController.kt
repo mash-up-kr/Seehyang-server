@@ -23,6 +23,12 @@ class UserApiController(
         return SeehyangResponse(UserDto.from(user))
     }
 
+    @GetMapping("/user/{nickname}")
+    fun validDuplicateNickname(
+        @PathVariable nickname: String,
+    ): SeehyangResponse<DuplicateNicknameResponse> =
+        SeehyangResponse(userService.isDuplicateNickname(nickname))
+
     @PostMapping("/user")
     fun signUpUser(
         @RequestBody body : SignUpRequest,
@@ -39,10 +45,6 @@ class UserApiController(
         return SeehyangResponse(userService.registerUserDetail(user.id!!, body))
     }
 
-    @GetMapping("/user/{nickname}")
-    fun validDuplicateNickname(
-        @PathVariable nickname: String,
-    ): SeehyangResponse<DuplicateNicknameResponse> =
-        SeehyangResponse(userService.isDuplicateNickname(nickname))
+
 
 }
