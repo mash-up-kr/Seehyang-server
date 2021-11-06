@@ -1,5 +1,6 @@
 package mashup.spring.seehyang.controller.api
 
+import io.swagger.annotations.ApiParam
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.home.TodaySeehyangDto
 import mashup.spring.seehyang.controller.api.dto.home.WeeklyDto
@@ -34,8 +35,8 @@ class HomeApiController(
 
     @GetMapping("/home/steady-perfume")
     fun steadyPerfume(
-        @RequestParam(value = "idCursor") idCursor :Long? = null,
-        @RequestParam(value = "likeCursor") likeCursor: Int? = null
+        @RequestParam(value = "idCursor", required = false) idCursor :Long? = null,
+        @RequestParam(value = "likeCursor", required = false) likeCursor: Int? = null
     ): SeehyangResponse<List<PerfumeDto>>{
         val perfumes = homeService.getSteadyPerfumes(idCursor, likeCursor).map{PerfumeDto(it)}
         return SeehyangResponse(perfumes)

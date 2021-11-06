@@ -24,30 +24,30 @@ class PerfumeApiControllerTest @Autowired constructor(
     @MockBean
     private lateinit var perfumeService: PerfumeService
 
-//    @Test
-//    fun getPerfume() {
-//        val testPerfume = testPerfume()
-//        given(perfumeService.get(anyLong())).willReturn(testPerfume)
-//
-//        val actual: SeehyangResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L, User.empty())
-//
-//        assertEquals(actual.data!!.id, testPerfume.id)
-//        assertEquals(actual.data!!.brandId, testPerfume.brand.id)
-//        assertEquals(actual.data!!.notes.base.size, 1)
-//        assertEquals(actual.data!!.notes.middle.size, 1)
-//        assertEquals(actual.data!!.notes.top.size, 0)
-//        assertEquals(actual.data!!.accords.size, 1)
-//    }
+    @Test
+    fun getPerfume() {
+        val testPerfume = testPerfume()
+        given(perfumeService.get(anyLong())).willReturn(testPerfume)
 
-//    @Test
-//    fun getPerfumeByName(){
-//        val testPerfume = testPerfume()
-//        given(perfumeService.getByName(anyString(), anyLong())).willReturn(listOf(testPerfume))
-//
-//        val actual = perfumeApiController.getPerfumeByName("향수",1000L)
-//
-//        assertEquals(actual.data!![0].name, testPerfume.name)
-//    }
+        val actual: SeehyangResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L, User.empty())
+
+        assertEquals(actual.data!!.id, testPerfume.id)
+        assertEquals(actual.data!!.brandId, testPerfume.brand.id)
+        assertEquals(actual.data!!.notes.base.size, 1)
+        assertEquals(actual.data!!.notes.middle.size, 1)
+        assertEquals(actual.data!!.notes.top.size, 0)
+        assertEquals(actual.data!!.accords.size, 1)
+    }
+
+    @Test
+    fun getPerfumeByName(){
+        val testPerfume = testPerfume()
+        given(perfumeService.getByName(anyString(), anyLong())).willReturn(listOf(testPerfume))
+
+        val actual = perfumeApiController.getPerfumeByName("향수",1000L)
+
+        assertEquals(actual.data!![0].name, testPerfume.name)
+    }
 
     fun testPerfume() :Perfume {
         val brand = Brand(1L, "Chanel", "샤넬")

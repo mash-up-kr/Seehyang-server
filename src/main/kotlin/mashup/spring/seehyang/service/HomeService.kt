@@ -7,11 +7,13 @@ import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.exception.BadRequestException
+import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.random.Random
+import kotlin.reflect.jvm.internal.impl.protobuf.Internal
 
 @Transactional
 @Service
@@ -38,10 +40,15 @@ class HomeService(
         val cacheType = CacheType.HOT_STORY
 
         val storyIds = mutableListOf<Long>()
+
         for(i in 1..cacheType.maximumSize!!){
-            storyIds.add(cacheRepository.getCache(cacheType, i.toString()))
+            val id = cacheRepository.getCache(cacheType, i.toString()) ?: break
+            if(id !is Long){
+                throw InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
+            }else{
+                storyIds.add(id)
+            }
         }
-        val stories = storyRepository.findByIds(storyIds).map { StoryDto(it) }
         return storyRepository.findByIds(storyIds)
     }
 
@@ -49,8 +56,14 @@ class HomeService(
         val cacheType = CacheType.WEEKLY_RANKING
 
         val perfumeIds = mutableListOf<Long>()
+
         for(i in 1..cacheType.maximumSize!!){
-            perfumeIds.add(cacheRepository.getCache(cacheType, i.toString()))
+            val id = cacheRepository.getCache(cacheType, i.toString()) ?: break
+            if(id !is Long){
+                throw InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
+            }else{
+                perfumeIds.add(id)
+            }
         }
 
         return perfumeRepository.findByIds(perfumeIds)
