@@ -16,5 +16,6 @@ data class StoryDto(
     val userProfileImageUrl: String? = story.user.profileImage?.url,
     val commentCount: Int = story.commentCount,
     val likeCount: Int = story.likeCount,
+    val createdAt: LocalDateTime = story.createdAt,
     val tags: List<TagDto> = story.storyTags.map { TagDto(it.tag) }
 )
