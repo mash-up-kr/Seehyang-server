@@ -1,7 +1,7 @@
-package mashup.spring.seehyang.batch
+package mashup.spring.seehyang.domain.batch
 
-import mashup.spring.seehyang.cache.CacheRepository
-import mashup.spring.seehyang.cache.CacheType
+import mashup.spring.seehyang.domain.cache.CacheRepository
+import mashup.spring.seehyang.domain.cache.CacheType
 import mashup.spring.seehyang.repository.community.StoryLikeRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository

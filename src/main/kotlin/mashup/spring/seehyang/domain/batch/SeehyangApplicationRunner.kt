@@ -1,4 +1,4 @@
-package mashup.spring.seehyang.batch
+package mashup.spring.seehyang.domain.batch
 
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner

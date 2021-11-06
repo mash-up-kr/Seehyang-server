@@ -1,4 +1,4 @@
-package mashup.spring.seehyang.cache
+package mashup.spring.seehyang.domain.cache
 
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.exception.InternalServerException

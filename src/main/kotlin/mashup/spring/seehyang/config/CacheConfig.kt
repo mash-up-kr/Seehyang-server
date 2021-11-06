@@ -1,7 +1,7 @@
 package mashup.spring.seehyang.config
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import mashup.spring.seehyang.cache.CacheType
+import mashup.spring.seehyang.domain.cache.CacheType
 import org.springframework.cache.Cache
 import org.springframework.cache.CacheManager
 import org.springframework.cache.caffeine.CaffeineCache

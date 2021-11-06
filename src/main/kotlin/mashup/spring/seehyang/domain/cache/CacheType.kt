@@ -1,4 +1,4 @@
-package mashup.spring.seehyang.cache
+package mashup.spring.seehyang.domain.cache
 
 import java.time.Duration
 

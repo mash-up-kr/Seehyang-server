@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.controller.api.dto.perfume
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import mashup.spring.seehyang.controller.api.dto.addBucketUrl
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 
 data class PerfumeDto(
@@ -9,7 +10,7 @@ data class PerfumeDto(
     val id: Long? = perfume.id,
     val name: String = perfume.name,
     val koreanName: String = perfume.koreanName,
-    val thumbnailUrl: String = perfume.thumbnailUrl,
+    val thumbnailUrl: String = addBucketUrl(perfume.thumbnailUrl),
     val brandId: Long? = perfume.brand.id,
     val brandName: String = perfume.brand.koreanName,
     val notes: NotesDto = NotesDto(perfume),

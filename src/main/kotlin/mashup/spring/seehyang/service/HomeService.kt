@@ -1,8 +1,7 @@
 package mashup.spring.seehyang.service
 
-import mashup.spring.seehyang.cache.CacheRepository
-import mashup.spring.seehyang.cache.CacheType
-import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.domain.cache.CacheRepository
+import mashup.spring.seehyang.domain.cache.CacheType
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
@@ -13,7 +12,6 @@ import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.random.Random
-import kotlin.reflect.jvm.internal.impl.protobuf.Internal
 
 @Transactional
 @Service
