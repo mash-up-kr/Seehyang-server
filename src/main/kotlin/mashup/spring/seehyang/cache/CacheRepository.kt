@@ -8,26 +8,17 @@ class CacheRepository(
     val cacheManager: CacheManager
 ) {
 
-    fun <T:Any> getCache(cacheType: CacheType, key: String): T
+    fun getCache(cacheType: CacheType, key: String): Any?
         = when (cacheType) {
             CacheType.WEEKLY_RANKING -> {
                 val cache = cacheManager.getCache(CacheType.WEEKLY_RANKING.cacheName) ?: throw RuntimeException("Weekly Ranking Cache Not Found")
-                val result = cache.get(key) ?.get()?: throw RuntimeException("Cannot find by key with " + cacheType.cacheName)
-                try{
-                    result as T
-                } catch (e : Exception){
-                    throw RuntimeException("Wrong Cache")
-                }
-
+                val result = cache.get(key) ?.get()
+                result
             }
             CacheType.HOT_STORY -> {
                 val cache = cacheManager.getCache(CacheType.HOT_STORY.cacheName) ?: throw RuntimeException("Hot Story Cache Not Found")
-                val result =  cache.get(key)?.get()?: throw RuntimeException("Cannot find by key with " + cacheType.cacheName)
-                try{
-                    result as T
-                } catch (e : Exception){
-                    throw RuntimeException("Wrong Cache")
-                }
+                val result =  cache.get(key)?.get()
+                result
             }
         }
 

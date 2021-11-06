@@ -38,10 +38,15 @@ class HomeService(
         val cacheType = CacheType.HOT_STORY
 
         val storyIds = mutableListOf<Long>()
+
         for(i in 1..cacheType.maximumSize!!){
-            storyIds.add(cacheRepository.getCache(cacheType, i.toString()))
+            val id = cacheRepository.getCache(cacheType, i.toString()) ?: break
+            if(id !is Long){
+                throw RuntimeException("Hot Story Cache value type is wrong")
+            }else{
+                storyIds.add(id)
+            }
         }
-        val stories = storyRepository.findByIds(storyIds).map { StoryDto(it) }
         return storyRepository.findByIds(storyIds)
     }
 
@@ -49,8 +54,14 @@ class HomeService(
         val cacheType = CacheType.WEEKLY_RANKING
 
         val perfumeIds = mutableListOf<Long>()
+
         for(i in 1..cacheType.maximumSize!!){
-            perfumeIds.add(cacheRepository.getCache(cacheType, i.toString()))
+            val id = cacheRepository.getCache(cacheType, i.toString()) ?: break
+            if(id !is Long){
+                throw RuntimeException("Weekly Ranking Cache Value Type Is Wrong")
+            }else{
+                perfumeIds.add(id)
+            }
         }
 
         return perfumeRepository.findByIds(perfumeIds)

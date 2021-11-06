@@ -45,33 +45,9 @@ class Scheduler(
 
         if(hotStoryIds.size < HOT_STORY_SIZE){
 
-            val defaultStories = storyRepository.findTop10ByOrderByLikeCountDesc().map { it.id!! }.toMutableList()
-
-            if(defaultStories.size < HOT_STORY_SIZE){
-                if(defaultStories.isEmpty()){
-                    //Not Found Exception 발생
-                    return
-                }else{
-
-                    val missingStoryCount = HOT_STORY_SIZE - defaultStories.size
-                    // 현재 스토리 4개 있고 -> 0 1 2 3
-                    // 6개를 채워야 한다 -> 0 1 2 3 0 1  -> 6개 채워주자.
-                    // i : 0 until missingCount -> 0 1 2 3 4 5
-                    // addIdx: i%defaultStories.size -> 0 1 2 3 0 1
-                    val defaultStorySize = defaultStories.size
-                    for(i in 0 until missingStoryCount){
-                        val addIdx = i%defaultStorySize
-                        defaultStories.add(defaultStories[addIdx])
-                    }
-                    for (i in 0 until HOT_STORY_SIZE) {
-                        cacheRepository.save(CacheType.HOT_STORY, (i+1).toString(), defaultStories[i])
-                    }
-
-                }
-            }else{
-                for (i in 0 until HOT_STORY_SIZE) {
-                    cacheRepository.save(CacheType.HOT_STORY, (i+1).toString(), defaultStories[i])
-                }
+            val defaultStories = storyRepository.findTop10ByOrderByLikeCountDesc().map { it.id!! }.toList()
+            for (i in defaultStories.indices) {
+                cacheRepository.save(CacheType.HOT_STORY, (i+1).toString(), defaultStories[i])
             }
 
         }else {
@@ -96,7 +72,7 @@ class Scheduler(
 
         if(perfumeIds.size < WEEKLY_RANKING_SIZE){
             val defaultPerfumes = perfumeRepository.findTop10ByOrderByLikeCountDesc().map { it.id!! }
-            for (i in 0 until WEEKLY_RANKING_SIZE) {
+            for (i in defaultPerfumes.indices) {
                 cacheRepository.save(CacheType.WEEKLY_RANKING, (i+1).toString(), defaultPerfumes[i])
             }
         }else {
