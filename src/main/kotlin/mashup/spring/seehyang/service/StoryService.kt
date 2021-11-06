@@ -30,7 +30,7 @@ class StoryService(
     private val PAGE_SIZE: Int = 20
 
     fun getStoryDetail(id: Long): Story {
-        return storyRepository.findById(id).get()
+        return storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
     }
 
     /**
@@ -66,7 +66,7 @@ class StoryService(
             else storyRepository.findStoryByPerfumeId(perfumeId, cursor, PAGE_SIZE)
 
     fun likeStory(user: User, storyId: Long): Boolean {
-        val story = storyRepository.findById(storyId).orElseThrow { RuntimeException("Entity Not Found : Story") }
+        val story = storyRepository.findById(storyId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
         val like = storyLikeRepository.findByUserAndStory(user, story)
 
         return if (like.isPresent) {
