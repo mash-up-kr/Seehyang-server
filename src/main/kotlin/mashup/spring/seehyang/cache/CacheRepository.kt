@@ -1,5 +1,7 @@
 package mashup.spring.seehyang.cache
 
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
+import mashup.spring.seehyang.exception.InternalServerException
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Component
 
@@ -11,12 +13,12 @@ class CacheRepository(
     fun getCache(cacheType: CacheType, key: String): Any?
         = when (cacheType) {
             CacheType.WEEKLY_RANKING -> {
-                val cache = cacheManager.getCache(CacheType.WEEKLY_RANKING.cacheName) ?: throw RuntimeException("Weekly Ranking Cache Not Found")
+                val cache = cacheManager.getCache(CacheType.WEEKLY_RANKING.cacheName)?: throw InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
                 val result = cache.get(key) ?.get()
                 result
             }
             CacheType.HOT_STORY -> {
-                val cache = cacheManager.getCache(CacheType.HOT_STORY.cacheName) ?: throw RuntimeException("Hot Story Cache Not Found")
+                val cache = cacheManager.getCache(CacheType.HOT_STORY.cacheName) ?: throw InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
                 val result =  cache.get(key)?.get()
                 result
             }
@@ -26,11 +28,11 @@ class CacheRepository(
     fun save(cacheType: CacheType, key: String, objects: Any?)
         = when (cacheType) {
             CacheType.WEEKLY_RANKING -> {
-                val cache = cacheManager.getCache(CacheType.WEEKLY_RANKING.cacheName) ?: throw RuntimeException("Weekly Ranking Cache Not Found")
+                val cache = cacheManager.getCache(CacheType.WEEKLY_RANKING.cacheName) ?: throw InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
                 cache.put(key, objects)
             }
             CacheType.HOT_STORY -> {
-                val cache = cacheManager.getCache(CacheType.HOT_STORY.cacheName) ?: throw RuntimeException("Hot Cache Not Found")
+                val cache = cacheManager.getCache(CacheType.HOT_STORY.cacheName) ?: throw InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
                 cache.put(key, objects)
             }
         }

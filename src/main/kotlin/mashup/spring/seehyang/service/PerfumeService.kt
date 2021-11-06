@@ -1,9 +1,11 @@
 package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeEditRequest
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.perfume.PerfumeLike
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
@@ -46,7 +48,7 @@ class PerfumeService(
     }
 
     fun likePerfume(user: User, perfumeId: Long): Boolean {
-        val perfume = perfumeRepository.findById(perfumeId).orElseThrow { RuntimeException("Entity Not Found : Perfume") }
+        val perfume = perfumeRepository.findById(perfumeId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME) }
         val like = perfumeLikeRepository.findByUserAndPerfume(user, perfume)
 
         return if (like.isPresent) {

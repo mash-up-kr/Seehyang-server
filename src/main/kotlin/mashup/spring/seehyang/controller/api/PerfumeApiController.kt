@@ -6,7 +6,9 @@ import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeEditRequest
 import mashup.spring.seehyang.service.PerfumeService
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.UnauthorizedException
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
@@ -48,7 +50,7 @@ class PerfumeApiController(
         @PathVariable id: Long,
         @ApiIgnore user: User
     ): SeehyangResponse<Map<String, Boolean>> {
-        if (user.isLogin().not()) throw RuntimeException("Not Authorization user..")
+        if (user.isLogin().not()) throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
         val isLiked = perfumeService.likePerfume(user, id)
 

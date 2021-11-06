@@ -7,11 +7,13 @@ import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.exception.BadRequestException
+import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.random.Random
+import kotlin.reflect.jvm.internal.impl.protobuf.Internal
 
 @Transactional
 @Service
@@ -42,7 +44,7 @@ class HomeService(
         for(i in 1..cacheType.maximumSize!!){
             val id = cacheRepository.getCache(cacheType, i.toString()) ?: break
             if(id !is Long){
-                throw RuntimeException("Hot Story Cache value type is wrong")
+                throw InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
             }else{
                 storyIds.add(id)
             }
@@ -58,7 +60,7 @@ class HomeService(
         for(i in 1..cacheType.maximumSize!!){
             val id = cacheRepository.getCache(cacheType, i.toString()) ?: break
             if(id !is Long){
-                throw RuntimeException("Weekly Ranking Cache Value Type Is Wrong")
+                throw InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
             }else{
                 perfumeIds.add(id)
             }

@@ -25,7 +25,7 @@ class CommentService(
         storyId: Long,
         commentContents: String
     ): Comment{
-        val story = storyRepository.findById(storyId).orElseThrow { RuntimeException("Entity Not Fount: Story") }
+        val story = storyRepository.findById(storyId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT) }
         val comment = Comment(contents = commentContents, story = story, user = user)
 
         // 동시성 및 잠금에 대해서 생각 해보기
@@ -44,7 +44,7 @@ class CommentService(
         commentId: Long,
         commentContents: String
     ): Comment{
-        val comment = commentRepository.findById(commentId).orElseThrow { RuntimeException("Entity Not Fount: Story") }
+        val comment = commentRepository.findById(commentId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT) }
         val replyComment = Comment(contents = commentContents, parent = comment, story = comment.story, user = user)
 
         // 동시성 및 잠금에 대해서 생각 해보기
