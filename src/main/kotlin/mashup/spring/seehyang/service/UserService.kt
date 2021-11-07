@@ -2,6 +2,7 @@ package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.user.*
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
+import mashup.spring.seehyang.domain.entity.user.OAuthType
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.exception.NotFoundException
@@ -19,7 +20,10 @@ class UserService(
 
     @Transactional
     fun signUpUser(req: SignUpRequest): SignUpResponse {
-        val verifiedInfo = oAuthService.verifyGoogle(req.idToken)
+        val verifiedInfo = when(req.oAuthType) {
+            OAuthType.GOOGLE -> oAuthService.verifyGoogle(req.idToken)
+            else -> throw BadRequestException(SeehyangStatus.NOT_EXIST_OAUTH_TYPE)
+        }
 
         if(userRepository.findByEmail(verifiedInfo.email).isPresent)
             throw BadRequestException(SeehyangStatus.ALREADY_EXIST_USER)
