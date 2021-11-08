@@ -7,6 +7,6 @@ import java.util.*
 
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
-    fun findByEmail(email: String): User?
-    fun findByNickname(nickname: String): User?
+    fun findByEmail(email: String): Optional<User>
+    fun findByNickname(nickname: String): Optional<User>
 }
