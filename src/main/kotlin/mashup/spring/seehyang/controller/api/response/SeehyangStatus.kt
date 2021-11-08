@@ -6,7 +6,9 @@ enum class SeehyangStatus(
 ) {
     OK(2000, "OK"),
 
-    INVALID_CURSOR_PARAMETER(4001, "You need like cursor and id cursor both"),
+    INVALID_CURSOR_PARAMETER(4001, "You need like cursor and id cursor both."),
+    ALREADY_EXIST_USER(4002, "Already exist user."),
+    NOT_EXIST_OAUTH_TYPE(4003, "Not exist oauth type. ex) GOOGLE, APPLE"),
 
     UNAUTHORIZED_USER(4010, "Unauthenticated user."),
     UNAUTHORIZED_INVALID_TOKEN(4011, "Invalid token."),

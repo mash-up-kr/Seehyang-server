@@ -1,7 +1,7 @@
 package mashup.spring.seehyang
 
 import mashup.spring.seehyang.domain.entity.Image
-import mashup.spring.seehyang.domain.entity.community.OAuthType
+import mashup.spring.seehyang.domain.entity.user.OAuthType
 import mashup.spring.seehyang.domain.entity.perfume.Brand
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import mashup.spring.seehyang.domain.entity.perfume.Perfume

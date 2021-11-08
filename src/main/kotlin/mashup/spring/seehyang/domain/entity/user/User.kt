@@ -4,7 +4,6 @@ import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.community.Comment
 import mashup.spring.seehyang.domain.entity.community.StoryLike
-import mashup.spring.seehyang.domain.entity.community.OAuthType
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import javax.persistence.*
@@ -22,10 +21,10 @@ class User(
 
     var nickname: String? = null,
 
-    val email: String,
+    var email: String? = null,
 
     @Enumerated(EnumType.STRING)
-    val oAuthType: OAuthType,
+    var oAuthType: OAuthType? = null,
 
     /**
      * ========== One to Many ==========
@@ -69,5 +68,5 @@ class User(
     }
 
     fun isLogin(): Boolean =
-        this.email.isNotEmpty() && this.oAuthType != OAuthType.UNKNOWN
+        this.email != null || this.oAuthType != OAuthType.UNKNOWN
 }
