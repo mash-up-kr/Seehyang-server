@@ -36,6 +36,13 @@ interface PerfumeRepository : JpaRepository<Perfume, Long>{
                    "limit :limit")
     fun findSteadyPerfume(@Param("idCursor") idCursor: Long, @Param("likeCursor") likeCursor: Int, @Param("limit") limit: Int): List<Perfume>
 
+    @Query(nativeQuery = true,
+           value = "select * from perfume " +
+                   "where  id < :idCursor " +
+                   "order by id desc "+
+                   "limit :limit")
+    fun findSteadyPerfume(@Param("idCursor") idCursor: Long, @Param("limit") limit: Int): List<Perfume>
+
     fun findTop10ByOrderByLikeCountDesc(): List<Perfume>
     fun findTop6ByOrderByLikeCountDescIdDesc(): List<Perfume>
     fun findTop10ByKoreanNameContainsOrderByIdDesc(name: String): List<Perfume>

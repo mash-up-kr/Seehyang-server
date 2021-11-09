@@ -72,10 +72,13 @@ class HomeService(
 
         return if(idCursor == null && likeCursor == null) {
             perfumeRepository.findTop6ByOrderByLikeCountDescIdDesc()
-        }else if(idCursor == null || likeCursor == null){
+        }else if(idCursor == null && likeCursor != null){
             throw BadRequestException(SeehyangStatus.INVALID_CURSOR_PARAMETER)
-        }else {
-            perfumeRepository.findSteadyPerfume(idCursor, likeCursor, STEADY_PAGE_SIZE)
+        }else if(idCursor != null && likeCursor == null){
+            perfumeRepository.findSteadyPerfume(idCursor, STEADY_PAGE_SIZE)
+        }
+        else {
+            perfumeRepository.findSteadyPerfume(idCursor!!, likeCursor!!, STEADY_PAGE_SIZE)
         }
     }
 }
