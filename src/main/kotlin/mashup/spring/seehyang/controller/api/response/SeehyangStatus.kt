@@ -17,6 +17,7 @@ enum class SeehyangStatus(
     NOT_FOUND_COMMENT(4041, "You need to write the content."),
     NOT_FOUND_STORY(4042, "The story does not exist."),
     NOT_FOUND_PERFUME(4043,"The perfume does not exist."),
+    NOT_FOUND_STORYLIKE(4044,"The story like does not exist"),
 
     INTERNAL_SERVER_ERROR(5000, "This request cannot be proceed.");
 
