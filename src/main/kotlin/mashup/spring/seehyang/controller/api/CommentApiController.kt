@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.controller.api
 
 import io.swagger.annotations.ApiParam
+import io.swagger.v3.oas.annotations.Parameter
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDeleteResponse
@@ -11,22 +12,25 @@ import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.CommentService
+import mashup.spring.seehyang.service.StoryService
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
 @ApiV1
 class CommentApiController(
-    private val commentService: CommentService
+    private val commentService: CommentService,
+    private val storyService: StoryService
 ) {
 
     @GetMapping("/story/{id}/comments")
-    fun comments(
+    fun getComments(
+        @ApiIgnore user:User,
         @PathVariable(value = "id") storyId: Long,
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
-        val comments = commentService.getComments(storyId, cursor)
-        val commentDtos = comments.map { CommentDto(it) }
-        return SeehyangResponse(commentDtos)
+        val storyDto = storyService.getStoryDetail(user, storyId)
+        val commentsDto = commentService.getComments(storyDto.id, cursor)
+        return SeehyangResponse(commentsDto)
     }
 
     @GetMapping("/comment/{id}/reply")
@@ -35,8 +39,7 @@ class CommentApiController(
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
         val replyComments = commentService.getReplyComments(parentCommentId, cursor)
-        val replyCommentDtos = replyComments.map { CommentDto(it) }
-        return SeehyangResponse(replyCommentDtos)
+        return SeehyangResponse(replyComments)
     }
 
     @PostMapping("/story/{id}/comment")
@@ -44,15 +47,16 @@ class CommentApiController(
         @ApiIgnore user: User,
         @PathVariable(value = "id") storyId: Long,
         @RequestBody requestDto: CommentCreateRequest,
-    ): SeehyangResponse<CommentCreateResponse> {
+    ): SeehyangResponse<CommentDto> {
+
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
         val commentContents = requestDto.contents
             ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
 
-        val savedComment = commentService.addComment(user, storyId, commentContents)
-        return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
+        commentService.addComment(user, storyId, commentContents)
+        return SeehyangResponse()
     }
 
 
@@ -62,7 +66,7 @@ class CommentApiController(
         @ApiIgnore user: User,
         @PathVariable(value = "id") commentId: Long,
         @RequestBody requestDto: CommentCreateRequest,
-    ): SeehyangResponse<CommentCreateResponse> {
+    ): SeehyangResponse<CommentDto> {
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
@@ -70,7 +74,7 @@ class CommentApiController(
             ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
 
         val savedComment = commentService.addReplyComment(user, commentId, commentContents)
-        return SeehyangResponse(CommentCreateResponse(savedComment, userNickname = user.nickname!!))
+        return SeehyangResponse()
     }
 
 
