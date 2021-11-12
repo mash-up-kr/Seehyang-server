@@ -9,6 +9,7 @@ import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.CommentService
@@ -52,8 +53,7 @@ class CommentApiController(
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
-        val commentContents = requestDto.contents
-            ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
+        val commentContents = contentsValidation(requestDto.contents)
 
         commentService.addComment(user, storyId, commentContents)
         return SeehyangResponse()
@@ -70,8 +70,7 @@ class CommentApiController(
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
-        val commentContents = requestDto.contents
-            ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
+        val commentContents = contentsValidation(requestDto.contents)
 
         val savedComment = commentService.addReplyComment(user, commentId, commentContents)
         return SeehyangResponse()
@@ -90,6 +89,13 @@ class CommentApiController(
         val deletedId: Long = commentService.deleteComment(user, commentId)
 
         return SeehyangResponse(CommentDeleteResponse(deletedId))
+    }
+
+    private fun contentsValidation(contents: String?): String{
+        if(contents.isNullOrBlank()){
+            throw BadRequestException(SeehyangStatus.CONTENTS_IS_EMPTY)
+        }
+        return contents
     }
 
 }
