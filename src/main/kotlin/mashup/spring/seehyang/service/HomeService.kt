@@ -1,5 +1,7 @@
 package mashup.spring.seehyang.service
 
+import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.domain.cache.CacheRepository
 import mashup.spring.seehyang.domain.cache.CacheType
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
@@ -34,7 +36,7 @@ class HomeService(
         return todaySeehyangStories
     }
 
-    fun hotStory() : List<Story> {
+    fun hotStory() : List<StoryDto> {
         val cacheType = CacheType.HOT_STORY
 
         val storyIds = mutableListOf<Long>()
@@ -47,10 +49,10 @@ class HomeService(
                 storyIds.add(id)
             }
         }
-        return storyRepository.findByIds(storyIds)
+        return storyRepository.findByIds(storyIds).map { StoryDto(it) }
     }
 
-    fun weeklyRanking(): List<Perfume>{
+    fun weeklyRanking(): List<PerfumeDto>{
         val cacheType = CacheType.WEEKLY_RANKING
 
         val perfumeIds = mutableListOf<Long>()
@@ -64,21 +66,21 @@ class HomeService(
             }
         }
 
-        return perfumeRepository.findByIds(perfumeIds)
+        return perfumeRepository.findByIds(perfumeIds).map { PerfumeDto(it) }
 
     }
 
-    fun getSteadyPerfumes(idCursor: Long?, likeCursor: Int?): List<Perfume>{
+    fun getSteadyPerfumes(idCursor: Long?, likeCursor: Int?): List<PerfumeDto>{
 
         return if(idCursor == null && likeCursor == null) {
-            perfumeRepository.findTop6ByOrderByLikeCountDescIdDesc()
+            perfumeRepository.findTop6ByOrderByLikeCountDescIdDesc().map { PerfumeDto(it) }
         }else if(idCursor == null && likeCursor != null){
             throw BadRequestException(SeehyangStatus.INVALID_CURSOR_PARAMETER)
         }else if(idCursor != null && likeCursor == null){
-            perfumeRepository.findSteadyPerfume(idCursor, STEADY_PAGE_SIZE)
+            perfumeRepository.findSteadyPerfume(idCursor, STEADY_PAGE_SIZE).map { PerfumeDto(it) }
         }
         else {
-            perfumeRepository.findSteadyPerfume(idCursor!!, likeCursor!!, STEADY_PAGE_SIZE)
+            perfumeRepository.findSteadyPerfume(idCursor!!, likeCursor!!, STEADY_PAGE_SIZE).map { PerfumeDto(it) }
         }
     }
 }

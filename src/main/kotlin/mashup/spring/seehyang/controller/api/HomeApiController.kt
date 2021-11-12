@@ -23,13 +23,13 @@ class HomeApiController(
 
     @GetMapping("/home/hot-story")
     fun hotStory(): SeehyangResponse<List<StoryDto>> {
-        val stories = homeService.hotStory().map{StoryDto(it)}
+        val stories = homeService.hotStory()
         return SeehyangResponse(stories)
     }
 
     @GetMapping("/home/weekly-ranking")
     fun weeklyRanking(): SeehyangResponse<List<PerfumeDto>> {
-        val perfumes = homeService.weeklyRanking().map{PerfumeDto(it)}
+        val perfumes = homeService.weeklyRanking()
         return SeehyangResponse(perfumes)
     }
 
@@ -38,7 +38,7 @@ class HomeApiController(
         @RequestParam(value = "idCursor", required = false) idCursor :Long? = null,
         @RequestParam(value = "likeCursor", required = false) likeCursor: Int? = null
     ): SeehyangResponse<List<PerfumeDto>>{
-        val perfumes = homeService.getSteadyPerfumes(idCursor, likeCursor).map{PerfumeDto(it)}
+        val perfumes = homeService.getSteadyPerfumes(idCursor, likeCursor)
         return SeehyangResponse(perfumes)
     }
 }
