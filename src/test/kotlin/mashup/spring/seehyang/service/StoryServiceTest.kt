@@ -44,7 +44,7 @@ class StoryServiceTest  @Autowired constructor(
     private lateinit var image: Image
 
     private val tagService : TagService = TagService(tagRepository, storyTagRepository)
-    private val storyService: StoryService = StoryService(storyLikeRepository, storyRepository, imageRepository, perfumeRepository, storyTagRepository,tagService)
+    private val storyService: StoryService = StoryService(storyLikeRepository, storyRepository, imageRepository, perfumeRepository, tagService,userRepository)
     @BeforeEach
     fun setUp() {
         user = userRepository.save(createTestUser())
