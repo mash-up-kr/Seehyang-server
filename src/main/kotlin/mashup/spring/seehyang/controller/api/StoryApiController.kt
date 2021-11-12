@@ -1,8 +1,5 @@
 package mashup.spring.seehyang.controller.api
 
-import io.swagger.annotations.ApiParam
-import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.Parameters
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
@@ -31,10 +28,11 @@ class StoryApiController(
      */
     @GetMapping("/story/{id}")
     fun getStory(
-        @PathVariable id : Long
+        @PathVariable id : Long,
+        @ApiIgnore user: User,
     ): SeehyangResponse<StoryDto> {
-        val story = storyService.getStoryDetail(id)
-        return SeehyangResponse(StoryDto(story))
+        val story = storyService.getStoryDetail(user,id)
+        return SeehyangResponse(story)
     }
 
 
@@ -43,11 +41,11 @@ class StoryApiController(
      */
     @GetMapping("/perfume/{id}/story")
     fun getStoryByPerfume(
+        @ApiIgnore user: User,
         @PathVariable(value = "id") perfumeId: Long,
         @RequestParam(value = "cursor", required = false)cursor: Long? = null
     ): SeehyangResponse<List<StoryDto>>{
-        val stories = storyService.getStoriesByPerfume(perfumeId, cursor)
-        val storyListDto = stories.map { StoryDto(it) }
+        val storyListDto = storyService.getStoriesByPerfume(user, perfumeId, cursor)
         return SeehyangResponse(storyListDto)
     }
 
@@ -58,9 +56,9 @@ class StoryApiController(
     ) : SeehyangResponse<StoryCreateResponse> {
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
-        val story = storyService.create(user, createRequest)
+        val storyDto = storyService.create(user, createRequest)
 
-        return SeehyangResponse(StoryCreateResponse(story))
+        return SeehyangResponse(StoryCreateResponse(storyDto))
     }
 
 

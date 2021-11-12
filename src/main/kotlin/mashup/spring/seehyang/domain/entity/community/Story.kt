@@ -14,6 +14,7 @@ class Story(
 
     var likeCount: Int = 0,
     var commentCount: Int = 0,
+    var isOnlyMe: Boolean,
 
 
     /**
@@ -32,19 +33,19 @@ class Story(
     /**
      * story는 여러개의 Like를 가질 수 있다.
      */
-    @OneToMany(mappedBy = "story")
+    @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
     val storyLikes : MutableList<StoryLike> = mutableListOf(),
 
     /**
      * story는 여러개의 Comments를 가질 수 있다.
      */
-    @OneToMany(mappedBy = "story")
+    @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
     val comments : MutableList<Comment> = mutableListOf(),
 
     /**
      * story는 여러개의 Tag를 가질 수 있다.
      */
-    @OneToMany(mappedBy = "story")
+    @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
     val storyTags: MutableList<StoryTag> = mutableListOf(),
 
 

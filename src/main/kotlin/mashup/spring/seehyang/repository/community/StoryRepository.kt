@@ -7,9 +7,17 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 interface StoryRepository : JpaRepository<Story, Long>{
+
+    @Query("select s from Story s " +
+                   "join fetch s.user u " +
+                   "join fetch s.image i " +
+                   "join fetch s.perfume p " +
+                   "where s.id = :id ")
+    override fun findById(@Param("id") id:Long): Optional<Story>
 
     @Query("select s " +
            "from Story s " +
