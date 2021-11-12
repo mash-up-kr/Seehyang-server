@@ -68,5 +68,5 @@ class User(
     }
 
     fun isLogin(): Boolean =
-        this.email != null || this.oAuthType != OAuthType.UNKNOWN
+        this.email.isNullOrBlank().not() || this.oAuthType != OAuthType.UNKNOWN
 }
