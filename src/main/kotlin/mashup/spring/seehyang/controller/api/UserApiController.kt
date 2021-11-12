@@ -20,6 +20,7 @@ class UserApiController(
     ): SeehyangResponse<UserDto> {
         if(user.isLogin().not())
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+        //TODO: Dto 생성 서비스로 옮기기
         return SeehyangResponse(UserDto.from(user))
     }
 

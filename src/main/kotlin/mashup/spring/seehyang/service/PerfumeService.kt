@@ -6,8 +6,10 @@ import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.perfume.PerfumeLike
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
+import mashup.spring.seehyang.repository.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class PerfumeService(
     private val perfumeRepository: PerfumeRepository,
-    private val perfumeLikeRepository: PerfumeLikeRepository
+    private val perfumeLikeRepository: PerfumeLikeRepository,
+    private val userRepository: UserRepository
 ) {
 
     private val PAGE_SIZE: Int = 10
@@ -48,15 +51,19 @@ class PerfumeService(
     }
 
     fun likePerfume(user: User, perfumeId: Long): Boolean {
+
+        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
+            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
+
         val perfume = perfumeRepository.findById(perfumeId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME) }
-        val like = perfumeLikeRepository.findByUserAndPerfume(user, perfume)
+        val like = perfumeLikeRepository.findByUserAndPerfume(managedUser, perfume)
 
         return if (like.isPresent) {
             perfumeLikeRepository.delete(like.get())
             perfume.cancleLike()
             false
         } else {
-            perfumeLikeRepository.save(PerfumeLike(user = user, perfume = perfume))
+            perfumeLikeRepository.save(PerfumeLike(user = managedUser, perfume = perfume))
             perfume.like()
             true
         }

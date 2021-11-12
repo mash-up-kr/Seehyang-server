@@ -7,6 +7,7 @@ import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.community.CommentRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
+import mashup.spring.seehyang.repository.user.UserRepository
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CommentService(
     val storyRepository: StoryRepository,
-    val commentRepository: CommentRepository
+    val commentRepository: CommentRepository,
+    val userRepository: UserRepository
 ) {
 
     private val PAGE_SIZE: Int = 20
@@ -25,8 +27,10 @@ class CommentService(
         storyId: Long,
         commentContents: String
     ): Comment{
+        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
+            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
         val story = storyRepository.findById(storyId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT) }
-        val comment = Comment(contents = commentContents, story = story, user = user)
+        val comment = Comment(contents = commentContents, story = story, user = managedUser)
 
         // 동시성 및 잠금에 대해서 생각 해보기
         story.addCommentCount()
@@ -44,8 +48,10 @@ class CommentService(
         commentId: Long,
         commentContents: String
     ): Comment{
+        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
+            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
         val comment = commentRepository.findById(commentId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT) }
-        val replyComment = Comment(contents = commentContents, parent = comment, story = comment.story, user = user)
+        val replyComment = Comment(contents = commentContents, parent = comment, story = comment.story, user = managedUser)
 
         // 동시성 및 잠금에 대해서 생각 해보기
         comment.story.addCommentCount()
