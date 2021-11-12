@@ -18,15 +18,14 @@ class TagService(
     fun addTagsToStory(story: Story, tags: List<String>):Unit{
 
         tags.filter{isExistedTag(it)}
-                    .map{story.addStoryTag(storyTagRepository.save(StoryTag(story = story,
-                                                              tag = tagRepository.findByContents(it))))}
+                    .forEach{story.addStoryTag(StoryTag(story = story,tag = tagRepository.findByContents(it)))}
 
 
         tags.filter{!isExistedTag(it)}
             .map{
                 tagRepository.save(Tag(contents = it))
             }.forEach {
-                story.addStoryTag(storyTagRepository.save(StoryTag(story = story, tag = it)))
+                story.addStoryTag(StoryTag(story = story, tag = it))
             }
 
 

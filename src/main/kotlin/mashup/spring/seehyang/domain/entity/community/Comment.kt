@@ -24,7 +24,7 @@ class Comment(
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
     val parent : Comment? = null,
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", cascade = [CascadeType.ALL], orphanRemoval = true)
     val children : MutableList<Comment> = mutableListOf(),
 
     /**
