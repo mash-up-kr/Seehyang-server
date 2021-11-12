@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CommentService(
     val storyService: StoryService,
+    val userService: UserService,
     val commentRepository: CommentRepository,
-    val userRepository: UserRepository
 ) {
 
     private val PAGE_SIZE: Int = 20
@@ -29,8 +29,7 @@ class CommentService(
         commentContents: String
     ): Unit{
 
-        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
-            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
+        val managedUser = userService.getUser(user.id)
 
         val story = storyService.getStoryDetail(user,storyId).story
 
@@ -54,8 +53,7 @@ class CommentService(
         commentContents: String
     ): Unit{
 
-        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
-            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
+        val managedUser = userService.getUser(user.id)
 
         val comment = commentRepository.findById(commentId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT) }
 

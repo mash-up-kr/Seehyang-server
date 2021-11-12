@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 class PerfumeService(
     private val perfumeRepository: PerfumeRepository,
     private val perfumeLikeRepository: PerfumeLikeRepository,
-    private val userRepository: UserRepository
+    private val userService: UserService
 ) {
 
     private val PAGE_SIZE: Int = 10
@@ -52,8 +52,7 @@ class PerfumeService(
 
     fun likePerfume(user: User, perfumeId: Long): Boolean {
 
-        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
-            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
+        val managedUser = userService.getUser(user.id)
 
         val perfume = perfumeRepository.findById(perfumeId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME) }
         val like = perfumeLikeRepository.findByUserAndPerfume(managedUser, perfume)

@@ -6,6 +6,7 @@ import mashup.spring.seehyang.domain.entity.user.OAuthType
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.user.UserRepository
 import mashup.spring.seehyang.util.UriGenerator
 import org.springframework.stereotype.Service
@@ -53,8 +54,11 @@ class UserService(
             isDuplicated = userRepository.findByNickname(nickname).isPresent)
     }
 
-    @Transactional(readOnly = true)
-    fun getUser(id: Long): User {
+    @Transactional
+    fun getUser(id: Long?): User {
+        if(id == null){
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+        }
         return userRepository.findById(id)
             .orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_USER) }
     }

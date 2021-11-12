@@ -26,7 +26,7 @@ class StoryService(
     val imageRepository: ImageRepository,
     val perfumeRepository: PerfumeRepository,
     val tagService: TagService,
-    val userRepository: UserRepository
+    val userService: UserService
 ) {
 
     private val PAGE_SIZE: Int = 20
@@ -76,8 +76,7 @@ class StoryService(
      */
     fun create(user: User, storyCreateRequest: StoryCreateRequest): StoryDto {
 
-        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
-            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
+        val managedUser = userService.getUser(user.id)
 
         // TODO : Entity Not Found 에러 핸들링
         val perfume = perfumeRepository.findById(storyCreateRequest.perfumeId).get()
@@ -101,8 +100,7 @@ class StoryService(
 
     fun likeStory(user: User, storyId: Long): Boolean {
 
-        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
-            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
+        val managedUser = userService.getUser(user.id)
 
         val story = storyRepository.findById(storyId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
         val like = storyLikeRepository.findByUserAndStory(managedUser, story)
@@ -117,8 +115,7 @@ class StoryService(
     }
 
     fun deleteStory(user: User, id:Long): Long{
-        val managedUser = userRepository.findById(user.id?:throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER))
-            .orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_USER)}
+        val managedUser = userService.getUser(user.id)
 
         val userId = managedUser.id!!
         val userIdInStory = storyRepository.findById(id).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_STORY)}.user.id!!
