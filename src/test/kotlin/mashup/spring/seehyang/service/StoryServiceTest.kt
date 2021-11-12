@@ -55,7 +55,7 @@ class StoryServiceTest  @Autowired constructor(
 
     @Test
     fun storyCreateTest() {
-        val request = StoryCreateRequest(perfume.id!!, image.id!!, mutableListOf(expectedTag, expectedTag2))
+        val request = StoryCreateRequest(perfume.id!!, image.id!!, mutableListOf(expectedTag, expectedTag2),false)
 
         val actual = storyService.create(user, request)
         
