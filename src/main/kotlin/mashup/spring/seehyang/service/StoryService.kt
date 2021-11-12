@@ -36,16 +36,12 @@ class StoryService(
         val story = storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
         return story
     }
+
     @Transactional(readOnly = true)
     fun getStoryDetail(user: User,id: Long): StoryDto {
 
         val story = storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
-
-        var isMine = false
-
-        if(user.isLogin()){
-            isMine = user.id!! == story.user.id
-        }
+        val isMine = user.isLogin() && (user.id!! == story.user.id)
 
         return if(story.isOnlyMe && isMine.not()) {
             throw NotFoundException(SeehyangStatus.NOT_FOUND_STORY)
