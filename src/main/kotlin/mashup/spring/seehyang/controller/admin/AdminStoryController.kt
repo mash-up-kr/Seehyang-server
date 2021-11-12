@@ -48,7 +48,7 @@ class AdminStoryController(
         @PathVariable id: Long,
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ) : String{
-        val story = storyService.getStoryDetail(id)
+        val story = storyService.getAdminStoryDetail(id)
         model.addAttribute("item", StoryDto(story))
         model.addAttribute("prevPage", page)
         return "story/storyDetail"
@@ -59,6 +59,7 @@ class AdminStoryController(
         return "story/upload"
     }
 
+    //TODO isOnlyMe 어드민 구현 필요
     @PostMapping("story/create.do")
     fun storyCreate(
         @RequestParam("perfumeId") perfumeId: Long,
@@ -70,7 +71,7 @@ class AdminStoryController(
         imageRepository.save(image)
         val user = userRepository.findById(9L).get()
 
-        storyService.create(user, StoryCreateRequest(perfumeId, image.id!!, tags.split(",")))
+        storyService.create(user, StoryCreateRequest(perfumeId, image.id!!, tags.split(","),isOnlyMe = false))
         return "story/upload"
     }
 }
