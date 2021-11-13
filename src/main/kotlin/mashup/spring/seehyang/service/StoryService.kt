@@ -29,7 +29,7 @@ class StoryService(
     val userRepository: UserRepository
 ) {
 
-    private val PAGE_SIZE: Int = 20
+    private val PAGE_SIZE: Int = 10
 
     @Transactional(readOnly = true)
     fun getAdminStoryDetail(id: Long): Story{
