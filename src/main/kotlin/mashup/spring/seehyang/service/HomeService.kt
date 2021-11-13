@@ -6,11 +6,11 @@ import mashup.spring.seehyang.domain.cache.CacheRepository
 import mashup.spring.seehyang.domain.cache.CacheType
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Story
-import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.random.Random
@@ -77,10 +77,10 @@ class HomeService(
         }else if(idCursor == null && likeCursor != null){
             throw BadRequestException(SeehyangStatus.INVALID_CURSOR_PARAMETER)
         }else if(idCursor != null && likeCursor == null){
-            perfumeRepository.findSteadyPerfume(idCursor, STEADY_PAGE_SIZE).map { PerfumeDto(it) }
+            perfumeRepository.findSteadyPerfume(idCursor, PageRequest.ofSize(STEADY_PAGE_SIZE)).map { PerfumeDto(it) }
         }
         else {
-            perfumeRepository.findSteadyPerfume(idCursor!!, likeCursor!!, STEADY_PAGE_SIZE).map { PerfumeDto(it) }
+            perfumeRepository.findSteadyPerfume(idCursor!!, likeCursor!!, PageRequest.ofSize(STEADY_PAGE_SIZE)).map { PerfumeDto(it) }
         }
     }
 }

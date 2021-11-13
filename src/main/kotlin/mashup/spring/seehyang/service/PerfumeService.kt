@@ -10,6 +10,7 @@ import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import mashup.spring.seehyang.repository.user.UserRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -35,8 +36,8 @@ class PerfumeService(
             perfumes.addAll(perfumeRepository.findTop10ByKoreanNameContainsOrderByIdDesc(name))
             perfumes.addAll(perfumeRepository.findTop10ByNameContainsIgnoreCaseOrderByIdDesc(name))
         }else{
-            perfumes.addAll(perfumeRepository.findByKoreanName(name, cursor, PAGE_SIZE))
-            perfumes.addAll(perfumeRepository.findByEngName(name, cursor, PAGE_SIZE))
+            perfumes.addAll(perfumeRepository.findByKoreanName(name, cursor, PageRequest.ofSize(PAGE_SIZE)))
+            perfumes.addAll(perfumeRepository.findByEngName(name, cursor, PageRequest.ofSize(PAGE_SIZE)))
         }
 
         return perfumes
