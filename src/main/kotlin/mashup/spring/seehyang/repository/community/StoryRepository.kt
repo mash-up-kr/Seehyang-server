@@ -60,7 +60,7 @@ interface StoryRepository : JpaRepository<Story, Long>{
                 "order by id desc " +
                 "limit :limit")
     fun findStoryByPerfumeId(@Param("perfumeId") perfumeId: Long, @Param("cursor") cursor: Long, @Param("limit") limit: Int) : List<Story>
-    fun findTop20ByPerfumeIdOrderByIdDesc(perfumeId: Long) : List<Story>
+    fun findTop10ByPerfumeIdOrderByIdDesc(perfumeId: Long) : List<Story>
 
     @Query("select s from Story s " +
                    "join fetch s.perfume p " +
