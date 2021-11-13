@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class TagService(
     val tagRepository: TagRepository,
-    val storyTagRepository: StoryTagRepository
 ) {
 
     fun addTagsToStory(story: Story, tags: List<String>):Unit{
