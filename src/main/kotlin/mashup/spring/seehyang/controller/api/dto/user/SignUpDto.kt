@@ -9,5 +9,5 @@ data class SignUpRequest(
 )
 
 data class SignUpResponse (
-    val seehyangToken: String,
+    val token: String
 )
