@@ -22,9 +22,8 @@ class PerfumeApiController(
         @PathVariable id: Long,
         @ApiIgnore user: User
     ) : SeehyangResponse<PerfumeDto> {
-        val perfume = perfumeService.get(id)
-        val liked = perfume.perfumeLikes.stream().filter { it.user.id == user.id }.findFirst().isPresent
-        return SeehyangResponse(PerfumeDto(perfume, isLiked = liked))
+        val perfume = perfumeService.get(user,id)
+        return SeehyangResponse(perfume)
     }
 
     @GetMapping("/perfume/list")
@@ -32,7 +31,7 @@ class PerfumeApiController(
         @RequestParam(value = "name") name: String,
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<BasicPerfumeDto>>{
-        val perfumeDtoList = perfumeService.getByName(name,cursor).map{BasicPerfumeDto(it)}.toList()
+        val perfumeDtoList = perfumeService.getByName(name,cursor)
         return SeehyangResponse(perfumeDtoList)
     }
 

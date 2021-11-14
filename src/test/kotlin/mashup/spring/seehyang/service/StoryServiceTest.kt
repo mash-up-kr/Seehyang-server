@@ -22,8 +22,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.SpringBootTest
 
-@DataJpaTest
+@SpringBootTest
 class StoryServiceTest  @Autowired constructor(
     val storyLikeRepository: StoryLikeRepository,
     val userRepository: UserRepository,
@@ -32,7 +33,8 @@ class StoryServiceTest  @Autowired constructor(
     val storyRepository: StoryRepository,
     val perfumeRepository: PerfumeRepository,
     val storyTagRepository: StoryTagRepository,
-    val tagRepository: TagRepository
+    val tagRepository: TagRepository,
+    val userService: UserService
 ) {
 
     private val expectedTag: String ="태그1"
@@ -43,8 +45,8 @@ class StoryServiceTest  @Autowired constructor(
     private lateinit var perfume: Perfume
     private lateinit var image: Image
 
-    private val tagService : TagService = TagService(tagRepository, storyTagRepository)
-    private val storyService: StoryService = StoryService(storyLikeRepository, storyRepository, imageRepository, perfumeRepository, tagService,userRepository)
+    private val tagService : TagService = TagService(tagRepository)
+    private val storyService: StoryService = StoryService(storyLikeRepository, storyRepository, imageRepository, perfumeRepository, tagService,userService)
     @BeforeEach
     fun setUp() {
         user = userRepository.save(createTestUser())

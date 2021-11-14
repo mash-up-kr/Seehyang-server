@@ -5,6 +5,7 @@ import mashup.spring.seehyang.domain.entity.perfume.Brand
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.perfume.PerfumeType
+import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.perfume.BrandRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import mashup.spring.seehyang.service.PerfumeService
@@ -44,8 +45,8 @@ class AdminPerfumeController(
         @PathVariable id: Long,
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ) : String{
-        val perfume = perfumeService.get(id)
-        model.addAttribute("item", PerfumeDto(perfume))
+        val perfume = perfumeService.get(User.empty(), id)
+        model.addAttribute("item", perfume)
         model.addAttribute("prevPage", page)
         return "perfume/perfumeDetail"
     }

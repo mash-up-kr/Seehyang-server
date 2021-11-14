@@ -1,5 +1,7 @@
 package mashup.spring.seehyang.service
 
+import mashup.spring.seehyang.controller.api.dto.perfume.BasicPerfumeDto
+import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeEditRequest
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
@@ -25,12 +27,19 @@ class PerfumeService(
     private val PAGE_SIZE: Int = 10
 
     @Transactional(readOnly = true)
-    fun get(id: Long) : Perfume {
-        return perfumeRepository.getById(id)
+    fun get(user: User,id: Long) : PerfumeDto {
+        val perfume = perfumeRepository.findById(id).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME)}
+
+        return if(user.isLogin()){
+            val isLiked = perfume.perfumeLikes.stream().filter { it.user.id == user.id }.findFirst().isPresent
+            PerfumeDto(perfume, isLiked = isLiked)
+        }else{
+            PerfumeDto(perfume, isLiked = false)
+        }
     }
 
     @Transactional(readOnly = true)
-    fun getByName(name : String, cursor: Long?) : List<Perfume> {
+    fun getByName(name : String, cursor: Long?) : List<BasicPerfumeDto> {
         val perfumes : MutableList<Perfume> = mutableListOf()
         if(cursor == null){
             perfumes.addAll(perfumeRepository.findTop10ByKoreanNameContainsOrderByIdDesc(name))
@@ -40,7 +49,7 @@ class PerfumeService(
             perfumes.addAll(perfumeRepository.findByEngName(name, cursor, PageRequest.ofSize(PAGE_SIZE)))
         }
 
-        return perfumes
+        return perfumes.map{ BasicPerfumeDto(it) }
     }
 
     fun edit(id: Long, request: PerfumeEditRequest): Perfume{
