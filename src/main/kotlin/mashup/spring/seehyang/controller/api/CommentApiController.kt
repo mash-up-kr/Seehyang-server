@@ -29,17 +29,20 @@ class CommentApiController(
         @PathVariable(value = "id") storyId: Long,
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
+
         val storyDto = storyService.getStoryDetail(user, storyId)
-        val commentsDto = commentService.getComments(storyDto.id, cursor)
+        val commentsDto = commentService.getComments(user,storyDto, cursor)
+
         return SeehyangResponse(commentsDto)
     }
 
     @GetMapping("/comment/{id}/reply")
     fun replyComments(
+        @ApiIgnore user:User,
         @PathVariable(value = "id") parentCommentId: Long,
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
-        val replyComments = commentService.getReplyComments(parentCommentId, cursor)
+        val replyComments = commentService.getReplyComments(user,parentCommentId, cursor)
         return SeehyangResponse(replyComments)
     }
 

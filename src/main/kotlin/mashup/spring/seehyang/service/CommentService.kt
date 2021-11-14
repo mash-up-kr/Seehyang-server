@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
+import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.community.Comment
 import mashup.spring.seehyang.domain.entity.user.User
@@ -9,6 +10,7 @@ import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.community.CommentRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.user.UserRepository
+import org.springframework.data.domain.PageRequest
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -42,9 +44,16 @@ class CommentService(
 
     // QueryDSL 이었다면...
     @Transactional(readOnly = true)
-    fun getComments(storyId: Long, cursor: Long?): List<CommentDto>
-            = if (cursor == null) commentRepository.findTop20ByStoryIdOrderByIdDesc(storyId).map { CommentDto(it) }
-    else commentRepository.findCommentsByStoryId(storyId, cursor, PAGE_SIZE).map { CommentDto(it) }
+    fun getComments(user: User, storyDto: StoryDto,cursor: Long?): List<CommentDto> {
+
+        val story = storyService.getStoryDetail(user, storyDto.id).story
+
+        return if (cursor == null) {
+            commentRepository.findTop20ByStoryIdOrderByIdDesc(story.id!!).map { CommentDto(it) }
+        }else {
+            commentRepository.findCommentsByStoryId(story, cursor, PageRequest.ofSize(PAGE_SIZE)).map { CommentDto(it) }
+        }
+    }
 
 
     fun addReplyComment(
@@ -65,10 +74,16 @@ class CommentService(
 
 
     @Transactional(readOnly = true)
-    fun getReplyComments(parentCommentId: Long, cursor: Long?): List<CommentDto>
-            = if (cursor == null) commentRepository.findTop20ByParentIdOrderByIdDesc(parentCommentId).map { CommentDto(it) }
-    else commentRepository.findReplyCommentsByStoryId(parentCommentId, cursor, PAGE_SIZE).map { CommentDto(it) }
+    fun getReplyComments(user: User, parentCommentId: Long, cursor: Long?): List<CommentDto> {
+        val comment = commentRepository.findById(parentCommentId).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)}
+        storyService.validateOnlyMe(user, comment.story)
 
+        return if (cursor == null) {
+            commentRepository.findTop20ByParentIdOrderByIdDesc(parentCommentId).map { CommentDto(it) }
+        }else {
+            commentRepository.findReplyCommentsByStoryId(parentCommentId, cursor, PageRequest.ofSize(PAGE_SIZE)).map { CommentDto(it) }
+        }
+    }
 
     fun deleteComment(user: User, id: Long): Long {
         val comment = commentRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT) }
