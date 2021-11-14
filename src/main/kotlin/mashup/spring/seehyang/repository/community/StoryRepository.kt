@@ -25,8 +25,10 @@ interface StoryRepository : JpaRepository<Story, Long>{
                 "order by s.id desc")
     fun findStoryByPerfumeId(@Param("perfumeId") perfumeId: Long, @Param("cursor") cursor: Long, pageable: Pageable) : List<Story>
 
+
     @EntityGraph(attributePaths = ["user","image","perfume"])
-    fun findTop20ByPerfumeIdOrderByIdDesc(perfumeId: Long) : List<Story>
+    fun findTop10ByPerfumeIdOrderByIdDesc(perfumeId: Long) : List<Story>
+
 
     @EntityGraph(attributePaths = ["user","image","perfume"])
     @Query("select s " +

@@ -30,7 +30,7 @@ class StoryService(
     val userService: UserService
 ) {
 
-    private val PAGE_SIZE: Int = 20
+    private val PAGE_SIZE: Int = 10
 
     @Transactional(readOnly = true)
     fun getAdminStoryDetail(id: Long): Story{
@@ -51,7 +51,7 @@ class StoryService(
     @Transactional(readOnly = true)
     fun getStoriesByPerfume(user: User, perfumeId: Long, cursor: Long?): List<StoryDto>
     = if (cursor == null) {
-            storyRepository.findTop20ByPerfumeIdOrderByIdDesc(perfumeId)
+            storyRepository.findTop10ByPerfumeIdOrderByIdDesc(perfumeId)
                 .filterNot {
                     it.isOnlyMe && it.user.id != user.id
                 }.map { StoryDto(it) }.toList()

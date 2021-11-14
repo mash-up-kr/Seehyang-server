@@ -45,6 +45,7 @@ class StoryApiController(
         @PathVariable(value = "id") perfumeId: Long,
         @RequestParam(value = "cursor", required = false)cursor: Long? = null
     ): SeehyangResponse<List<StoryDto>>{
+        println(cursor)
         val storyListDto = storyService.getStoriesByPerfume(user, perfumeId, cursor)
         return SeehyangResponse(storyListDto)
     }
