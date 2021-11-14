@@ -146,7 +146,7 @@ class StoryService(
         story.like()
     }
 
-    private fun validateOnlyMe(user:User, story:Story) {
+    fun validateOnlyMe(user:User, story:Story) {
         val isMine = user.isLogin() && (user.id!! == story.user.id)
 
         if (story.isOnlyMe && isMine.not()) {
