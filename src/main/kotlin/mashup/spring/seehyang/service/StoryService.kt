@@ -15,6 +15,7 @@ import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.community.StoryTagRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import mashup.spring.seehyang.repository.user.UserRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -41,14 +42,10 @@ class StoryService(
     fun getStoryDetail(user: User,id: Long): StoryDto {
 
         val story = storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
-        val isMine = user.isLogin() && (user.id!! == story.user.id)
 
-        return if(story.isOnlyMe && isMine.not()) {
-            throw NotFoundException(SeehyangStatus.NOT_FOUND_STORY)
-        }else{
-            StoryDto(story)
-        }
+        validateOnlyMe(user, story)
 
+        return StoryDto(story)
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +56,7 @@ class StoryService(
                     it.isOnlyMe && it.user.id != user.id
                 }.map { StoryDto(it) }.toList()
         } else {
-            storyRepository.findStoryByPerfumeId(perfumeId, cursor, PAGE_SIZE)
+            storyRepository.findStoryByPerfumeId(perfumeId, cursor, PageRequest.ofSize(PAGE_SIZE))
                 .filterNot {
                     it.isOnlyMe && it.user.id != user.id
                 }.map { StoryDto(it) }.toList()
@@ -101,8 +98,10 @@ class StoryService(
     fun likeStory(user: User, storyId: Long): Boolean {
 
         val managedUser = userService.getUser(user.id)
-
         val story = storyRepository.findById(storyId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
+
+        validateOnlyMe(managedUser,story)
+
         val like = storyLikeRepository.findByUserAndStory(managedUser, story)
 
         return if (like.isPresent) {
@@ -134,6 +133,8 @@ class StoryService(
         story.commentCount++
     }
 
+
+
     private fun cancelLike(storyLike: StoryLike){
         val story = storyLike.story
         storyLikeRepository.deleteById(storyLike.id?:throw NotFoundException(SeehyangStatus.NOT_FOUND_STORY))
@@ -143,5 +144,13 @@ class StoryService(
     private fun saveStoryLike(user:User, story:Story){
         storyLikeRepository.save(StoryLike(user = user, story = story))
         story.like()
+    }
+
+    private fun validateOnlyMe(user:User, story:Story) {
+        val isMine = user.isLogin() && (user.id!! == story.user.id)
+
+        if (story.isOnlyMe && isMine.not()) {
+            throw NotFoundException(SeehyangStatus.NOT_FOUND_STORY)
+        }
     }
 }
