@@ -5,6 +5,7 @@ import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -21,11 +22,10 @@ interface StoryLikeRepository : JpaRepository<StoryLike, Long> {
                    "where s.id = :storyId")
     fun countByStoryId(@Param("storyId") storyId: Long) : Long
 
+    @EntityGraph(attributePaths = ["story","user"])
     @Query("select st " +
                    "from StoryLike st " +
-                   "join fetch st.story s " +
-                   "join fetch st.user u " +
-                   "where u = :user and s = :story")
+                   "where st.user = :user and st.story = :story")
     fun findByUserAndStory(@Param("user") user: User, @Param("story") story: Story) : Optional<StoryLike>
 
     @Query("select s.id " +
