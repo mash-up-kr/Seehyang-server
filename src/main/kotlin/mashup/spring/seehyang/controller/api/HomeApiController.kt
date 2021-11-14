@@ -16,29 +16,18 @@ class HomeApiController(
 ) {
 
     @GetMapping("/home/today")
-    fun today() : SeehyangResponse<TodaySeehyangDto> {
-        val stories = homeService.todaySeehyang()
-        return SeehyangResponse(TodaySeehyangDto(stories[0].perfume, stories))
-    }
+    fun today() : SeehyangResponse<TodaySeehyangDto> = SeehyangResponse(homeService.todaySeehyang())
 
     @GetMapping("/home/hot-story")
-    fun hotStory(): SeehyangResponse<List<StoryDto>> {
-        val stories = homeService.hotStory()
-        return SeehyangResponse(stories)
-    }
+    fun hotStory(): SeehyangResponse<List<StoryDto>> = SeehyangResponse(homeService.hotStory())
 
     @GetMapping("/home/weekly-ranking")
-    fun weeklyRanking(): SeehyangResponse<List<PerfumeDto>> {
-        val perfumes = homeService.weeklyRanking()
-        return SeehyangResponse(perfumes)
-    }
+    fun weeklyRanking(): SeehyangResponse<List<PerfumeDto>> = SeehyangResponse(homeService.weeklyRanking())
 
     @GetMapping("/home/steady-perfume")
     fun steadyPerfume(
         @RequestParam(value = "idCursor", required = false) idCursor :Long? = null,
         @RequestParam(value = "likeCursor", required = false) likeCursor: Int? = null
-    ): SeehyangResponse<List<PerfumeDto>>{
-        val perfumes = homeService.getSteadyPerfumes(idCursor, likeCursor)
-        return SeehyangResponse(perfumes)
-    }
+    ): SeehyangResponse<List<PerfumeDto>> = SeehyangResponse(homeService.getSteadyPerfumes(idCursor, likeCursor))
+
 }

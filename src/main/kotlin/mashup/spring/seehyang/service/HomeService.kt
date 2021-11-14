@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.dto.home.TodaySeehyangDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.domain.cache.CacheRepository
 import mashup.spring.seehyang.domain.cache.CacheType
@@ -28,12 +29,13 @@ class HomeService(
      * 2. 찾은 향수 중 랜덤으로 하나를 선택 한다.
      * 3. 선택한 향수에서 좋아요 개수 상위 10개를 가져온다.
      * */
-    fun todaySeehyang() : List<Story>{
+    fun todaySeehyang() : TodaySeehyangDto{
         val perfumeIdList = perfumeRepository.findByStoryLengthGreaterThan().map { it.id }
         val randIndex = Random.nextInt(perfumeIdList.size)
         val randId = perfumeIdList[randIndex]
-        val todaySeehyangStories = storyRepository.findTop10ByPerfumeIdOrderByLikeCountDesc(randId)
-        return todaySeehyangStories
+        val stories = storyRepository.findTop10ByPerfumeIdOrderByLikeCountDesc(randId)
+        return TodaySeehyangDto(stories[0].perfume,stories)
+
     }
 
     fun hotStory() : List<StoryDto> {
