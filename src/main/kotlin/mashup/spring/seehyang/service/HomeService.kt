@@ -23,14 +23,15 @@ class HomeService(
     val perfumeRepository: PerfumeRepository,
     val cacheRepository: CacheRepository
 ) {
-    private val STEADY_PAGE_SIZE = 6;
+    private val STEADY_PAGE_SIZE = 6
+    private val TODAY_PERFUME_BASELINE = 5
     /**
      * 1. 스토리가 5개 이상 올라온 향수를 찾는다.
      * 2. 찾은 향수 중 랜덤으로 하나를 선택 한다.
      * 3. 선택한 향수에서 좋아요 개수 상위 10개를 가져온다.
      * */
     fun todaySeehyang() : TodaySeehyangDto{
-        val perfumeIdList = perfumeRepository.findByStoryLengthGreaterThan().map { it.id }
+        val perfumeIdList = perfumeRepository.findByStoryLengthGreaterThan(TODAY_PERFUME_BASELINE).map { it.id }
         val randIndex = Random.nextInt(perfumeIdList.size)
         val randId = perfumeIdList[randIndex]
         val stories = storyRepository.findTop10ByPerfumeIdOrderByLikeCountDesc(randId)

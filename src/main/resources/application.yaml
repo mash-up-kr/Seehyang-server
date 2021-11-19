@@ -55,7 +55,7 @@ spring:
         format_sql: true
         default_batch_fetch_size: 1000
     show-sql: true
-    #open-in-view: false
+    open-in-view: false
 
 ---
 spring:
@@ -78,7 +78,7 @@ spring:
         format_sql: true
         default_batch_fetch_size: 1000
     show-sql: true
-    #open-in-view: false
+    open-in-view: false
 
 
 

@@ -18,8 +18,8 @@ interface PerfumeRepository : JpaRepository<Perfume, Long>{
 
     @Query("select p from Perfume p " +
                    "join fetch p.brand b " +
-                   "where size(p.stories) >= 5")
-    fun findByStoryLengthGreaterThan(): List<Perfume>
+                   "where size(p.stories) >= :size")
+    fun findByStoryLengthGreaterThan(@Param("size") size: Int): List<Perfume>
 
 
     @Query("select p from Perfume p " +
@@ -37,7 +37,7 @@ interface PerfumeRepository : JpaRepository<Perfume, Long>{
 
     @Query("select p from Perfume p " +
                    "join fetch p.brand b " +
-                   "where (p.likeCount < :likeCursor or (p.likeCount = :like_count and p.id < :idCursor)) " +
+                   "where (p.likeCount < :likeCursor or (p.likeCount = :likeCursor and p.id < :idCursor)) " +
                    "order by p.likeCount desc, p.id desc")
     fun findSteadyPerfume(@Param("idCursor") idCursor: Long, @Param("likeCursor") likeCursor: Int, pageable: Pageable): List<Perfume>
 
