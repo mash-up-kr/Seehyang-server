@@ -4,7 +4,7 @@ import mashup.spring.seehyang.domain.entity.perfume.Gender
 
 data class RegisterUserDetailRequest(
     val gender: Gender,
-    val age: Short,
+    val age: Int,
     val nickname: String,
 )
 

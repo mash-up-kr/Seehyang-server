@@ -41,9 +41,9 @@ class UserService(
     ): RegisterUserDetailResponse {
         val user: User = userRepository.findById(id)
             .orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_USER) }
-        user.age = req.age
-        user.gender = req.gender
-        user.nickname = req.nickname
+        user.changeAge(req.age)
+        user.changeGender(req.gender)
+        user.changeNickname(req.nickname)
         return RegisterUserDetailResponse(UserDto.from(user))
     }
 
