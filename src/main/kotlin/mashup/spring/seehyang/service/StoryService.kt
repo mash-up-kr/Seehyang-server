@@ -33,10 +33,7 @@ class StoryService(
     private val PAGE_SIZE: Int = 10
 
     @Transactional(readOnly = true)
-    fun getAdminStoryDetail(id: Long): Story{
-        val story = storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
-        return story
-    }
+    fun getAdminStoryDetail(id: Long): Story = storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
 
     @Transactional(readOnly = true)
     fun getStoryDetail(user: User,id: Long): StoryDto {
@@ -51,15 +48,13 @@ class StoryService(
             storyRepository.findTop10ByPerfumeIdOrderByIdDesc(perfumeId)
                 .filterNot {
                     it.isOnlyMe && it.user.id != user.id
-                }.map { StoryDto(it) }.toList()
+                }.map { StoryDto(it, isLiked = it.storyLikes.any { storyLike -> storyLike.user.id == user.id }) }.toList()
         } else {
             storyRepository.findStoryByPerfumeId(perfumeId, cursor, PageRequest.ofSize(PAGE_SIZE))
                 .filterNot {
                     it.isOnlyMe && it.user.id != user.id
-                }.map { StoryDto(it) }.toList()
+                }.map { StoryDto(it, isLiked = it.storyLikes.any { storyLike -> storyLike.user.id == user.id }) }.toList()
         }
-
-
 
     /**
      * StoryCreateRequest
