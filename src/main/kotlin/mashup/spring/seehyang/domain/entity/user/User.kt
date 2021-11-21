@@ -11,19 +11,19 @@ import javax.persistence.*
 
 @Entity
 class User(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Enumerated(EnumType.STRING)
+        @Enumerated(EnumType.STRING)
     var gender: Gender? = null,
 
-    var age: Short? = null,
+        var age: Short? = null,
 
-    var nickname: String? = null,
+        var nickname: String? = null,
 
-    var email: String? = null,
+        var email: String? = null,
 
-    @Enumerated(EnumType.STRING)
+        @Enumerated(EnumType.STRING)
     var oAuthType: OAuthType? = null,
 
     /**
@@ -31,26 +31,26 @@ class User(
      * Post, Like, Comment
      */
 
-    /**
+        /**
      * User는 여러 개의 story를 쓸 수 있다.
      */
     @OneToMany(mappedBy = "user")
     val stories: MutableList<Story> = mutableListOf(),
 
-    /**
+        /**
      * User는 여러개의 like를 가질 수 있다.
      */
     @OneToMany(mappedBy = "user")
-    val storyLikes: MutableList<StoryLike> = mutableListOf(),
+    val storyLikes: MutableSet<StoryLike> = mutableSetOf(),
 
-    /**
+        /**
      * User는 여러 개의 Comment를 가질 수 있다.
      */
     @OneToMany(mappedBy = "user")
     val comments: MutableList<Comment> = mutableListOf(),
 
 
-    /**
+        /**
      * ============== One to One =============
      */
     @OneToOne

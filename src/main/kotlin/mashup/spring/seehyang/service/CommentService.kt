@@ -76,6 +76,9 @@ class CommentService(
     @Transactional(readOnly = true)
     fun getReplyComments(user: User, parentCommentId: Long, cursor: Long?): List<CommentDto> {
         val comment = commentRepository.findById(parentCommentId).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)}
+
+        // storyService 의 method를 쓰는것 한 번 더 고려해볼것.
+        // valid method 아니라 쿼리단계에서 걸러주는것은 어떤지?
         storyService.validateOnlyMe(user, comment.story)
 
         return if (cursor == null) {

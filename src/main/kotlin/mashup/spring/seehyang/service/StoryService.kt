@@ -40,12 +40,9 @@ class StoryService(
 
     @Transactional(readOnly = true)
     fun getStoryDetail(user: User,id: Long): StoryDto {
-
         val story = storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
-
         validateOnlyMe(user, story)
-
-        return StoryDto(story)
+        return StoryDto(story, isLiked = story.storyLikes.any { storyLike -> storyLike.user.id == user.id })
     }
 
     @Transactional(readOnly = true)
@@ -61,7 +58,6 @@ class StoryService(
                     it.isOnlyMe && it.user.id != user.id
                 }.map { StoryDto(it) }.toList()
         }
-
 
 
 
