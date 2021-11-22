@@ -21,9 +21,7 @@ class User(
 
     oAuthType: OAuthType,
 
-
 ) : BaseTimeEntity() {
-
 
     @Enumerated(EnumType.STRING)
     var gender: Gender? = null
@@ -54,7 +52,7 @@ class User(
     val stories: MutableList<Story> = mutableListOf()
 
     @OneToMany(mappedBy = "user")
-    val storyLikes: MutableList<StoryLike> = mutableListOf()
+    val storyLikes: MutableSet<StoryLike> = mutableSetOf()
 
 
     @OneToMany(mappedBy = "user")

@@ -9,13 +9,14 @@ import mashup.spring.seehyang.domain.entity.perfume.PerfumeType
 import mashup.spring.seehyang.domain.entity.user.User
 
 fun createTestUser() : User{
-    return User(
-        gender = Gender.BOTH,
-        age = 99,
-        nickname = "test",
+    val user = User(
         email = "test@test.com",
         oAuthType = OAuthType.GOOGLE
     )
+    user.changeGender(Gender.BOTH)
+    user.changeAge(99)
+    user.changeNickname("test")
+    return user
 }
 
 fun createTestBrand() : Brand{

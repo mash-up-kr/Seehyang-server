@@ -13,7 +13,11 @@ import java.util.*
 @Repository
 interface StoryRepository : JpaRepository<Story, Long>{
 
-    @EntityGraph(attributePaths = ["user","image","perfume"])
+    /**
+     * 같은 findById 동작을 원하지만 EntityGraph 를 다르게 적용 하고 싶다면 어떻게?
+     * QueryDSL 도입의 이유가 될듯.
+     * */
+    @EntityGraph(attributePaths = ["user","image","perfume", "storyLikes", "storyLikes.user"])
     override fun findById(@Param("id") id:Long): Optional<Story>
 
     @EntityGraph(attributePaths = ["user","image","perfume"])
