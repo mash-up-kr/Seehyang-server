@@ -28,7 +28,7 @@ class UserJwtService(
             .compact()
     }
 
-    override fun decode(target: String): Long {
+    override fun decode(target: String): Map<String, Any> {
         val decoded: Map<String, Any> = try {
             Jwts.parser()
                 .setSigningKey(jwtSecretKey)
@@ -36,6 +36,10 @@ class UserJwtService(
         } catch (err: RuntimeException) {
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_INVALID_TOKEN)
         }
-        return decoded["id"].toString().toLong()
+        return decoded
+    }
+
+    fun getUserIdByToken(token: String):Long{
+        return decode(token)["id"].toString().toLong()
     }
 }
