@@ -2,6 +2,7 @@ package mashup.spring.seehyang.controller.api
 
 import mashup.spring.seehyang.controller.api.dto.perfume.BasicPerfumeDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.domain.entity.perfume.*
 import mashup.spring.seehyang.service.PerfumeService
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.*
 import org.mockito.Mockito
-import org.mockito.internal.matchers.Null
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -29,9 +29,9 @@ class PerfumeApiControllerTest @Autowired constructor(
     @Test
     fun getPerfume() {
         val testPerfume = testPerfumeDto()
-        given(perfumeService.get(any(User::class.java), anyLong())).willReturn(testPerfume)
+        given(perfumeService.getPerfume(any(UserDto::class.java), anyLong())).willReturn(testPerfume)
 
-        val actual: SeehyangResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L, User.empty())
+        val actual: SeehyangResponse<PerfumeDto> = perfumeApiController.getPerfumeDetail(0L, UserDto(User.empty()))
 
         assertEquals(actual.data!!.id, testPerfume.id)
         assertEquals(actual.data!!.brandId, testPerfume.brandId)

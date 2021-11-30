@@ -3,15 +3,16 @@ package mashup.spring.seehyang.service
 import mashup.spring.seehyang.controller.api.dto.perfume.BasicPerfumeDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeEditRequest
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
+import mashup.spring.seehyang.domain.PerfumeDomain
+import mashup.spring.seehyang.domain.UserDomain
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.perfume.PerfumeLike
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.NotFoundException
-import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
-import mashup.spring.seehyang.repository.user.UserRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,62 +20,33 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @Service
 class PerfumeService(
-    private val perfumeRepository: PerfumeRepository,
-    private val perfumeLikeRepository: PerfumeLikeRepository,
-    private val userService: UserService
+    private val perfumeDomain: PerfumeDomain,
+    private val userDomain: UserDomain
 ) {
 
-    private val PAGE_SIZE: Int = 10
-
     @Transactional(readOnly = true)
-    fun get(user: User,id: Long) : PerfumeDto {
-        val perfume = perfumeRepository.findById(id).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME)}
-
-        return if(user.isLogin()){
-            val isLiked = perfume.perfumeLikes.stream().filter { it.user.id == user.id }.findFirst().isPresent
-            PerfumeDto(perfume, isLiked = isLiked)
-        }else{
-            PerfumeDto(perfume, isLiked = false)
-        }
+    fun getPerfume(userDto: UserDto, perfumeId: Long) : PerfumeDto {
+        //val perfume = perfumeRepository.findById(id).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME)}
+        val user = userDomain.getUser(userDto)
+        return perfumeDomain.getPerfumeWithUser(perfumeId,user)
     }
 
     @Transactional(readOnly = true)
     fun getByName(name : String, cursor: Long?) : List<BasicPerfumeDto> {
-        val perfumes : MutableList<Perfume> = mutableListOf()
-        if(cursor == null){
-            perfumes.addAll(perfumeRepository.findTop10ByKoreanNameContainsOrderByIdDesc(name))
-            perfumes.addAll(perfumeRepository.findTop10ByNameContainsIgnoreCaseOrderByIdDesc(name))
-        }else{
-            perfumes.addAll(perfumeRepository.findByKoreanName(name, cursor, PageRequest.ofSize(PAGE_SIZE)))
-            perfumes.addAll(perfumeRepository.findByEngName(name, cursor, PageRequest.ofSize(PAGE_SIZE)))
-        }
 
-        return perfumes.map{ BasicPerfumeDto(it) }
+        return perfumeDomain.searchByName(name, cursor).map{BasicPerfumeDto(it) }
+
     }
 
-    fun edit(id: Long, request: PerfumeEditRequest): Perfume{
-        val perfume = perfumeRepository.findById(id).get()
-        // TODO 더 세심한 체크 ..
-        perfume.name = request.name!!
-        perfume.koreanName = request.koreanName!!
-        return perfume
+    fun editPerfume(perfumeId: Long, request: PerfumeEditRequest){
+
+        perfumeDomain.editPerfume(perfumeId, request)
     }
 
-    fun likePerfume(user: User, perfumeId: Long): Boolean {
+    fun likePerfume(userDto: UserDto, perfumeId: Long): Boolean {
 
-        val managedUser = userService.getUser(user.id)
+        val user = userDomain.getUser(userDto)
+        return perfumeDomain.likePerfume(perfumeId, user)
 
-        val perfume = perfumeRepository.findById(perfumeId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME) }
-        val like = perfumeLikeRepository.findByUserAndPerfume(managedUser, perfume)
-
-        return if (like.isPresent) {
-            perfumeLikeRepository.delete(like.get())
-            perfume.cancleLike()
-            false
-        } else {
-            perfumeLikeRepository.save(PerfumeLike(user = managedUser, perfume = perfume))
-            perfume.like()
-            true
-        }
     }
 }
