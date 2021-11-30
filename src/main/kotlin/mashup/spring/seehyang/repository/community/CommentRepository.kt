@@ -26,11 +26,15 @@ interface CommentRepository: JpaRepository<Comment, Long> {
     @Query("select c from Comment c " +
                 "where c.parent.id = :parentId and c.id < :cursor " +
                 "order by c.id desc ")
-    fun findReplyCommentsByStoryId(@Param("parentId") parentId:Long, @Param("cursor") cursor: Long, pageable: Pageable) : List<Comment>
+    fun findReplyCommentsByParentId(@Param("parentId") parentId:Long, @Param("cursor") cursor: Long, pageable: Pageable) : List<Comment>
 
     @EntityGraph(attributePaths = ["parent", "story","user"])
     fun findTop20ByParentIdOrderByIdDesc(parentId: Long) : List<Comment>
 
     @EntityGraph(attributePaths = ["parent", "story", "user"])
     override fun findById(id: Long): Optional<Comment>
+
+    @EntityGraph(attributePaths = ["parent", "story", "user"])
+    @Query("select c from Comment c where c.story.id = :storyId and c.id = :commentId")
+    fun findByStoryIdAndCommentId(@Param("storyId") storyId:Long, @Param("commentId") commentId: Long): Comment?
 }

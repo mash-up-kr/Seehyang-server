@@ -1,98 +1,100 @@
 package mashup.spring.seehyang.controller.api
 
-import io.swagger.annotations.ApiParam
-import io.swagger.v3.oas.annotations.Parameter
 import mashup.spring.seehyang.controller.api.dto.community.CommentCreateRequest
-import mashup.spring.seehyang.controller.api.dto.community.CommentCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDeleteResponse
 import mashup.spring.seehyang.controller.api.dto.community.CommentDto
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
-import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.BadRequestException
-import mashup.spring.seehyang.exception.NotFoundException
-import mashup.spring.seehyang.exception.UnauthorizedException
-import mashup.spring.seehyang.service.CommentService
 import mashup.spring.seehyang.service.StoryService
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
 @ApiV1
 class CommentApiController(
-    private val commentService: CommentService,
     private val storyService: StoryService
 ) {
 
-    @GetMapping("/story/{id}/comments")
+    @GetMapping("/story/{storyId}/comment")
     fun getComments(
-        @ApiIgnore user:User,
-        @PathVariable(value = "id") storyId: Long,
+        @ApiIgnore userDto: UserDto,
+        @PathVariable(value = "storyId") storyId: Long,
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
 
-        val storyDto = storyService.getStoryDetail(user, storyId)
-        val commentsDto = commentService.getComments(user,storyDto, cursor)
+        val commentsDto = storyService.getComments(storyId, userDto, cursor)
 
         return SeehyangResponse(commentsDto)
     }
 
-    @GetMapping("/comment/{id}/reply")
+
+
+    @GetMapping("/story/{storyId}/comment/{id}")
     fun replyComments(
-        @ApiIgnore user:User,
+        @ApiIgnore userDto: UserDto,
+        @PathVariable(value = "storyId") storyId: Long,
         @PathVariable(value = "id") parentCommentId: Long,
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
-        val replyComments = commentService.getReplyComments(user,parentCommentId, cursor)
+
+        val replyComments = storyService.getReplyComments(storyId, parentCommentId, userDto, cursor)
+
         return SeehyangResponse(replyComments)
     }
 
-    @PostMapping("/story/{id}/comment")
+
+
+    @PostMapping("/story/{storyId}/comment")
     fun createComment(
-        @ApiIgnore user: User,
-        @PathVariable(value = "id") storyId: Long,
+        @ApiIgnore userDto: UserDto,
+        @PathVariable(value = "storyId") storyId: Long,
         @RequestBody requestDto: CommentCreateRequest,
-    ): SeehyangResponse<CommentDto> {
+    ): SeehyangResponse<String> {
 
-        if(user.isLogin().not())
-            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
         val commentContents = contentsValidation(requestDto.contents)
 
-        commentService.addComment(user, storyId, commentContents)
-        return SeehyangResponse()
+        storyService.addComment(storyId, userDto, commentContents)
+
+        return SeehyangResponse("OK")
     }
 
 
 
-    @PostMapping("/comment/{id}/reply")
+    @PostMapping("/story/{storyId}/comment/{commentId}")
     fun createReplyComment(
-        @ApiIgnore user: User,
-        @PathVariable(value = "id") commentId: Long,
+        @ApiIgnore userDto: UserDto,
+        @PathVariable(value = "storyId") storyId: Long,
+        @PathVariable(value = "commentId") commentId: Long,
         @RequestBody requestDto: CommentCreateRequest,
-    ): SeehyangResponse<CommentDto> {
-        if(user.isLogin().not())
-            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+    ): SeehyangResponse<String> {
 
         val commentContents = contentsValidation(requestDto.contents)
 
-        val savedComment = commentService.addReplyComment(user, commentId, commentContents)
-        return SeehyangResponse()
+        storyService.addReplyComment(storyId, commentId, userDto, commentContents)
+
+        return SeehyangResponse("OK")
     }
 
 
 
-    @DeleteMapping("/comment/{id}")
+    @DeleteMapping("/story/{storyId}/comment/{commentId}")
     fun deleteComment(
-        @PathVariable(value = "id") commentId: Long,
-        @ApiIgnore user : User
+        @PathVariable(value = "storyId") storyId: Long,
+        @PathVariable(value = "commentId") commentId: Long,
+        @ApiIgnore userDto: UserDto
     ): SeehyangResponse<CommentDeleteResponse>{
-        if(user.isLogin().not())
-            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
-        val deletedId: Long = commentService.deleteComment(user, commentId)
 
-        return SeehyangResponse(CommentDeleteResponse(deletedId))
+        storyService.deleteComment(storyId,commentId,userDto)
+
+        return SeehyangResponse(CommentDeleteResponse(commentId))
     }
+
+    /**
+     * ===========Private Methods =============
+     */
 
     private fun contentsValidation(contents: String?): String{
         if(contents.isNullOrBlank()){

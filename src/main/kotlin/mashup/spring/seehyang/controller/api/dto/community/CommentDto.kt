@@ -7,7 +7,6 @@ import java.time.LocalDateTime
 data class CommentDto (
     @JsonIgnore
     val comment: Comment,
-
     val id: Long = comment.id!!,
     val userNickname: String? = comment.user.nickname,
     val createdAt : LocalDateTime = comment.createdAt,
@@ -15,4 +14,6 @@ data class CommentDto (
     val replyCount: Int = comment.numOfReply,
     val likeCount: Int = comment.numOfLike,
     val dislikeCount: Int = comment.numOfDislike
-)
+){
+
+}
