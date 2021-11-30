@@ -17,6 +17,7 @@ class ImageUploadController(
     @PostMapping("/image")
     fun upload(@RequestParam("image") multipartFile: MultipartFile): SeehyangResponse<Map<String, Long>> {
         //TODO: 에러 핸들링 imageUrl NPE?
+        //TODO: repository 수정 필요
         val imageUrl = awsS3UploadService.upload(multipartFile, "application/image/post")
         val image = Image(url = imageUrl!!)
         imageRepository.save(image)

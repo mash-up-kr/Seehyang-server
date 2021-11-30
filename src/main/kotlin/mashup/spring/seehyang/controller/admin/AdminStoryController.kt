@@ -2,6 +2,7 @@ package mashup.spring.seehyang.controller.admin
 
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
@@ -71,7 +72,7 @@ class AdminStoryController(
         imageRepository.save(image)
         val user = userRepository.findById(9L).get()
 
-        storyService.create(user, StoryCreateRequest(perfumeId, image.id!!, tags.split(","),isOnlyMe = false))
+        storyService.createStory(UserDto(user), StoryCreateRequest(perfumeId, image.id!!, tags.split(","), isOnlyMe = false))
         return "story/upload"
     }
 }
