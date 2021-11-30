@@ -1,147 +1,194 @@
 package mashup.spring.seehyang.service
 
+import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
-import mashup.spring.seehyang.controller.api.response.SeehyangStatus
-import mashup.spring.seehyang.domain.entity.community.Comment
-import mashup.spring.seehyang.domain.entity.community.StoryLike
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
+import mashup.spring.seehyang.domain.PerfumeDomain
+import mashup.spring.seehyang.domain.StoryDomain
+import mashup.spring.seehyang.domain.TagDomain
+import mashup.spring.seehyang.domain.UserDomain
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
-import mashup.spring.seehyang.exception.NotFoundException
-import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.ImageRepository
-import mashup.spring.seehyang.repository.community.StoryLikeRepository
-import mashup.spring.seehyang.repository.community.StoryRepository
-import mashup.spring.seehyang.repository.community.StoryTagRepository
-import mashup.spring.seehyang.repository.perfume.PerfumeRepository
-import mashup.spring.seehyang.repository.user.UserRepository
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 @Service
 class StoryService(
-    val storyLikeRepository: StoryLikeRepository,
-    val storyRepository: StoryRepository,
     val imageRepository: ImageRepository,
-    val perfumeRepository: PerfumeRepository,
-    val tagService: TagService,
-    val userService: UserService
+    val perfumeRepository: PerfumeDomain,
+    val storyDomain: StoryDomain,
+    val tagDomain: TagDomain,
+    val userDomain: UserDomain
 ) {
 
     private val PAGE_SIZE: Int = 10
 
-    @Transactional(readOnly = true)
-    fun getAdminStoryDetail(id: Long): Story = storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
+
+    /**
+     * ============= Story 조회 ===============
+     */
 
     @Transactional(readOnly = true)
-    fun getStoryDetail(user: User,id: Long): StoryDto {
-        val story = storyRepository.findById(id).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
-        validateOnlyMe(user, story)
-        return StoryDto(story, isLiked = story.storyLikes.any { storyLike -> storyLike.user.id == user.id })
+    fun getAdminStoryDetail(storyId: Long): Story {
+
+        val story = storyDomain.adminGetStoryById(storyId)
+
+        return story
     }
 
     @Transactional(readOnly = true)
-    fun getStoriesByPerfume(user: User, perfumeId: Long, cursor: Long?): List<StoryDto>
-    = if (cursor == null) {
-            storyRepository.findTop10ByPerfumeIdOrderByIdDesc(perfumeId)
-                .filterNot {
-                    it.isOnlyMe && it.user.id != user.id
-                }.map { StoryDto(it, isLiked = it.storyLikes.any { storyLike -> storyLike.user.id == user.id }) }.toList()
-        } else {
-            storyRepository.findStoryByPerfumeId(perfumeId, cursor, PageRequest.ofSize(PAGE_SIZE))
-                .filterNot {
-                    it.isOnlyMe && it.user.id != user.id
-                }.map { StoryDto(it, isLiked = it.storyLikes.any { storyLike -> storyLike.user.id == user.id }) }.toList()
-        }
+    fun getStoryDetail(storyId: Long, userDto: UserDto): StoryDto {
 
-    /**
-     * StoryCreateRequest
-     * perfumeId : Long
-     * imageId : Long
-     * tags : MutableList<String>
-     */
-    fun create(user: User, storyCreateRequest: StoryCreateRequest): StoryDto {
+        val user = userDomain.getUser(userDto)
+        val story = storyDomain.getStoryById(storyId, user)
 
-        val managedUser = userService.getUser(user.id)
+        return getStoryDtoWithIsLiked(story, user)
+    }
 
-        // TODO : Entity Not Found 에러 핸들링
-        val perfume = perfumeRepository.findById(storyCreateRequest.perfumeId).get()
-        val image = imageRepository.findById(storyCreateRequest.imageId).get()
-        val tags = storyCreateRequest.tags
-        val isOnlyMe = storyCreateRequest.isOnlyMe
+    @Transactional(readOnly = true)
+    fun getStoriesByPerfume(perfumeId: Long, userDto: UserDto, cursor: Long?): List<StoryDto> {
 
-        val story = Story(
-            perfume = perfume,
-            user = managedUser,
-            image = image,
-            isOnlyMe = isOnlyMe
+        val user = userDomain.getUser(userDto)
+
+        val stories = storyDomain.getStoriesByPerfume(
+            perfumeId = perfumeId,
+            user = user,
+            pageSize = 10,
+            cursor = cursor
         )
 
-        val savedStory = storyRepository.save(story)
 
-        tagService.addTagsToStory(savedStory, tags)
+        return getStoryDtosWithIsLiked(stories, user)
+    }
+
+
+    /**
+     * =============== 스토리 생성, 수정, 삭제=================
+     */
+    fun createStory(userDto: UserDto, storyCreateRequest: StoryCreateRequest): StoryDto {
+
+        val user = userDomain.getUser(userDto)
+        val perfume = perfumeRepository.getPerfume(storyCreateRequest.perfumeId)
+        val image = imageRepository.findById(storyCreateRequest.imageId).get()
+        val tags = storyCreateRequest.tags
+
+        val savedStory = storyDomain.saveStory(
+            storyCreateRequest = storyCreateRequest,
+            user = user,
+            perfume = perfume,
+            image = image
+        )
+
+        tagDomain.addTagsToStory(savedStory, tags)
 
         return StoryDto(savedStory)
     }
 
-    fun likeStory(user: User, storyId: Long): Boolean {
+    fun likeStory(userDto: UserDto, storyId: Long): Boolean {
 
-        val managedUser = userService.getUser(user.id)
-        val story = storyRepository.findById(storyId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_STORY) }
+        val user = userDomain.getUser(userDto)
 
-        validateOnlyMe(managedUser,story)
+        val currentLikeState = storyDomain.likeStory(storyId, user)
 
-        val like = storyLikeRepository.findByUserAndStory(managedUser, story)
+        return currentLikeState
 
-        return if (like.isPresent) {
-            cancelLike(like.get())
-            false
+    }
+
+    fun deleteStory(storyId: Long, userDto: UserDto): Long {
+
+        val user = userDomain.getUser(userDto)
+
+        return storyDomain.deleteStory(storyId, user)
+    }
+
+    /**
+     * ================== Comment ====================
+     */
+
+
+    fun getComments(storyId: Long, userDto: UserDto, cursor: Long?): List<CommentDto> {
+        val user = userDomain.getUser(userDto)
+
+        return storyDomain.getComments(storyId, user, cursor).map { CommentDto(it) }
+
+    }
+
+    fun addComment(storyId: Long, userDto: UserDto, contents: String) {
+
+        val user = userDomain.getUser(userDto)
+        storyDomain.addComments(storyId, user, contents)
+    }
+
+    fun deleteComment(storyId: Long, commentId: Long, userDto: UserDto) {
+
+        val user = userDomain.getUser(userDto)
+        storyDomain.deleteComment(storyId, commentId, user)
+
+    }
+
+
+    /**
+     * ================== Reply Comment ====================
+     */
+
+
+    fun getReplyComments(storyId: Long, commentId: Long, userDto: UserDto, cursor: Long?): List<CommentDto> {
+
+        val user = userDomain.getUser(userDto)
+
+        return storyDomain.getReplyComments(storyId, commentId, user, cursor).map { CommentDto(it) }
+    }
+
+
+    fun addReplyComment(storyId: Long, commentId: Long, userDto: UserDto, contents: String) {
+
+        val user = userDomain.getUser(userDto)
+
+        storyDomain.addReplyComment(storyId, commentId, user, contents)
+    }
+
+
+    fun deleteReplyComment(storyId: Long, commentId: Long, userDto: UserDto) {
+        val user = userDomain.getUser(userDto)
+        val story = storyDomain.getStoryById(storyId, user)
+
+        story.deleteReplyComment(commentId, user)
+    }
+
+    /**
+     * ============ Private Methods =============
+     */
+
+    fun getStoryDtoWithIsLiked(story: Story, user: User): StoryDto {
+        val storyDto = StoryDto(story)
+
+        if (user.isLogin()) {
+            storyDto.isLiked = story.isUserLike(user)
         } else {
-            saveStoryLike(managedUser, story)
-            true
+            storyDto.isLiked = false
         }
+
+        return storyDto
     }
 
-    fun deleteStory(user: User, id:Long): Long{
-        val managedUser = userService.getUser(user.id)
+    fun getStoryDtosWithIsLiked(stories: List<Story>, user: User): List<StoryDto> {
 
-        val userId = managedUser.id!!
-        val userIdInStory = storyRepository.findById(id).orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_STORY)}.user.id!!
-
-        if (userId == userIdInStory) {
-            storyRepository.deleteById(id)
-            return id;
+        return if (user.isLogin()) {
+            stories.map {
+                val storyDto = StoryDto(it)
+                storyDto.isLiked = it.isUserLike(user)
+                return@map storyDto
+            }.toList()
         } else {
-            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+            stories.map {
+                val storyDto = StoryDto(it)
+                storyDto.isLiked = false
+                return@map storyDto
+            }.toList()
         }
     }
 
-    fun addComment(comment:Comment){
-        val story = comment.story
-        story.comments.add(comment)
-        story.commentCount++
-    }
-
-
-
-    private fun cancelLike(storyLike: StoryLike){
-        val story = storyLike.story
-        storyLikeRepository.deleteById(storyLike.id?:throw NotFoundException(SeehyangStatus.NOT_FOUND_STORY))
-        story.cancleLike()
-    }
-
-    private fun saveStoryLike(user:User, story:Story){
-        storyLikeRepository.save(StoryLike(user = user, story = story))
-        story.like()
-    }
-
-    fun validateOnlyMe(user:User, story:Story) {
-        val isMine = user.isLogin() && (user.id!! == story.user.id)
-
-        if (story.isOnlyMe && isMine.not()) {
-            throw NotFoundException(SeehyangStatus.NOT_FOUND_STORY)
-        }
-    }
 }

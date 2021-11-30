@@ -3,10 +3,8 @@ package mashup.spring.seehyang.controller.api
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateResponse
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
-import mashup.spring.seehyang.controller.api.response.SeehyangStatus
-import mashup.spring.seehyang.domain.entity.user.User
-import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.StoryService
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
@@ -26,64 +24,64 @@ class StoryApiController(
     /**
      * 1. id로 하나 가져오기
      */
-    @GetMapping("/story/{id}")
+    @GetMapping("/story/{storyId}")
     fun getStory(
-        @PathVariable id : Long,
-        @ApiIgnore user: User,
+        @PathVariable("storyId") storyId : Long,
+        @ApiIgnore userDto: UserDto,
     ): SeehyangResponse<StoryDto> {
-        val story = storyService.getStoryDetail(user,id)
-        return SeehyangResponse(story)
+
+        val storyDto = storyService.getStoryDetail(storyId, userDto)
+
+        return SeehyangResponse(storyDto)
     }
 
 
     /**
      * 2. 향수 id 로 여러개 가져오기
      */
-    @GetMapping("/perfume/{id}/story")
+    @GetMapping("/perfume/{perfumeId}/story")
     fun getStoryByPerfume(
-        @ApiIgnore user: User,
-        @PathVariable(value = "id") perfumeId: Long,
+        @ApiIgnore userDto: UserDto,
+        @PathVariable(value = "perfumeId") perfumeId: Long,
         @RequestParam(value = "cursor", required = false)cursor: Long? = null
     ): SeehyangResponse<List<StoryDto>>{
-        println(cursor)
-        val storyListDto = storyService.getStoriesByPerfume(user, perfumeId, cursor)
+
+        val storyListDto = storyService.getStoriesByPerfume(perfumeId, userDto, cursor)
+
         return SeehyangResponse(storyListDto)
     }
 
     @PostMapping("/story")
     fun createStory(
         @RequestBody createRequest: StoryCreateRequest,
-        @ApiIgnore user: User,
+        @ApiIgnore userDto: UserDto,
     ) : SeehyangResponse<StoryCreateResponse> {
-        if(user.isLogin().not())
-            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
-        val storyDto = storyService.create(user, createRequest)
+
+        val storyDto = storyService.createStory(userDto, createRequest)
 
         return SeehyangResponse(StoryCreateResponse(storyDto))
     }
 
 
 
-    @PostMapping("/story/{id}/like")
+    @PostMapping("/story/{storyId}/like")
     fun likeStory(
-        @ApiIgnore user: User,
-        @PathVariable id : Long,
+        @ApiIgnore userDto: UserDto,
+        @PathVariable("storyId") storyId : Long,
     ): SeehyangResponse<Map<String, Boolean>> {
-        if(user.isLogin().not())
-            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
-        val isLike = storyService.likeStory(user, id)
+
+        val isLike = storyService.likeStory(userDto, storyId)
 
         return SeehyangResponse(mutableMapOf(Pair("isLike", isLike)))
     }
 
     @DeleteMapping("/story/{id}")
     fun deleteStory(
-        @ApiIgnore user: User,
+        @ApiIgnore userDto: UserDto,
         @PathVariable id: Long
     ): SeehyangResponse<Map<String, Long>>{
-        if(user.isLogin().not())
-            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
-        val deletedId = storyService.deleteStory(user,id)
+
+        val deletedId = storyService.deleteStory(id,userDto)
 
         return SeehyangResponse(mutableMapOf(Pair("id", deletedId)))
     }

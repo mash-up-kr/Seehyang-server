@@ -43,4 +43,51 @@ interface StoryRepository : JpaRepository<Story, Long>{
     @EntityGraph(attributePaths = ["user","image","perfume"])
     fun findTop10ByOrderByLikeCountDesc(): List<Story>
 
+    //accessible story: 내 스토리 + (남이쓴 스토리 & 나만보기아님)
+    @EntityGraph(attributePaths = ["user","image","perfume"])
+    @Query("select s from Story s " +
+                   "where (s.user.id = :userId or (s.user.id <> :userId and s.isOnlyMe = false)) "+ // 남이 쓴 스토리
+                        "and s.perfume.id = :perfumeId " +
+                        "and s.id < :cursor ")
+    fun findAccessibleStoriesByPerfumeId(@Param("perfumeId") perfumeId: Long,  @Param("userId") userId: Long, @Param("cursor") cursor: Long, pageable: Pageable): List<Story>
+
+    @EntityGraph(attributePaths = ["user","image","perfume"])
+    @Query("select s from Story s " +
+                   "where s.isOnlyMe = false "+ // user 정보가 없으므로 나만보기 false 인 것만 가져온다.
+                   "and s.perfume.id = :perfumeId " +
+                   "and s.id < :cursor ")
+    fun findAccessibleStoriesByPerfumeId(@Param("perfumeId") perfumeId: Long,  @Param("cursor") cursor: Long, pageable: Pageable): List<Story>
+
+    @EntityGraph(attributePaths = ["user","image","perfume"])
+    @Query("select s from Story s " +
+                   "where s.isOnlyMe = false")
+    fun findPublicStories(pageable: Pageable): List<Story>
+
+
+
+    @EntityGraph(attributePaths = ["user","image","perfume"])
+    @Query("select s from Story s " +
+                   "where s.isOnlyMe = false "+
+                   "and s.id in :storyIds")
+    fun findAccessibleStories(@Param("storyIds") storyIds: List<Long>): List<Story>
+
+    @EntityGraph(attributePaths = ["user","image","perfume"])
+    @Query("select s from Story s " +
+                   "where (s.user.id = :userId or (s.user.id <> :userId and s.isOnlyMe = false)) "+
+                   "and s.id in :storyIds")
+    fun findAccessibleStories(@Param("storyIds") storyIds: List<Long>,@Param("userId") userId: Long): List<Story>
+
+
+    @EntityGraph(attributePaths = ["user","image","perfume"])
+    @Query("select s from Story s " +
+                   "where (s.user.id = :userId or (s.user.id <> :userId and s.isOnlyMe = false)) "+
+                   "and s.id = :storyId")
+    fun findAccessibleStory(@Param("storyId") storyId: Long,  @Param("userId") userId: Long): Optional<Story>
+
+    @EntityGraph(attributePaths = ["user","image","perfume"])
+    @Query("select s from Story s " +
+                   "where s.isOnlyMe = false "+
+                   "and s.id = :storyId")
+    fun findAccessibleStory(@Param("storyId") storyId: Long): Optional<Story>
+
 }

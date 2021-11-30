@@ -1,90 +1,151 @@
 package mashup.spring.seehyang.domain.entity.community
 
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.NotFoundException
 import javax.persistence.*
 
 @Entity
 class Story(
+    id: Long? = null,
+    isOnlyMe: Boolean,
+    image: Image,
+    perfume : Perfume,
+    user : User
+) : BaseTimeEntity(){
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
-
-    var likeCount: Int = 0,
-    var commentCount: Int = 0,
-    var isOnlyMe: Boolean,
+    val id: Long? = id
 
 
-    /**
-     * ========== One to One =========
-     */
+    //TODO: isOnlyMe 관련 로직 추가 필요
+    var isOnlyMe: Boolean = isOnlyMe
+        protected set
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
-    val image: Image,
+    val image: Image = image
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "perfume_id")
+    val perfume : Perfume = perfume
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    val user : User = user
+
+    var likeCount: Int = 0
+        protected set
+    var commentCount: Int = 0
+        protected set
+
+    @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val comments : MutableList<Comment> = mutableListOf()
+        get() = ArrayList(field) // deep copy
 
     /**
      * ========== One to Many ==========
      * Like, Comment, Tagstory
      */
 
-    /**
-     * story는 여러개의 Like를 가질 수 있다.
-     */
     @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val storyLikes : MutableList<StoryLike> = mutableListOf(),
+    val storyLikes : MutableList<StoryLike> = mutableListOf()
+        get() = ArrayList(field)
 
-    /**
-     * story는 여러개의 Comments를 가질 수 있다.
-     */
     @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val comments : MutableList<Comment> = mutableListOf(),
-
-    /**
-     * story는 여러개의 Tag를 가질 수 있다.
-     */
-    @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val storyTags: MutableList<StoryTag> = mutableListOf(),
+    val storyTags: MutableList<StoryTag> = mutableListOf()
+        get() = ArrayList(field)
 
 
 
     /**
-     * ========= Many to One ==========
-     * Perfume, User
+     * ================ Public Methods =======================
      */
 
-    /**
-     * 어떤 Perfume 에 관련된 포스트인지 연결한다.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "perfume_id")
-    val perfume : Perfume,
+    fun likeStory(user: User):Boolean{
 
-    /**
-     * 어떤 User 가 쓴 포스트인지 연결한다.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    val user : User
+        val userLike = findUserLike(user)
+        if(userLike != null){
+            cancelLike(userLike)
+            return false
+        }else{
+            doLike(user)
+            return true
+        }
 
-) : BaseTimeEntity(){
+    }
+
+    fun isUserLike(user: User) : Boolean {
+        return storyLikes.any{ it.user.id == user.id!! }
+    }
+
+
+    fun addComment(contents: String, user: User) {
+        val comment = Comment(contents = contents, user = user, story = this)
+        comments.add(comment)
+        this.commentCount = comments.size
+    }
+
+    fun deleteComment(commentId: Long, user:User): Boolean{
+        val isDeleted = comments.removeIf { it.id == commentId && it.user.id == user.id!! }
+        return isDeleted
+    }
+
+//    fun getReplyComments(parentId: Long): List<Comment>{
+//        val parent = getComment(parentId)
+//        return parent.children
+//    }
+
+    fun addReplyComment(commentId: Long, contents: String, user: User) {
+
+        val comment = getComment(commentId)
+
+        comment.addReplyComment(contents, user)
+    }
+
+    fun deleteReplyComment(commentId: Long, user:User){
+        val comment = getComment(commentId)
+
+        comment.deleteReplyComment(commentId)
+    }
+
 
     fun addStoryTag(storyTag: StoryTag) {
         storyTags.add(storyTag)
     }
 
-    fun addCommentCount() {
-        this.commentCount ++
+    fun deleteStoryTag(storyTag: StoryTag): Boolean{
+        val isRemoved = storyTags.removeIf { it.id == storyTag.id }
+        return isRemoved
     }
 
-    fun like() {
-        this.likeCount ++
+
+
+    /**
+     * ================== Private Methods ==================
+     */
+
+    private fun findUserLike(user: User) : StoryLike? {
+        return storyLikes.find { it.user.id == user.id!! }
     }
 
-    fun cancleLike() {
-        this.likeCount --
+    private fun doLike(user: User){
+        storyLikes.add(StoryLike(user = user, story = this))
+        likeCount = storyLikes.size
     }
+
+    private fun cancelLike(storyLike: StoryLike){
+         storyLikes.remove(storyLike)
+         likeCount = storyLikes.size
+    }
+
+    private fun getComment(commentId : Long) : Comment{
+        return comments.firstOrNull{it.id == commentId} ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
+    }
+
+
 
 }
