@@ -1,9 +1,7 @@
 package mashup.spring.seehyang.controller.api
 
-import io.swagger.annotations.ApiParam
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.home.TodaySeehyangDto
-import mashup.spring.seehyang.controller.api.dto.home.WeeklyDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.service.HomeService
