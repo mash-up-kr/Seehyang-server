@@ -12,6 +12,10 @@ enum class SeehyangStatus(
     CONTENTS_IS_EMPTY(4004, "Contents is empty or blank"),
     INVALID_AGE(4005,"Age must be in range 0 to 100"),
     INVALID_NICKNAME(4006,"Nickname must be English or Korean or Number"),
+    INVALID_EMAIL(4007,"Invalid Email"),
+    INVALID_CREATE_REQUEST(4008, "Necessary field is empty "),
+    INVALID_PERFUME_EDIT_REQUEST(4009, "At least one filed must not be null"),
+
 
     UNAUTHORIZED_USER(4010, "Unauthenticated user."),
     UNAUTHORIZED_INVALID_TOKEN(4011, "Invalid token."),
@@ -21,6 +25,7 @@ enum class SeehyangStatus(
     NOT_FOUND_STORY(4042, "The story does not exist."),
     NOT_FOUND_PERFUME(4043,"The perfume does not exist."),
     NOT_FOUND_STORYLIKE(4044,"The story like does not exist"),
+    NOT_FOUND_IMAGE(4045,"The image does not exist."),
 
     INTERNAL_SERVER_ERROR(5000, "This request cannot be proceed.");
 
