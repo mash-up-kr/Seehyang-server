@@ -20,7 +20,7 @@ data class PerfumeDto(
 
 ) {
     init {
-        perfume.accords.forEach { accords.add(AccordDto(it.accord)) }
+        perfume.viewAccords().forEach { accords.add(AccordDto(it.accord)) }
     }
 
     override fun toString(): String {

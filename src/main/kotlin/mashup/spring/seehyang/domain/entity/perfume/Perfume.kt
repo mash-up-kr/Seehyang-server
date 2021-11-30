@@ -53,19 +53,19 @@ class Perfume(
         protected set
 
     @OneToMany(mappedBy = "perfume")
-    val accords: MutableList<PerfumeAccord> = mutableListOf()
+    private val accords: MutableList<PerfumeAccord> = mutableListOf()
 
 
     @OneToMany(mappedBy = "perfume")
-    val notes: MutableList<PerfumeNote> = mutableListOf()
+    private val notes: MutableList<PerfumeNote> = mutableListOf()
 
 
     @OneToMany(mappedBy = "perfume")
-    val stories: MutableList<Story> = mutableListOf()
+    private val stories: MutableList<Story> = mutableListOf()
 
 
     @OneToMany(mappedBy = "perfume", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val perfumeLikes : MutableList<PerfumeLike> = mutableListOf()
+    private val perfumeLikes : MutableList<PerfumeLike> = mutableListOf()
 
 
 
@@ -73,6 +73,14 @@ class Perfume(
     /**
      * ============= Public Methods =================
       */
+
+    fun viewAccords():List<PerfumeAccord> = ArrayList(accords)
+
+    fun viewNotes():List<PerfumeNote> = ArrayList(notes)
+
+    fun viewStories():List<Story> = ArrayList(stories)
+
+    fun viewLikes():List<PerfumeLike> = ArrayList(perfumeLikes)
 
     fun changePerfumeNames(name:String?, koreanName: String?){
         if(name != null){

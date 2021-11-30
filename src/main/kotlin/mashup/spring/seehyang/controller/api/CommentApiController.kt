@@ -53,7 +53,7 @@ class CommentApiController(
     ): SeehyangResponse<String> {
 
 
-        val commentContents = contentsValidation(requestDto.contents)
+        val commentContents = validateContents(requestDto.contents)
 
         storyService.addComment(storyId, userDto, commentContents)
 
@@ -70,7 +70,7 @@ class CommentApiController(
         @RequestBody requestDto: CommentCreateRequest,
     ): SeehyangResponse<String> {
 
-        val commentContents = contentsValidation(requestDto.contents)
+        val commentContents = validateContents(requestDto.contents)
 
         storyService.addReplyComment(storyId, commentId, userDto, commentContents)
 
@@ -96,7 +96,7 @@ class CommentApiController(
      * ===========Private Methods =============
      */
 
-    private fun contentsValidation(contents: String?): String{
+    private fun validateContents(contents: String?): String{
         if(contents.isNullOrBlank()){
             throw BadRequestException(SeehyangStatus.CONTENTS_IS_EMPTY)
         }

@@ -29,30 +29,53 @@ class UserDomain(
      */
     fun getUser(userDto: UserDto): User {
 
-        val userId = validateDto(userDto)
+        return if(isNotEmptyUser(userDto)){
+            userRepository.findById(userDto.id!!).orElseThrow {NOT_FOUND_USER_EXCEPTION}
+        }else{
+            User.empty()
+        }
+    }
 
-        return userRepository.findById(userId).orElseThrow {NOT_FOUND_USER_EXCEPTION}
+    private fun isNotEmptyUser(userDto: UserDto): Boolean {
+        return User.isLogin(userDto = userDto)
     }
 
     fun getUserByEmail(email: String):User {
+
         val validatedEmail = validateEmailFormat(email)
-        return userRepository.findByEmail(validatedEmail).orElseThrow { NOT_FOUND_USER_EXCEPTION }
+
+        val foundUser = userRepository.findByEmail(validatedEmail)?: throw NOT_FOUND_USER_EXCEPTION
+        validateActiveUser(foundUser)
+
+        return foundUser
     }
 
     fun getUserByNickname(nickname: String): User{
-        return userRepository.findByNickname(nickname).orElseThrow{NOT_FOUND_USER_EXCEPTION}
+
+        val foundUser = userRepository.findByNickname(nickname)?: throw NOT_FOUND_USER_EXCEPTION
+
+        validateActiveUser(foundUser)
+
+        return foundUser
     }
 
     fun existsByNickname(nickname: String): Boolean {
-        return userRepository.existsByNickname(nickname)
+
+        val foundUser = userRepository.findByNickname(nickname)
+
+        return isExistAndActive(foundUser)
     }
+
+
 
     fun existsByEmail(email: String): Boolean {
-        return userRepository.existsByEmail(email)
+        val foundUser =  userRepository.findByEmail(email)
+
+        return isExistAndActive(foundUser)
     }
 
-
     fun saveUser(user: User): User{
+
         if(user.id != null){
             //logger.error("Merge Entity is not allowed")
             throw MERGE_NOT_ALLOWED_EXCEPTION
@@ -60,17 +83,25 @@ class UserDomain(
         return userRepository.save(user)
     }
 
-
-
-
     /**
      * Private Methods
      */
 
-    private fun validateDto(userDto: UserDto) : Long{
-        if(userDto.id == null)
-            throw EMPTY_USER_IS_NOT_ALLOWED
-        return userDto.id
+    private fun isExistAndActive(foundUser: User?): Boolean {
+        return foundUser != null && foundUser.isActivated
+    }
+
+
+    private fun validateActiveUser(foundUser: User) {
+        val isActive = isActiveUser(foundUser)
+        if(isActive.not()) throw NOT_FOUND_USER_EXCEPTION
+    }
+
+
+
+
+    private fun isActiveUser(foundUser: User): Boolean {
+        return foundUser.isActivated
     }
 
     private fun validateEmailFormat(email: String) :String{

@@ -7,8 +7,8 @@ import java.util.*
 
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
-    fun findByEmail(email: String): Optional<User>
-    fun findByNickname(nickname: String): Optional<User>
+    fun findByEmail(email: String): User?
+    fun findByNickname(nickname: String): User?
 
     /**
      * exists 성능 이슈 참고

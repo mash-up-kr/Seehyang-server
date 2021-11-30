@@ -43,8 +43,8 @@ class Story(
         protected set
 
     @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val comments : MutableList<Comment> = mutableListOf()
-        get() = ArrayList(field) // deep copy
+    private val comments : MutableList<Comment> = mutableListOf()
+
 
     /**
      * ========== One to Many ==========
@@ -52,18 +52,24 @@ class Story(
      */
 
     @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val storyLikes : MutableList<StoryLike> = mutableListOf()
-        get() = ArrayList(field)
+    private val storyLikes : MutableList<StoryLike> = mutableListOf()
+
 
     @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val storyTags: MutableList<StoryTag> = mutableListOf()
-        get() = ArrayList(field)
+    private val storyTags: MutableList<StoryTag> = mutableListOf()
+
 
 
 
     /**
      * ================ Public Methods =======================
      */
+
+    fun viewComments() :List<Comment> = ArrayList(comments)
+
+
+    fun viewStoryTags(): List<StoryTag> = ArrayList(storyTags)
+
 
     fun likeStory(user: User):Boolean{
 
@@ -99,11 +105,15 @@ class Story(
 //        return parent.children
 //    }
 
-    fun addReplyComment(commentId: Long, contents: String, user: User) {
+    fun addReplyComment(commentId: Long, contents: String, user: User):Boolean {
 
         val comment = getComment(commentId)
+        if(comment.parent != null){
+            comment.addReplyComment(contents, user)
+            return true
+        }
+        return false
 
-        comment.addReplyComment(contents, user)
     }
 
     fun deleteReplyComment(commentId: Long, user:User){

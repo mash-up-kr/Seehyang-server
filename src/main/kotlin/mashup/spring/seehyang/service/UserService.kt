@@ -91,9 +91,10 @@ class UserService(
     fun withdrawUser(userDto: UserDto): Long{
 
         val user= userDomain.getUser(userDto)
+        val userId = user.id!!
         user.disableUser()
 
-        return user.id!!
+        return userId
     }
 
     /**

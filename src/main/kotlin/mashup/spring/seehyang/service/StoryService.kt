@@ -43,6 +43,7 @@ class StoryService(
     fun getStoryDetail(storyId: Long, userDto: UserDto): StoryDto {
 
         val user = userDomain.getUser(userDto)
+
         val story = storyDomain.getStoryById(storyId, user)
 
         return getStoryDtoWithIsLiked(story, user)
@@ -75,7 +76,7 @@ class StoryService(
         val image = imageRepository.findById(storyCreateRequest.imageId).get()
         val tags = storyCreateRequest.tags
 
-        val savedStory = storyDomain.saveStory(
+        val savedStory = storyDomain.createStory(
             storyCreateRequest = storyCreateRequest,
             user = user,
             perfume = perfume,

@@ -36,16 +36,13 @@ class Comment(
         protected set
 
     @OneToMany(mappedBy = "parent", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val children : MutableList<Comment> = mutableListOf()
-        get() = ArrayList(field)
+    private val children : MutableList<Comment> = mutableListOf()
 
     @OneToMany(mappedBy = "comment", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val commentLikes : MutableList<CommentLike> = mutableListOf()
-        get() = ArrayList(field)
+    private val commentLikes : MutableList<CommentLike> = mutableListOf()
 
     @OneToMany(mappedBy = "comment", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val commentDislike : MutableList<CommentDislike> = mutableListOf()
-        get() = ArrayList(field)
+    private val commentDislike : MutableList<CommentDislike> = mutableListOf()
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -73,6 +70,7 @@ class Comment(
         comment.setParentComment(this)
         children.add(comment)
         numOfReply = children.size
+
         return comment
     }
 

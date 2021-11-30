@@ -36,7 +36,7 @@ class PerfumeDomain(
         val perfume = getPerfume(perfumeId)
 
         return if (user.isLogin()) {
-            val isLiked = perfume.perfumeLikes.any { it.user.id == user.id }
+            val isLiked = perfume.viewLikes().any { it.user.id == user.id }
             PerfumeDto(perfume, isLiked = isLiked)
         } else {
             PerfumeDto(perfume, isLiked = false)

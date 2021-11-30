@@ -12,17 +12,13 @@ data class StoryDto(
     val id: Long = story.id!!,
     val imageUrl: String = story.image.url,
     val perfumeId:Long = story.perfume.id!!,
-    val userId : Long = story.user.id!!,
-    val userNickname: String = story.user.nickname!!,
+    val userId : Long? = story.user.id,
+    val userNickname: String? = story.user.nickname,
     val userProfileImageUrl: String? = story.user.profileImage?.url,
     val commentCount: Int = story.commentCount,
     val likeCount: Int = story.likeCount,
     val createdAt: LocalDateTime = story.createdAt,
-    val tags: List<TagDto> = story.storyTags.map { TagDto(it.tag) },
+    val tags: List<TagDto> = story.viewStoryTags().map { TagDto(it.tag) },
     val isOnlyMe: Boolean = story.isOnlyMe,
     var isLiked: Boolean? = false
-){
-
-
-
-}
+)

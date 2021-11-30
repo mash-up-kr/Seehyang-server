@@ -12,6 +12,7 @@ import mashup.spring.seehyang.domain.enums.Domain
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.community.CommentRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import org.springframework.data.domain.PageRequest
@@ -25,13 +26,16 @@ class StoryDomain(
 ) {
     private val STORY_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_STORY)
     private val COMMENT_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
+    private val CANNOT_REPLY_TO_REPLY = NotFoundException(SeehyangStatus.INVALID_COMMENT_REPLY_REQUEST)
+    private val UNAUTHORIZED_STORY_ACCESS = UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+
 
 
     /**
      * ========= Story 생성 =============
      */
 
-    fun saveStory(storyCreateRequest: StoryCreateRequest, user: User, perfume: Perfume, image: Image): Story {
+    fun createStory(storyCreateRequest: StoryCreateRequest, user: User, perfume: Perfume, image: Image): Story {
 
         val isOnlyMe = storyCreateRequest.isOnlyMe
 
@@ -55,8 +59,7 @@ class StoryDomain(
             ).orElseThrow { STORY_NOT_FOUND_EXCEPTION }
         } else {
             storyRepository.findAccessibleStory(
-                storyId = storyId,
-                userId = user.id!!
+                storyId = storyId
             ).orElseThrow { STORY_NOT_FOUND_EXCEPTION }
         }
 
@@ -152,7 +155,7 @@ class StoryDomain(
 
         val story = getStoryById(storyId, user)
 
-        val parentComment = story.comments.find { it.id == commentId } ?: throw COMMENT_NOT_FOUND_EXCEPTION
+        val parentComment = story.viewComments().find { it.id == commentId } ?: throw COMMENT_NOT_FOUND_EXCEPTION
 
         return commentRepository.findReplyCommentsByParentId(
             parentComment.id!!,
@@ -167,8 +170,14 @@ class StoryDomain(
     }
 
     fun addReplyComment(storyId: Long,commentId:Long, user: User, contents: String){
+
         val story = getStoryById(storyId, user)
-        story.addReplyComment(commentId,contents, user)
+
+        val isReplyAdded = story.addReplyComment(commentId, contents, user)
+
+        if(isReplyAdded.not()){
+            throw CANNOT_REPLY_TO_REPLY
+        }
     }
 
     fun deleteComment(storyId: Long, commentId: Long, user: User){
@@ -193,11 +202,17 @@ class StoryDomain(
         return currentLikeState
     }
 
+
     fun deleteStory(storyId: Long, user: User): Long {
         val story = getStoryById(storyId, user)
+
+        validateDeleteAccess(story,user)
+
         storyRepository.deleteById(story.id!!)
         return story.id!!
     }
+
+
 
 
     /**
@@ -235,7 +250,7 @@ class StoryDomain(
 
 
     private fun validateAccessibility(story: Story, user: User) {
-        val userIdInStory = story.user.id!!
+        val userIdInStory = story.user.id
         val userIdInDto = user.id
 
         if (isAccessible(story.isOnlyMe, userIdInDto, userIdInStory).not()) {
@@ -245,7 +260,7 @@ class StoryDomain(
 
     private fun validateAccessibility(stories: List<Story>, user: User) {
         stories.forEach {
-            val userIdInStory = it.user.id!!
+            val userIdInStory = it.user.id
             val userIdInDto = user.id
 
             if (isAccessible(it.isOnlyMe, userIdInDto, userIdInStory).not()) {
@@ -254,14 +269,24 @@ class StoryDomain(
         }
     }
 
-    private fun isAccessible(isOnlyMe: Boolean, idInDto: Long?, idInStory: Long): Boolean {
-        return (isOnlyMe && idInDto != idInStory).not()
+    private fun isAccessible(isOnlyMe: Boolean, idInDto: Long?, idInStory: Long?): Boolean {
+        return if(idInDto!=null && idInStory!=null) (isOnlyMe && idInDto != idInStory).not() else isOnlyMe.not()
     }
 
     private fun getComment(storyId: Long, commentId: Long, user: User): Comment {
         val story = getStoryById(storyId, user)
-        val comment = commentRepository.findByStoryIdAndCommentId(storyId, commentId) ?: throw COMMENT_NOT_FOUND_EXCEPTION
+        val comment = commentRepository.findByStoryIdAndCommentId(story.id!!, commentId) ?: throw COMMENT_NOT_FOUND_EXCEPTION
         return comment
+    }
+
+    private fun validateDeleteAccess(story: Story, user: User) {
+
+        val userIdInStory = story.user.id?: throw UNAUTHORIZED_STORY_ACCESS
+        val userId = user.id ?: throw UNAUTHORIZED_STORY_ACCESS
+
+        if(userId != userIdInStory){
+            throw UNAUTHORIZED_STORY_ACCESS
+        }
     }
 
 

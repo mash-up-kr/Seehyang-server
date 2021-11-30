@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.domain.entity.user
 
 import mashup.spring.seehyang.controller.api.dto.user.RegisterUserDetailRequest
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.Image
@@ -64,14 +65,15 @@ class User(
         protected set
 
     @OneToMany(mappedBy = "user")
-    val stories: MutableList<Story> = mutableListOf()
+    private val stories: MutableList<Story> = mutableListOf()
+
+    //TODO: 좋아요한 게시물 보기 기능 추가 시 사용
+    @OneToMany(mappedBy = "user")
+    private val storyLikes: MutableSet<StoryLike> = mutableSetOf()
+
 
     @OneToMany(mappedBy = "user")
-    val storyLikes: MutableSet<StoryLike> = mutableSetOf()
-
-
-    @OneToMany(mappedBy = "user")
-    val comments: MutableList<Comment> = mutableListOf()
+    private val comments: MutableList<Comment> = mutableListOf()
 
 
 
@@ -82,6 +84,9 @@ class User(
                 email = "",
                 oAuthType = OAuthType.UNKNOWN
             )
+        fun isLogin(userDto: UserDto):Boolean{
+            return userDto.email.isNullOrBlank().not() && userDto.oAuthType != OAuthType.UNKNOWN && userDto.id != null
+        }
     }
 
     fun addUserInfo(age:Int, gender:Gender, nickname: String) {
@@ -113,7 +118,7 @@ class User(
     }
 
     fun isLogin(): Boolean =
-        this.email.isNullOrBlank().not() || this.oAuthType != OAuthType.UNKNOWN || id != null
+        this.email.isNullOrBlank().not() && this.oAuthType != OAuthType.UNKNOWN && id != null
 
 
     /**
@@ -129,4 +134,6 @@ class User(
     private fun validateAge(age: Int) {
         if(age < 0 || age > 100) throw BadRequestException(SeehyangStatus.INVALID_AGE)
     }
+
+
 }

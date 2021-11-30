@@ -23,7 +23,7 @@ class HomeService(
 ) {
 
 
-    private val TODAY_PERFUME_BASELINE = 5
+    private val TODAY_PERFUME_BASELINE = 2
 
     /**
      * 1. 스토리가 5개 이상 올라온 향수를 찾는다.
