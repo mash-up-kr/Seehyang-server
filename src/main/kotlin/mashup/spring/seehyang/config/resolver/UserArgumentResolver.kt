@@ -1,8 +1,11 @@
 package mashup.spring.seehyang.config.resolver
 
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.InternalServerException
+import mashup.spring.seehyang.repository.user.UserRepository
 import mashup.spring.seehyang.service.UserJwtService
-import mashup.spring.seehyang.service.UserService
 import org.springframework.core.MethodParameter
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.WebDataBinderFactory
@@ -13,11 +16,11 @@ import org.springframework.web.method.support.ModelAndViewContainer
 @Component
 class UserArgumentResolver(
     private val userJwtService: UserJwtService,
-    private val userService: UserService,
+    private val userRepository: UserRepository
 ): HandlerMethodArgumentResolver {
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
-        if(parameter.parameterType == User::class.java) return true
+        if(parameter.parameterType == UserDto::class.java) return true
         return false
     }
 
@@ -27,8 +30,10 @@ class UserArgumentResolver(
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
     ): Any? {
-        val token = webRequest.getHeader("Authorization") ?: return User.empty()
-        if(token.isBlank()) return User.empty()
-        return userService.getUser(userJwtService.decode(token))
+        val token = webRequest.getHeader("Authorization")
+        if(token.isNullOrBlank()) return UserDto(User.empty())
+        val userId = userJwtService.getUserIdByToken(token)
+
+        return UserDto(userRepository.findById(userId).orElseThrow{InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)})
     }
 }
