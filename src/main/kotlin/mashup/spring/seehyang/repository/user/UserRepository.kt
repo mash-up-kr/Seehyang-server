@@ -9,4 +9,12 @@ import java.util.*
 interface UserRepository : JpaRepository<User, Long> {
     fun findByEmail(email: String): Optional<User>
     fun findByNickname(nickname: String): Optional<User>
+
+    /**
+     * exists 성능 이슈 참고
+     * [JPA exists 쿼리 성능 개선]
+     * https://jojoldu.tistory.com/516
+     */
+    fun existsByNickname(nickname: String): Boolean
+    fun existsByEmail(email: String): Boolean
 }

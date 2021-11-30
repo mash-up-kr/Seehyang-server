@@ -1,5 +1,6 @@
 package mashup.spring.seehyang.domain.entity.user
 
+import mashup.spring.seehyang.controller.api.dto.user.RegisterUserDetailRequest
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.Image
@@ -14,8 +15,8 @@ import javax.persistence.*
 
 @Entity
 class User(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+
+    id: Long? = null,
 
     email: String,
 
@@ -23,22 +24,36 @@ class User(
 
 ) : BaseTimeEntity() {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = id
+        get() = if(isActivated) field else null
+
     @Enumerated(EnumType.STRING)
     var gender: Gender? = null
+        get() = if(isActivated) field else null
         protected set
 
     var age: Short? = null
+        get() = if(isActivated) field else null
         protected set
 
     var nickname: String? = null
+        get() = if(isActivated) field else null
         protected set
 
-    var email: String? = email
-        protected set
+    @Column(unique = true)
+    val email: String? = email
+        get() = if(isActivated) field else null
 
     @Enumerated(EnumType.STRING)
     var oAuthType: OAuthType? = oAuthType
+        get() = if(isActivated) field else null
         protected set
+
+    var isActivated: Boolean = true
+        protected set
+
     /**
      * =============== PK ===================
      */
@@ -59,6 +74,8 @@ class User(
     val comments: MutableList<Comment> = mutableListOf()
 
 
+
+
     companion object {
         fun empty(): User =
             User(
@@ -67,13 +84,14 @@ class User(
             )
     }
 
-
-
-    fun isLogin(): Boolean =
-        this.email.isNullOrBlank().not() || this.oAuthType != OAuthType.UNKNOWN
+    fun addUserInfo(age:Int, gender:Gender, nickname: String) {
+        changeAge(age)
+        changeGender(gender)
+        changeNickname(nickname)
+    }
 
     fun changeAge(age: Int){
-        validationAge(age)
+        validateAge(age)
         this.age = age.toShort()
     }
 
@@ -82,20 +100,33 @@ class User(
     }
 
     fun changeNickname(nickname: String){
-        validationNickname(nickname)
+        validateNickname(nickname)
         this.nickname = nickname
     }
 
+    fun disableUser(){
+        this.isActivated = false
+    }
+
+    fun replaceProfileImage(image: Image){
+        this.profileImage = image
+    }
+
+    fun isLogin(): Boolean =
+        this.email.isNullOrBlank().not() || this.oAuthType != OAuthType.UNKNOWN || id != null
 
 
-    //TODO 정규식 왜이래
-    private fun validationNickname(nickname: String) {
-        if(Pattern.matches("", nickname).not()){
+    /**
+     * ================== Private Methods ==================
+     */
+
+    private fun validateNickname(nickname: String) {
+        if(Pattern.matches("^[A-Za-z0-9가-힣]+\$", nickname).not() || nickname.length > 12){
             throw BadRequestException(SeehyangStatus.INVALID_NICKNAME)
         }
     }
 
-    private fun validationAge(age: Int) {
+    private fun validateAge(age: Int) {
         if(age < 0 || age > 100) throw BadRequestException(SeehyangStatus.INVALID_AGE)
     }
 }
