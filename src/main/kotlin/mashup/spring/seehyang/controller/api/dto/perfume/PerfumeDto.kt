@@ -2,6 +2,7 @@ package mashup.spring.seehyang.controller.api.dto.perfume
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import mashup.spring.seehyang.controller.api.dto.addBucketUrl
+import mashup.spring.seehyang.domain.entity.perfume.Gender
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 
 data class PerfumeDto(
@@ -16,6 +17,7 @@ data class PerfumeDto(
     val notes: NotesDto = NotesDto(perfume),
     val accords: MutableList<AccordDto> = mutableListOf(),
     val isLiked: Boolean = false,
+    val gender: Gender = perfume.gender,
     val likeCount: Int = perfume.likeCount
 
 ) {
