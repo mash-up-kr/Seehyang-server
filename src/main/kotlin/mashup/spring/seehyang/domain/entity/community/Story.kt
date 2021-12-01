@@ -95,19 +95,26 @@ class Story(
     fun addComment(contents: String, user: User) {
         val comment = Comment(contents = contents, user = user, story = this)
         comments.add(comment)
-        this.commentCount = comments.size
+        this.commentCount++
     }
 
     fun deleteComment(commentId: Long, user:User): Boolean{
-        val isDeleted = comments.removeIf { it.id == commentId && it.user.id == user.id!! }
-        return isDeleted
+        val comment = comments.find { it.id == commentId && it.user.id == user.id!! }
+        if(comment != null){
+            commentCount -= comment.numOfReply
+            commentCount -= 1
+            comments.remove(comment)
+            return true
+        }
+        return false
     }
 
     fun addReplyComment(commentId: Long, contents: String, user: User):Boolean {
 
         val comment = getComment(commentId)
-        if(comment.parent != null){
+        if(comment.parent == null){
             comment.addReplyComment(contents, user)
+            commentCount++
             return true
         }
         return false
@@ -118,6 +125,7 @@ class Story(
         val comment = getComment(commentId)
 
         comment.deleteReplyComment(commentId)
+        commentCount--
     }
 
 
@@ -152,6 +160,16 @@ class Story(
 
     private fun getComment(commentId : Long) : Comment{
         return comments.firstOrNull{it.id == commentId} ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
+    }
+
+    private fun calculateNumberOfCommentsWithReply():Int{
+        var sumOfReplyCount :Int = 0
+
+        for( comment in comments){
+            sumOfReplyCount += comment.numOfReply
+        }
+
+        return sumOfReplyCount
     }
 
 
