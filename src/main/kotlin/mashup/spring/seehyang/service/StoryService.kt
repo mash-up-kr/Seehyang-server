@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class StoryService(
     val imageRepository: ImageRepository,
-    val perfumeRepository: PerfumeDomain,
+    val perfumeDomain: PerfumeDomain,
     val storyDomain: StoryDomain,
     val tagDomain: TagDomain,
     val userDomain: UserDomain
@@ -76,9 +76,9 @@ class StoryService(
     fun createStory(userDto: UserDto, storyCreateRequest: StoryCreateRequest): StoryDto {
 
         val user = userDomain.getLoginUser(userDto)
-        val perfume = perfumeRepository.getPerfume(storyCreateRequest.perfumeId)
+        val perfume = perfumeDomain.getPerfume(storyCreateRequest.perfumeId)
         val image = imageRepository.findById(storyCreateRequest.imageId).get()
-        val tags = storyCreateRequest.tags.map{it.trim()}
+        val tags = storyCreateRequest.tags.map { it.trim() }
 
         val savedStory = storyDomain.createStory(
             storyCreateRequest = storyCreateRequest,
@@ -86,7 +86,6 @@ class StoryService(
             perfume = perfume,
             image = image
         )
-
         tagDomain.addTagsToStory(savedStory, tags)
 
         return StoryDto(savedStory)
@@ -95,8 +94,8 @@ class StoryService(
     fun likeStory(userDto: UserDto, storyId: Long): Boolean {
 
         val user = userDomain.getLoginUser(userDto)
-
         val story = storyDomain.getStoryById(storyId, user)
+
         val currentLikeState = story.likeStory(user ?: throw UNAUTHORIZED_STORY_ACCESS)
 
         return currentLikeState
@@ -131,7 +130,6 @@ class StoryService(
     fun addComment(storyId: Long, userDto: UserDto, contents: String) {
 
         val user = userDomain.getLoginUser(userDto)
-
         val story = storyDomain.getStoryById(storyId, user)
 
         story.addComment(contents, user ?: throw UNAUTHORIZED_STORY_ACCESS)
@@ -140,17 +138,30 @@ class StoryService(
     fun deleteComment(storyId: Long, commentId: Long, userDto: UserDto) {
 
         val user = userDomain.getLoginUser(userDto)
-
         val story = storyDomain.getStoryById(storyId, user)
 
         story.deleteComment(commentId, user ?: throw UNAUTHORIZED_STORY_ACCESS)
 
     }
 
-    fun deleteReplyComment(storyId: Long, commentId: Long, userDto: UserDto, contents: String) {
+    fun likeComment(storyId: Long, commentId: Long, userDto: UserDto): Boolean {
+
         val user = userDomain.getLoginUser(userDto)
-        val story = storyDomain.getStoryById(storyId, user ?: throw UNAUTHORIZED_STORY_ACCESS)
-        story.deleteReplyComment(commentId, user ?: throw UNAUTHORIZED_STORY_ACCESS)
+        val story = storyDomain.getStoryById(storyId, user)
+
+        val isLiked = story.likeComment(commentId)
+
+        return isLiked
+    }
+
+    fun dislikeComment(storyId: Long, commentId: Long, userDto: UserDto): Boolean {
+
+        val user = userDomain.getLoginUser(userDto)
+        val story = storyDomain.getStoryById(storyId, user)
+
+        val isDisLiked = story.dislikeComment(commentId)
+
+        return isDisLiked
     }
 
 

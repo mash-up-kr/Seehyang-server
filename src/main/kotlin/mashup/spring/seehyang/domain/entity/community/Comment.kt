@@ -103,7 +103,15 @@ class Comment(
             isLiked = true
         }
 
+        val disLikeComment: CommentDislike? = getDislikeComment(user)
+
+        if(disLikeComment != null){
+            commentDislike.remove(disLikeComment)
+        }
+
+
         numOfLike = commentLikes.size
+        numOfDislike = commentDislike.size
 
         return isLiked
     }
@@ -119,7 +127,15 @@ class Comment(
             isDislike = true
         }
 
+        val likeComment: CommentLike? = getLikeComment(user)
+
+        if(likeComment != null){
+            commentLikes.remove(likeComment)
+        }
+
+
         numOfLike = commentLikes.size
+        numOfDislike = commentDislike.size
 
         return isDislike
     }

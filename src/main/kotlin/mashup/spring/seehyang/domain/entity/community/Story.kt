@@ -118,7 +118,22 @@ class Story(
             return true
         }
         return false
+    }
 
+    fun likeComment(commentId: Long):Boolean{
+
+        val comment = getComment(commentId)
+        val isLiked = comment.likeComment(user)
+
+        return isLiked
+    }
+
+    fun dislikeComment(commentId: Long):Boolean{
+
+        val comment = getComment(commentId)
+        val isDiskiked = comment.disLikeComment(user)
+
+        return isDiskiked
     }
 
     fun deleteReplyComment(commentId: Long, user:User){
@@ -147,6 +162,7 @@ class Story(
     private fun findUserLike(user: User) : StoryLike? {
         return storyLikes.find { it.user.id == (user.id ?: throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)) }
     }
+
 
     private fun doLike(user: User){
         storyLikes.add(StoryLike(user = user, story = this))
