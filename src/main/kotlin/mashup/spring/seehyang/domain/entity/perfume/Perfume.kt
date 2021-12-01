@@ -1,8 +1,10 @@
 package mashup.spring.seehyang.domain.entity.perfume
 
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.util.isOnlyEngSpaceNumber
 import mashup.spring.seehyang.util.isOnlyKoreanSpaceNumber
 import javax.persistence.*
@@ -130,11 +132,15 @@ class Perfume(
     }
 
     private fun verifyEnglishPerfumeName(name: String) {
-        isOnlyEngSpaceNumber(name)
+        if(isOnlyEngSpaceNumber(name).not()){
+            throw BadRequestException(SeehyangStatus.INVALID_PERFUME_EDIT_REQUEST)
+        }
     }
 
     private fun verifyKoreanPerfumeName(koreanName: String) {
-        isOnlyKoreanSpaceNumber(koreanName)
+        if(isOnlyKoreanSpaceNumber(koreanName).not()){
+            throw BadRequestException(SeehyangStatus.INVALID_PERFUME_EDIT_REQUEST)
+        }
     }
 
 
