@@ -10,6 +10,5 @@ class TagService(
     val tagDomain: TagDomain
 ) {
 
-    // TODO: NOT NEEDED SERVICE YET.
-    // TODO: Tag Service would be used "search by tag" after
+    // TODO 검색란에 태그로 검색하기 기능 추가
 }

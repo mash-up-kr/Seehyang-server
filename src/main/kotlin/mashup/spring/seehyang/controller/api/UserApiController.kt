@@ -78,5 +78,7 @@ class UserApiController(
         return SeehyangResponse(Pair("id", withdrawnUserId))
     }
 
+    //TODO : MyPage 내 시향지(개수), 좋아요한 시향지(개수) 추가하기
+
 
 }
