@@ -78,7 +78,7 @@ class StoryService(
         val user = userDomain.getLoginUser(userDto)
         val perfume = perfumeRepository.getPerfume(storyCreateRequest.perfumeId)
         val image = imageRepository.findById(storyCreateRequest.imageId).get()
-        val tags = storyCreateRequest.tags
+        val tags = storyCreateRequest.tags.map{it.trim()}
 
         val savedStory = storyDomain.createStory(
             storyCreateRequest = storyCreateRequest,
