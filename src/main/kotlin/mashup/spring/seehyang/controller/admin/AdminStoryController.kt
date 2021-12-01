@@ -7,7 +7,7 @@ import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.user.UserRepository
-import mashup.spring.seehyang.service.AwsS3UploadService
+import mashup.spring.seehyang.service.infra.AwsS3UploadService
 import mashup.spring.seehyang.service.StoryService
 import org.springframework.data.domain.PageRequest
 import org.springframework.ui.Model

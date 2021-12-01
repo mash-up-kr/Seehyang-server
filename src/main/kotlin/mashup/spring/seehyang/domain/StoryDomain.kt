@@ -1,8 +1,6 @@
 package mashup.spring.seehyang.domain
 
-import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
-import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.community.Comment
@@ -10,7 +8,7 @@ import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.enums.Domain
 import mashup.spring.seehyang.domain.entity.user.User
-import mashup.spring.seehyang.exception.BadRequestException
+import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.community.CommentRepository
@@ -28,18 +26,18 @@ class StoryDomain(
     private val COMMENT_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
     private val CANNOT_REPLY_TO_REPLY = NotFoundException(SeehyangStatus.INVALID_COMMENT_REPLY_REQUEST)
     private val UNAUTHORIZED_STORY_ACCESS = UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
-
+    private val INVALID_USER_ENTITY = InternalServerException(SeehyangStatus.INVALID_USER_ENTITY)
 
 
     /**
      * ========= Story 생성 =============
      */
 
-    fun createStory(storyCreateRequest: StoryCreateRequest, user: User, perfume: Perfume, image: Image): Story {
+    fun createStory(storyCreateRequest: StoryCreateRequest, user: User?, perfume: Perfume, image: Image): Story {
 
         val isOnlyMe = storyCreateRequest.isOnlyMe
 
-        val story = Story(isOnlyMe = isOnlyMe, user = user, perfume = perfume, image = image)
+        val story = Story(isOnlyMe = isOnlyMe, user = user ?: throw UNAUTHORIZED_STORY_ACCESS, perfume = perfume, image = image)
 
         return storyRepository.save(story)
 
@@ -50,17 +48,17 @@ class StoryDomain(
      */
 
     // Story ID로 단건 조회
-    fun getStoryById(storyId: Long, user: User): Story {
+    fun getStoryById(storyId: Long, user: User?): Story {
 
-        val story = if (user.isLogin()) {
-            storyRepository.findAccessibleStory(
+        val story = if (user != null) {
+            storyRepository.findAccessibleStoryWithUser(
                 storyId = storyId,
-                userId = user.id!!
-            ).orElseThrow { STORY_NOT_FOUND_EXCEPTION }
+                userId = user.id ?: throw INVALID_USER_ENTITY
+            ) ?: throw STORY_NOT_FOUND_EXCEPTION
         } else {
-            storyRepository.findAccessibleStory(
+            storyRepository.findPublicStory(
                 storyId = storyId
-            ).orElseThrow { STORY_NOT_FOUND_EXCEPTION }
+            ) ?: throw STORY_NOT_FOUND_EXCEPTION
         }
 
         //도메인 계층에서 접근 권한 다시 검증
@@ -70,15 +68,15 @@ class StoryDomain(
     }
 
     // 여러개 Story ID 로 스토리 조회
-    fun getStoriesByIds(storyIds: List<Long>, user: User): List<Story> {
+    fun getStoriesByIds(storyIds: List<Long>, user: User?): List<Story> {
 
-        val stories = if (user.isLogin()) {
-            storyRepository.findAccessibleStories(
+        val stories = if (user != null) {
+            storyRepository.findAccessibleStoriesWithUser(
                 storyIds = storyIds,
-                userId = user.id!!
+                userId = user.id ?: throw INVALID_USER_ENTITY
             )
         } else {
-            storyRepository.findAccessibleStories(storyIds = storyIds)
+            storyRepository.findPublicStories(storyIds = storyIds)
         }
 
         //도메인 계층에서 접근 권한 다시 검증
@@ -96,12 +94,10 @@ class StoryDomain(
         val stories = storyRepository.findPublicStories(PageRequest.of(firstPageNumber, pageSize, sort))
 
         //도메인 계층에서 접근 권한 다시 검증
-        validateAccessibility(stories, User.empty())
+        validateAccessibility(stories, null)
 
         return stories
     }
-
-
 
 
     /**
@@ -110,7 +106,7 @@ class StoryDomain(
 
     fun getStoriesByPerfume(
         perfumeId: Long,
-        user: User,
+        user: User?,
         pageSize: Int,
         sortType: StorySortType = StorySortType.ID,
         cursor: Long?
@@ -138,7 +134,7 @@ class StoryDomain(
     private val COMMENT_PAGE_SIZE: Int = 20
 
 
-    fun getComments(storyId: Long, user: User, cursor: Long?): List<Comment> {
+    fun getComments(storyId: Long, user: User?, cursor: Long?): List<Comment> {
 
         val story = getStoryById(storyId, user)
 
@@ -150,7 +146,7 @@ class StoryDomain(
 
     }
 
-    fun getReplyComments(storyId: Long, commentId: Long, user: User, cursor: Long?): List<Comment> {
+    fun getReplyComments(storyId: Long, commentId: Long, user: User?, cursor: Long?): List<Comment> {
 
 
         val story = getStoryById(storyId, user)
@@ -164,55 +160,21 @@ class StoryDomain(
         )
     }
 
-    fun addComments(storyId: Long, user: User, contents: String){
-        val story = getStoryById(storyId, user)
-        story.addComment(contents, user)
-    }
-
-    fun addReplyComment(storyId: Long,commentId:Long, user: User, contents: String){
-
-        val story = getStoryById(storyId, user)
-
-        val isReplyAdded = story.addReplyComment(commentId, contents, user)
-
-        if(isReplyAdded.not()){
-            throw CANNOT_REPLY_TO_REPLY
-        }
-    }
-
-    fun deleteComment(storyId: Long, commentId: Long, user: User){
-        val story = getStoryById(storyId, user)
-        story.deleteComment(commentId, user)
-    }
-
-    fun deleteReplyComment(storyId: Long, commentId:Long, user: User, contents: String){
-        val story = getStoryById(storyId, user)
-        story.deleteReplyComment(commentId, user)
-    }
-
 
     /**
      * =============== Story 변경 ================
      */
 
 
-    fun likeStory(storyId: Long, user: User): Boolean {
-        val story = getStoryById(storyId, user)
-        val currentLikeState = story.likeStory(user)
-        return currentLikeState
-    }
-
-
-    fun deleteStory(storyId: Long, user: User): Long {
+    fun deleteStory(storyId: Long, user: User?): Long {
         val story = getStoryById(storyId, user)
 
-        validateDeleteAccess(story,user)
+        validateDeleteAccess(story, user ?: throw UNAUTHORIZED_STORY_ACCESS)
 
-        storyRepository.deleteById(story.id!!)
-        return story.id!!
+        storyRepository.deleteById(storyId)
+
+        return storyId
     }
-
-
 
 
     /**
@@ -227,12 +189,11 @@ class StoryDomain(
      */
 
 
-
     // 해당 퍼퓸의 스토리를 가져온다.
     // 스토리 정렬 조건은 sortType 으로 명시
     private fun getSortedStories(
         perfumeId: Long,
-        user: User,
+        user: User?,
         pageSize: Int,
         sortType: StorySortType,
         cursor: Long
@@ -241,27 +202,27 @@ class StoryDomain(
         val firstPageNumber = 0
         val pageable = PageRequest.of(firstPageNumber, pageSize, Sort.by(sortType.fieldName).descending())
 
-        return if (user.isLogin()) {
-            storyRepository.findAccessibleStoriesByPerfumeId(perfumeId, user.id!!, cursor, pageable)
+        return if (user != null) {
+            storyRepository.findAccessibleStoriesWithUserByPerfumeId(perfumeId, user.id ?: throw INVALID_USER_ENTITY, cursor, pageable)
         } else {
-            storyRepository.findAccessibleStoriesByPerfumeId(perfumeId, cursor, pageable)
+            storyRepository.findPublicStoriesByPerfumeId(perfumeId, cursor, pageable)
         }
     }
 
 
-    private fun validateAccessibility(story: Story, user: User) {
+    private fun validateAccessibility(story: Story, user: User?) {
         val userIdInStory = story.user.id
-        val userIdInDto = user.id
+        val userIdInDto = user?.id
 
         if (isAccessible(story.isOnlyMe, userIdInDto, userIdInStory).not()) {
             throw STORY_NOT_FOUND_EXCEPTION
         }
     }
 
-    private fun validateAccessibility(stories: List<Story>, user: User) {
+    private fun validateAccessibility(stories: List<Story>, user: User?) {
         stories.forEach {
             val userIdInStory = it.user.id
-            val userIdInDto = user.id
+            val userIdInDto = user?.id
 
             if (isAccessible(it.isOnlyMe, userIdInDto, userIdInStory).not()) {
                 throw STORY_NOT_FOUND_EXCEPTION
@@ -270,10 +231,10 @@ class StoryDomain(
     }
 
     private fun isAccessible(isOnlyMe: Boolean, idInDto: Long?, idInStory: Long?): Boolean {
-        return if(idInDto!=null && idInStory!=null) (isOnlyMe && idInDto != idInStory).not() else isOnlyMe.not()
+        return if (idInDto != null && idInStory != null) (isOnlyMe && idInDto != idInStory).not() else isOnlyMe.not()
     }
 
-    private fun getComment(storyId: Long, commentId: Long, user: User): Comment {
+    private fun getComment(storyId: Long, commentId: Long, user: User?): Comment {
         val story = getStoryById(storyId, user)
         val comment = commentRepository.findByStoryIdAndCommentId(story.id!!, commentId) ?: throw COMMENT_NOT_FOUND_EXCEPTION
         return comment
@@ -281,10 +242,10 @@ class StoryDomain(
 
     private fun validateDeleteAccess(story: Story, user: User) {
 
-        val userIdInStory = story.user.id?: throw UNAUTHORIZED_STORY_ACCESS
-        val userId = user.id ?: throw UNAUTHORIZED_STORY_ACCESS
+        val userIdInStory = story.user.id ?: throw UNAUTHORIZED_STORY_ACCESS
+        val userId = user.id ?: throw INVALID_USER_ENTITY
 
-        if(userId != userIdInStory){
+        if (userId != userIdInStory) {
             throw UNAUTHORIZED_STORY_ACCESS
         }
     }

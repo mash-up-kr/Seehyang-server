@@ -7,6 +7,7 @@ import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.exception.BadRequestException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.StoryService
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
@@ -18,7 +19,7 @@ class CommentApiController(
 
     @GetMapping("/story/{storyId}/comment")
     fun getComments(
-        @ApiIgnore userDto: UserDto,
+        @ApiIgnore userDto: UserDto?,
         @PathVariable(value = "storyId") storyId: Long,
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
     ): SeehyangResponse<List<CommentDto>>{
@@ -31,8 +32,8 @@ class CommentApiController(
 
 
     @GetMapping("/story/{storyId}/comment/{id}")
-    fun replyComments(
-        @ApiIgnore userDto: UserDto,
+    fun getReplyComments(
+        @ApiIgnore userDto: UserDto?,
         @PathVariable(value = "storyId") storyId: Long,
         @PathVariable(value = "id") parentCommentId: Long,
         @RequestParam(value = "cursor", required = false) cursor: Long? = null,
@@ -47,11 +48,14 @@ class CommentApiController(
 
     @PostMapping("/story/{storyId}/comment")
     fun createComment(
-        @ApiIgnore userDto: UserDto,
+        @ApiIgnore userDto: UserDto?,
         @PathVariable(value = "storyId") storyId: Long,
         @RequestBody requestDto: CommentCreateRequest,
     ): SeehyangResponse<String> {
 
+        if(userDto == null){
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+        }
 
         val commentContents = validateContents(requestDto.contents)
 
@@ -64,11 +68,15 @@ class CommentApiController(
 
     @PostMapping("/story/{storyId}/comment/{commentId}")
     fun createReplyComment(
-        @ApiIgnore userDto: UserDto,
+        @ApiIgnore userDto: UserDto?,
         @PathVariable(value = "storyId") storyId: Long,
         @PathVariable(value = "commentId") commentId: Long,
         @RequestBody requestDto: CommentCreateRequest,
     ): SeehyangResponse<String> {
+
+        if(userDto == null){
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+        }
 
         val commentContents = validateContents(requestDto.contents)
 
@@ -83,9 +91,12 @@ class CommentApiController(
     fun deleteComment(
         @PathVariable(value = "storyId") storyId: Long,
         @PathVariable(value = "commentId") commentId: Long,
-        @ApiIgnore userDto: UserDto
+        @ApiIgnore userDto: UserDto?
     ): SeehyangResponse<CommentDeleteResponse>{
 
+        if(userDto == null){
+            throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
+        }
 
         storyService.deleteComment(storyId,commentId,userDto)
 

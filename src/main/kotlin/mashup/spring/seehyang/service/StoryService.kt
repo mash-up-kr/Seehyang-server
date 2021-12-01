@@ -4,12 +4,15 @@ import mashup.spring.seehyang.controller.api.dto.community.CommentDto
 import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.user.UserDto
+import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.PerfumeDomain
 import mashup.spring.seehyang.domain.StoryDomain
 import mashup.spring.seehyang.domain.TagDomain
 import mashup.spring.seehyang.domain.UserDomain
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.ImageRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,24 +28,21 @@ class StoryService(
 ) {
 
     private val PAGE_SIZE: Int = 10
-
+    private val CANNOT_REPLY_TO_REPLY = NotFoundException(SeehyangStatus.INVALID_COMMENT_REPLY_REQUEST)
+    private val UNAUTHORIZED_STORY_ACCESS = UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
     /**
      * ============= Story 조회 ===============
      */
 
     @Transactional(readOnly = true)
-    fun getAdminStoryDetail(storyId: Long): Story {
+    fun getStoryDetail(storyId: Long, userDto: UserDto?): StoryDto {
 
-        val story = storyDomain.adminGetStoryById(storyId)
+        var user: User? = null
 
-        return story
-    }
-
-    @Transactional(readOnly = true)
-    fun getStoryDetail(storyId: Long, userDto: UserDto): StoryDto {
-
-        val user = userDomain.getUser(userDto)
+        if (userDto != null) {
+            user = userDomain.getLoginUser(userDto)
+        }
 
         val story = storyDomain.getStoryById(storyId, user)
 
@@ -50,9 +50,13 @@ class StoryService(
     }
 
     @Transactional(readOnly = true)
-    fun getStoriesByPerfume(perfumeId: Long, userDto: UserDto, cursor: Long?): List<StoryDto> {
+    fun getStoriesByPerfume(perfumeId: Long, userDto: UserDto?, cursor: Long?): List<StoryDto> {
 
-        val user = userDomain.getUser(userDto)
+        var user: User? = null
+
+        if (userDto != null) {
+            user = userDomain.getLoginUser(userDto)
+        }
 
         val stories = storyDomain.getStoriesByPerfume(
             perfumeId = perfumeId,
@@ -71,7 +75,7 @@ class StoryService(
      */
     fun createStory(userDto: UserDto, storyCreateRequest: StoryCreateRequest): StoryDto {
 
-        val user = userDomain.getUser(userDto)
+        val user = userDomain.getLoginUser(userDto)
         val perfume = perfumeRepository.getPerfume(storyCreateRequest.perfumeId)
         val image = imageRepository.findById(storyCreateRequest.imageId).get()
         val tags = storyCreateRequest.tags
@@ -90,17 +94,19 @@ class StoryService(
 
     fun likeStory(userDto: UserDto, storyId: Long): Boolean {
 
-        val user = userDomain.getUser(userDto)
+        val user = userDomain.getLoginUser(userDto)
 
-        val currentLikeState = storyDomain.likeStory(storyId, user)
+        val story = storyDomain.getStoryById(storyId, user)
+        val currentLikeState = story.likeStory(user ?: throw UNAUTHORIZED_STORY_ACCESS)
 
         return currentLikeState
+
 
     }
 
     fun deleteStory(storyId: Long, userDto: UserDto): Long {
 
-        val user = userDomain.getUser(userDto)
+        val user = userDomain.getLoginUser(userDto)
 
         return storyDomain.deleteStory(storyId, user)
     }
@@ -110,8 +116,13 @@ class StoryService(
      */
 
 
-    fun getComments(storyId: Long, userDto: UserDto, cursor: Long?): List<CommentDto> {
-        val user = userDomain.getUser(userDto)
+    fun getComments(storyId: Long, userDto: UserDto?, cursor: Long?): List<CommentDto> {
+
+        var user: User? = null
+
+        if (userDto != null) {
+            user = userDomain.getLoginUser(userDto)
+        }
 
         return storyDomain.getComments(storyId, user, cursor).map { CommentDto(it) }
 
@@ -119,15 +130,27 @@ class StoryService(
 
     fun addComment(storyId: Long, userDto: UserDto, contents: String) {
 
-        val user = userDomain.getUser(userDto)
-        storyDomain.addComments(storyId, user, contents)
+        val user = userDomain.getLoginUser(userDto)
+
+        val story = storyDomain.getStoryById(storyId, user)
+
+        story.addComment(contents, user ?: throw UNAUTHORIZED_STORY_ACCESS)
     }
 
     fun deleteComment(storyId: Long, commentId: Long, userDto: UserDto) {
 
-        val user = userDomain.getUser(userDto)
-        storyDomain.deleteComment(storyId, commentId, user)
+        val user = userDomain.getLoginUser(userDto)
 
+        val story = storyDomain.getStoryById(storyId, user)
+
+        story.deleteComment(commentId, user ?: throw UNAUTHORIZED_STORY_ACCESS)
+
+    }
+
+    fun deleteReplyComment(storyId: Long, commentId: Long, userDto: UserDto, contents: String) {
+        val user = userDomain.getLoginUser(userDto)
+        val story = storyDomain.getStoryById(storyId, user ?: throw UNAUTHORIZED_STORY_ACCESS)
+        story.deleteReplyComment(commentId, user ?: throw UNAUTHORIZED_STORY_ACCESS)
     }
 
 
@@ -136,9 +159,13 @@ class StoryService(
      */
 
 
-    fun getReplyComments(storyId: Long, commentId: Long, userDto: UserDto, cursor: Long?): List<CommentDto> {
+    fun getReplyComments(storyId: Long, commentId: Long, userDto: UserDto?, cursor: Long?): List<CommentDto> {
 
-        val user = userDomain.getUser(userDto)
+        var user: User? = null
+
+        if (userDto != null) {
+            user = userDomain.getLoginUser(userDto)
+        }
 
         return storyDomain.getReplyComments(storyId, commentId, user, cursor).map { CommentDto(it) }
     }
@@ -146,27 +173,32 @@ class StoryService(
 
     fun addReplyComment(storyId: Long, commentId: Long, userDto: UserDto, contents: String) {
 
-        val user = userDomain.getUser(userDto)
+        val user = userDomain.getLoginUser(userDto)
+        val story = storyDomain.getStoryById(storyId, user)
 
-        storyDomain.addReplyComment(storyId, commentId, user, contents)
+        val isReplyAdded = story.addReplyComment(commentId, contents, user ?: throw UNAUTHORIZED_STORY_ACCESS)
+
+        if (isReplyAdded.not()) {
+            throw CANNOT_REPLY_TO_REPLY
+        }
     }
 
 
     fun deleteReplyComment(storyId: Long, commentId: Long, userDto: UserDto) {
-        val user = userDomain.getUser(userDto)
+        val user = userDomain.getLoginUser(userDto)
         val story = storyDomain.getStoryById(storyId, user)
 
-        story.deleteReplyComment(commentId, user)
+        story.deleteReplyComment(commentId, user ?: throw UNAUTHORIZED_STORY_ACCESS)
     }
 
     /**
      * ============ Private Methods =============
      */
 
-    fun getStoryDtoWithIsLiked(story: Story, user: User): StoryDto {
+    fun getStoryDtoWithIsLiked(story: Story, user: User?): StoryDto {
         val storyDto = StoryDto(story)
 
-        if (user.isLogin()) {
+        if (user != null) {
             storyDto.isLiked = story.isUserLike(user)
         } else {
             storyDto.isLiked = false
@@ -175,9 +207,9 @@ class StoryService(
         return storyDto
     }
 
-    fun getStoryDtosWithIsLiked(stories: List<Story>, user: User): List<StoryDto> {
+    fun getStoryDtosWithIsLiked(stories: List<Story>, user: User?): List<StoryDto> {
 
-        return if (user.isLogin()) {
+        return if (user != null) {
             stories.map {
                 val storyDto = StoryDto(it)
                 storyDto.isLiked = it.isUserLike(user)

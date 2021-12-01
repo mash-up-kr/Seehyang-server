@@ -10,14 +10,13 @@ import mashup.spring.seehyang.domain.entity.community.StoryLike
 import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import mashup.spring.seehyang.exception.BadRequestException
+import mashup.spring.seehyang.util.isValidEmailFormat
 import java.util.regex.Pattern
 import javax.persistence.*
 
 
 @Entity
 class User(
-
-    id: Long? = null,
 
     email: String,
 
@@ -27,7 +26,7 @@ class User(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = id
+    var id: Long? = null
         get() = if(isActivated) field else null
 
     @Enumerated(EnumType.STRING)
@@ -44,7 +43,7 @@ class User(
         protected set
 
     @Column(unique = true)
-    val email: String? = email
+    val email: String? = validateEmailFormat(email)
         get() = if(isActivated) field else null
 
     @Enumerated(EnumType.STRING)
@@ -62,6 +61,7 @@ class User(
     @OneToOne
     @JoinColumn(name = "image_id")
     var profileImage: Image? = null
+        get() = if(isActivated) field else null
         protected set
 
     @OneToMany(mappedBy = "user")
@@ -76,18 +76,9 @@ class User(
     private val comments: MutableList<Comment> = mutableListOf()
 
 
-
-
-    companion object {
-        fun empty(): User =
-            User(
-                email = "",
-                oAuthType = OAuthType.UNKNOWN
-            )
-        fun isLogin(userDto: UserDto):Boolean{
-            return userDto.email.isNullOrBlank().not() && userDto.oAuthType != OAuthType.UNKNOWN && userDto.id != null
-        }
-    }
+    /**
+     * ============= Public Methods =============
+     */
 
     fun addUserInfo(age:Int, gender:Gender, nickname: String) {
         changeAge(age)
@@ -113,26 +104,35 @@ class User(
         this.isActivated = false
     }
 
-    fun replaceProfileImage(image: Image){
+    fun changeProfileImage(image: Image){
         this.profileImage = image
     }
 
-    fun isLogin(): Boolean =
-        this.email.isNullOrBlank().not() && this.oAuthType != OAuthType.UNKNOWN && id != null
+
+
 
 
     /**
      * ================== Private Methods ==================
      */
 
+
+    private fun validateAge(age: Int) {
+        if(age < 0 || age > 100) throw BadRequestException(SeehyangStatus.INVALID_AGE)
+    }
+
+    private fun validateEmailFormat(email: String) :String{
+
+        if(!isValidEmailFormat(email) || email.isEmpty()){
+            throw BadRequestException(SeehyangStatus.INVALID_EMAIL)
+        }
+        return email
+    }
+
     private fun validateNickname(nickname: String) {
         if(Pattern.matches("^[A-Za-z0-9가-힣]+\$", nickname).not() || nickname.length > 12){
             throw BadRequestException(SeehyangStatus.INVALID_NICKNAME)
         }
-    }
-
-    private fun validateAge(age: Int) {
-        if(age < 0 || age > 100) throw BadRequestException(SeehyangStatus.INVALID_AGE)
     }
 
 

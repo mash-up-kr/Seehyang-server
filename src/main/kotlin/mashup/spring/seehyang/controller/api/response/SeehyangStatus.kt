@@ -18,6 +18,7 @@ enum class SeehyangStatus(
     INVALID_COMMENT_REPLY_REQUEST(4010,"Cannot Reply to Reply Comment"),
 
 
+
     UNAUTHORIZED_USER(4010, "Unauthenticated user."),
     UNAUTHORIZED_INVALID_TOKEN(4011, "Invalid token."),
 
@@ -28,7 +29,9 @@ enum class SeehyangStatus(
     NOT_FOUND_STORYLIKE(4044,"The story like does not exist"),
     NOT_FOUND_IMAGE(4045,"The image does not exist."),
 
-    INTERNAL_SERVER_ERROR(5000, "This request cannot be proceed.");
+    INTERNAL_SERVER_ERROR(5000, "This request cannot be proceed."),
+    INVALID_USER_ENTITY(5001, "Invalid User entity for making User Dto"),
+    INVALID_IMAGE_ENTITY(5002, "Invalid Image Entity");
 
 
     companion object {

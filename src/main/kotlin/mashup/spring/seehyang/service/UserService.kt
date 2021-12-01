@@ -6,8 +6,12 @@ import mashup.spring.seehyang.domain.entity.user.OAuthType
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.domain.UserDomain
 import mashup.spring.seehyang.exception.BadRequestException
+import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.ImageRepository
+import mashup.spring.seehyang.service.auth.JwtService
+import mashup.spring.seehyang.service.auth.OAuthService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,15 +20,17 @@ class UserService(
     private val userDomain: UserDomain,
     private val imageRepository: ImageRepository,
     private val userJwtService: JwtService<Long>,
-    private val oAuthService: OAuthService,
+    private val oAuthService: OAuthService, // TODO 도메인으로 변경 필요
 ) {
+
+    private val EMPTY_USER_IS_NOT_ALLOWED = UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
     @Transactional
     fun signUpUser(req: SignUpRequest): SignUpResponse {
 
         val verifiedInfo = verifyOAuthToken(req)
-        validateDuplicatedEmail(verifiedInfo)
-        val user = userDomain.saveUser(User(email = verifiedInfo.email, oAuthType = req.oAuthType))
+
+        val user = userDomain.saveUser(verifiedInfo.email, req.oAuthType)
 
         return SignUpResponse(userJwtService.encode(user.id!!))
     }
@@ -36,30 +42,40 @@ class UserService(
         req: RegisterUserDetailRequest
     ): RegisterUserDetailResponse {
 
-        val user: User = userDomain.getUser(userDto)
+        val user: User? = userDomain.getLoginUser(userDto)
 
-        user.addUserInfo(age = req.age,
-                         gender = req.gender,
-                         nickname = req.nickname)
+        val validUser = validateLoginUser(user)
 
-        return RegisterUserDetailResponse(UserDto(user))
+        validUser.addUserInfo(
+            age = req.age,
+            gender = req.gender,
+            nickname = req.nickname
+        )
+
+        return RegisterUserDetailResponse(UserDto(validUser))
+
+
     }
+
 
     @Transactional
     fun changeProfileImage(
         userDto: UserDto,
         imageId: Long
-    ){
+    ) {
 
-        val user = userDomain.getUser(userDto = userDto)
+        val user = userDomain.getLoginUser(userDto = userDto)
+
+        val validUser = validateLoginUser(user)
+
         val newImage = imageRepository.findById(imageId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_IMAGE) }
-        val oldImage = user.profileImage
+        val oldImage = validUser.profileImage
 
-        if(oldImage != null){
-            imageRepository.deleteById(oldImage.id!!)
+        if (oldImage != null) {
+            imageRepository.deleteById(oldImage.id ?: throw InternalServerException(SeehyangStatus.INVALID_IMAGE_ENTITY))
         }
 
-        user.replaceProfileImage(newImage)
+        validUser.changeProfileImage(newImage)
     }
 
     @Transactional(readOnly = true)
@@ -74,7 +90,10 @@ class UserService(
     @Transactional(readOnly = true)
     fun getUser(userDto: UserDto): UserDto {
 
-        return UserDto(userDomain.getUser(userDto))
+        val user = userDomain.getLoginUser(userDto = userDto)
+        val validUser = validateLoginUser(user)
+
+        return UserDto(validUser)
     }
 
 
@@ -88,11 +107,14 @@ class UserService(
     }
 
     @Transactional
-    fun withdrawUser(userDto: UserDto): Long{
+    fun withdrawUser(userDto: UserDto): Long {
 
-        val user= userDomain.getUser(userDto)
-        val userId = user.id!!
-        user.disableUser()
+        val user = userDomain.getLoginUser(userDto)
+        val validUser = validateLoginUser(user)
+
+        val userId = validUser.id ?: throw InternalServerException(SeehyangStatus.INVALID_USER_ENTITY)
+
+        validUser.disableUser()
 
         return userId
     }
@@ -106,13 +128,12 @@ class UserService(
         else -> throw BadRequestException(SeehyangStatus.NOT_EXIST_OAUTH_TYPE)
     }
 
-    private fun validateDuplicatedEmail(verifiedInfo: OAuthResponse) {
-        val userEmail = verifiedInfo.email
-        val isDuplicated = userDomain.existsByEmail(userEmail)
-
-        if (isDuplicated){
-            throw BadRequestException(SeehyangStatus.ALREADY_EXIST_USER)
+    fun validateLoginUser(user: User?): User {
+        if (user == null) {
+            throw EMPTY_USER_IS_NOT_ALLOWED
         }
+        return user
     }
+
 
 }

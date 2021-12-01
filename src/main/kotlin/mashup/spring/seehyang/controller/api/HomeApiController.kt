@@ -3,10 +3,12 @@ package mashup.spring.seehyang.controller.api
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.home.TodaySeehyangDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.service.HomeService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
+import springfox.documentation.annotations.ApiIgnore
 
 @ApiV1
 class HomeApiController(
@@ -14,7 +16,7 @@ class HomeApiController(
 ) {
 
     @GetMapping("/home/today")
-    fun today() : SeehyangResponse<TodaySeehyangDto> = SeehyangResponse(homeService.todaySeehyang())
+    fun today(@ApiIgnore userDto: UserDto?) : SeehyangResponse<TodaySeehyangDto> = SeehyangResponse(homeService.todaySeehyang())
 
     @GetMapping("/home/hot-story")
     fun hotStory(): SeehyangResponse<List<StoryDto>> = SeehyangResponse(homeService.hotStory())

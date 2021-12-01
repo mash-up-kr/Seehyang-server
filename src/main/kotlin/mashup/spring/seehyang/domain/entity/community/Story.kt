@@ -5,7 +5,9 @@ import mashup.spring.seehyang.domain.entity.BaseTimeEntity
 import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.exception.UnauthorizedException
 import javax.persistence.*
 
 @Entity
@@ -74,6 +76,7 @@ class Story(
     fun likeStory(user: User):Boolean{
 
         val userLike = findUserLike(user)
+
         if(userLike != null){
             cancelLike(userLike)
             return false
@@ -85,7 +88,7 @@ class Story(
     }
 
     fun isUserLike(user: User) : Boolean {
-        return storyLikes.any{ it.user.id == user.id!! }
+        return storyLikes.any{ it.user.id == (user.id?: throw InternalServerException(SeehyangStatus.INVALID_USER_ENTITY))}
     }
 
 
@@ -99,11 +102,6 @@ class Story(
         val isDeleted = comments.removeIf { it.id == commentId && it.user.id == user.id!! }
         return isDeleted
     }
-
-//    fun getReplyComments(parentId: Long): List<Comment>{
-//        val parent = getComment(parentId)
-//        return parent.children
-//    }
 
     fun addReplyComment(commentId: Long, contents: String, user: User):Boolean {
 
@@ -139,7 +137,7 @@ class Story(
      */
 
     private fun findUserLike(user: User) : StoryLike? {
-        return storyLikes.find { it.user.id == user.id!! }
+        return storyLikes.find { it.user.id == (user.id ?: throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)) }
     }
 
     private fun doLike(user: User){

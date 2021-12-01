@@ -2,6 +2,7 @@ package mashup.spring.seehyang.domain
 
 import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
+import mashup.spring.seehyang.domain.entity.user.OAuthType
 import mashup.spring.seehyang.domain.enums.Domain
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.BadRequestException
@@ -20,39 +21,40 @@ class UserDomain(
      * Exceptions
      */
     private val NOT_FOUND_USER_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_USER)
-    private val INVALID_REQUESTED_EMAIL  = BadRequestException(SeehyangStatus.INVALID_EMAIL)
+    private val INVALID_REQUESTED_EMAIL = BadRequestException(SeehyangStatus.INVALID_EMAIL)
     private val MERGE_NOT_ALLOWED_EXCEPTION = InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
     private val EMPTY_USER_IS_NOT_ALLOWED = UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
     /**
      * Role and Responsibility (Public methods)
      */
-    fun getUser(userDto: UserDto): User {
+    fun getLoginUser(userDto: UserDto): User? {
 
-        return if(isNotEmptyUser(userDto)){
-            userRepository.findById(userDto.id!!).orElseThrow {NOT_FOUND_USER_EXCEPTION}
-        }else{
-            User.empty()
+
+        val user = userRepository.findById(userDto.id).orElseThrow { NOT_FOUND_USER_EXCEPTION }
+        val activeUser = isActiveUser(user)
+
+        if (activeUser) {
+            return user
         }
+
+        return null
     }
 
-    private fun isNotEmptyUser(userDto: UserDto): Boolean {
-        return User.isLogin(userDto = userDto)
-    }
 
-    fun getUserByEmail(email: String):User {
+    fun getUserByEmail(email: String): User {
 
-        val validatedEmail = validateEmailFormat(email)
 
-        val foundUser = userRepository.findByEmail(validatedEmail)?: throw NOT_FOUND_USER_EXCEPTION
+        val foundUser = userRepository.findByEmail(email) ?: throw NOT_FOUND_USER_EXCEPTION
+
         validateActiveUser(foundUser)
 
         return foundUser
     }
 
-    fun getUserByNickname(nickname: String): User{
+    fun getUserByNickname(nickname: String): User {
 
-        val foundUser = userRepository.findByNickname(nickname)?: throw NOT_FOUND_USER_EXCEPTION
+        val foundUser = userRepository.findByNickname(nickname) ?: throw NOT_FOUND_USER_EXCEPTION
 
         validateActiveUser(foundUser)
 
@@ -67,19 +69,12 @@ class UserDomain(
     }
 
 
+    fun saveUser(email: String, oAuthType: OAuthType): User {
 
-    fun existsByEmail(email: String): Boolean {
-        val foundUser =  userRepository.findByEmail(email)
+        validateDuplicatedEmail(email)
 
-        return isExistAndActive(foundUser)
-    }
+        val user = User(email = email, oAuthType = oAuthType)
 
-    fun saveUser(user: User): User{
-
-        if(user.id != null){
-            //logger.error("Merge Entity is not allowed")
-            throw MERGE_NOT_ALLOWED_EXCEPTION
-        }
         return userRepository.save(user)
     }
 
@@ -94,20 +89,26 @@ class UserDomain(
 
     private fun validateActiveUser(foundUser: User) {
         val isActive = isActiveUser(foundUser)
-        if(isActive.not()) throw NOT_FOUND_USER_EXCEPTION
+        if (isActive.not()) throw NOT_FOUND_USER_EXCEPTION
     }
-
-
 
 
     private fun isActiveUser(foundUser: User): Boolean {
         return foundUser.isActivated
     }
 
-    private fun validateEmailFormat(email: String) :String{
-        if(isValidEmailFormat(email)){
-            throw INVALID_REQUESTED_EMAIL
+
+    private fun validateDuplicatedEmail(email: String) {
+        val isDuplicated = existsByEmail(email)
+
+        if (isDuplicated) {
+            throw BadRequestException(SeehyangStatus.ALREADY_EXIST_USER)
         }
-        return email
+    }
+
+    fun existsByEmail(email: String): Boolean {
+        val foundUser = userRepository.findByEmail(email)
+
+        return isExistAndActive(foundUser)
     }
 }

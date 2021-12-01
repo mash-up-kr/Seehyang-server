@@ -7,6 +7,7 @@ import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.domain.enums.Domain
 import mashup.spring.seehyang.exception.BadRequestException
+import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.data.domain.PageRequest
@@ -18,6 +19,7 @@ class PerfumeDomain(
 
     private val PERFUME_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME)
     private val INVALID_PERFUME_EDIT_EXCEPTION = BadRequestException(SeehyangStatus.INVALID_PERFUME_EDIT_REQUEST)
+    private val INVALID_USER_ENTITY = InternalServerException(SeehyangStatus.INVALID_USER_ENTITY)
 
     private val SEARCH_BY_NAME_PAGE_SIZE: Int = 10
     private val STEADY_PAGE_SIZE: Int = 6
@@ -32,11 +34,12 @@ class PerfumeDomain(
         return perfumeRepository.findByIds(perfumeIds)
     }
 
-    fun getPerfumeWithUser(perfumeId: Long, user: User): PerfumeDto {
+    fun getPerfumeWithUser(perfumeId: Long, user: User?): PerfumeDto {
+
         val perfume = getPerfume(perfumeId)
 
-        return if (user.isLogin()) {
-            val isLiked = perfume.viewLikes().any { it.user.id == user.id }
+        return if (user != null) {
+            val isLiked = perfume.viewLikes().any { (it.user.id ?: throw INVALID_USER_ENTITY)  == (user.id ?: throw INVALID_USER_ENTITY) }
             PerfumeDto(perfume, isLiked = isLiked)
         } else {
             PerfumeDto(perfume, isLiked = false)

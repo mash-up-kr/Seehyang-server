@@ -3,12 +3,10 @@ package mashup.spring.seehyang.service
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
 import mashup.spring.seehyang.controller.api.dto.home.TodaySeehyangDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
+import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.domain.cache.CacheType
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
-import mashup.spring.seehyang.domain.CacheDomain
-import mashup.spring.seehyang.domain.PerfumeDomain
-import mashup.spring.seehyang.domain.StoryDomain
-import mashup.spring.seehyang.domain.StorySortType
+import mashup.spring.seehyang.domain.*
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.InternalServerException
 import org.springframework.stereotype.Service
@@ -19,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 class HomeService(
     val storyDomain: StoryDomain,
     val perfumeDomain: PerfumeDomain,
+    val userDomain: UserDomain,
     val cacheDomain: CacheDomain
 ) {
 
@@ -32,20 +31,22 @@ class HomeService(
      * */
     fun todaySeehyang(): TodaySeehyangDto {
 
+        val notLoginUser : User? = null
+
         val perfumeIdList = perfumeDomain.getPerfumesWithStoriesMoreThan(TODAY_PERFUME_BASELINE).map { it.id!! }
         val randId = perfumeIdList.random()
-        val stories = storyDomain.getStoriesByPerfume(randId, User.empty(), pageSize = 10, StorySortType.LIKE, cursor = null)
+        val stories = storyDomain.getStoriesByPerfume(randId, notLoginUser, pageSize = 10, StorySortType.LIKE, cursor = null)
 
         return TodaySeehyangDto(stories[0].perfume, stories)
 
     }
 
     fun hotStory(): List<StoryDto> {
-
+        val notLoginUser : User? = null
 
         val storyIds = cacheDomain.getHotStoryList()
 
-        return storyDomain.getStoriesByIds(storyIds, User.empty()).map { StoryDto(it) }
+        return storyDomain.getStoriesByIds(storyIds, notLoginUser).map { StoryDto(it) }
     }
 
     fun weeklyRanking(): List<PerfumeDto> {
