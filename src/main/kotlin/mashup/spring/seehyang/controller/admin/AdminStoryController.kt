@@ -7,6 +7,7 @@ import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.user.UserRepository
+import mashup.spring.seehyang.service.AdminService
 import mashup.spring.seehyang.service.infra.AwsS3UploadService
 import mashup.spring.seehyang.service.StoryService
 import org.springframework.data.domain.PageRequest
@@ -19,11 +20,7 @@ import org.springframework.web.multipart.MultipartFile
 
 @AdminController
 class AdminStoryController(
-    val awsS3UploadService: AwsS3UploadService,
-    val imageRepository: ImageRepository,
-    private val storyService: StoryService,
-    private val storyRepository: StoryRepository,
-    private val userRepository: UserRepository // 테스트를 위한 임시 작업.
+    private val adminService: AdminService
 ) {
 
     @GetMapping("/entity/Story")
@@ -32,8 +29,8 @@ class AdminStoryController(
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ): String {
         val pageRequest = PageRequest.of(page - 1, 30)
-        val items = storyRepository.findAll(pageRequest).content
-        val count = storyRepository.count()
+        val items = adminService.getStories(pageRequest)
+        val count = adminService.getStoryCount()
 
         val maxPage = if (count%30L==0L) count/30 else count/30 + 1
 
@@ -49,8 +46,8 @@ class AdminStoryController(
         @PathVariable id: Long,
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ) : String{
-        val story = storyService.getAdminStoryDetail(id)
-        model.addAttribute("item", StoryDto(story))
+        val story = adminService.getAdminStoryDetail(id)
+        model.addAttribute("item", story)
         model.addAttribute("prevPage", page)
         return "story/storyDetail"
     }
@@ -67,12 +64,9 @@ class AdminStoryController(
         @RequestParam("tags") tags: String,
         @RequestParam("image") image: MultipartFile,
     ): String {
-        val uploadedImage = awsS3UploadService.upload(image, "application/image/post")
-        val image = Image(url = uploadedImage!!)
-        imageRepository.save(image)
-        val user = userRepository.findById(9L).get()
 
-        storyService.createStory(UserDto(user), StoryCreateRequest(perfumeId, image.id!!, tags.split(","), isOnlyMe = false))
+        adminService.saveStory(perfumeId, tags, image)
+
         return "story/upload"
     }
 }

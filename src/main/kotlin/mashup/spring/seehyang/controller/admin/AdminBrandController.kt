@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.controller.admin
 
 import mashup.spring.seehyang.repository.perfume.BrandRepository
+import mashup.spring.seehyang.service.AdminService
 import org.springframework.data.domain.PageRequest
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @AdminController
 class AdminBrandController(
-    val brandRepository: BrandRepository
+    val adminService: AdminService
 ) {
 
     @GetMapping("/entity/Brand")
@@ -18,8 +19,8 @@ class AdminBrandController(
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ): String {
         val pageRequest = PageRequest.of(page - 1, 20)
-        val items = brandRepository.findAll(pageRequest).content
-        val count = brandRepository.count()
+        val items = adminService.getBrands(pageRequest)
+        val count = adminService.getBrandCount()
 
         val maxPage = if (count%20L==0L) count/20 else count/20 + 1
 
@@ -35,7 +36,7 @@ class AdminBrandController(
         @PathVariable id: Long,
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ) : String{
-        val brand = brandRepository.findById(id).get()
+        val brand = adminService.getBrand(id)
         model.addAttribute("item", brand)
         model.addAttribute("prevPage", page)
         return "perfume/brandDetail"

@@ -197,12 +197,6 @@ class StoryDomain(
     }
 
 
-    /**
-     * ============ Methods for Admin =============
-     */
-
-    fun adminGetStoryById(storyId: Long): Story = storyRepository.findById(storyId).orElseThrow { STORY_NOT_FOUND_EXCEPTION }
-
 
     /**
      * ============= Private Methods ==================

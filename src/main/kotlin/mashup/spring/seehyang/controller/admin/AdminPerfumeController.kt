@@ -3,6 +3,7 @@ package mashup.spring.seehyang.controller.admin
 import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
+import mashup.spring.seehyang.service.AdminService
 import mashup.spring.seehyang.service.PerfumeService
 import org.springframework.data.domain.PageRequest
 import org.springframework.ui.Model
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @AdminController
 class AdminPerfumeController(
-    val perfumeService: PerfumeService,
-    val perfumeRepository: PerfumeRepository
+    val adminService: AdminService
 ) {
 
     @GetMapping("/entity/Perfume")
@@ -22,8 +22,8 @@ class AdminPerfumeController(
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ): String {
         val pageRequest = PageRequest.of(page - 1, 30)
-        val items = perfumeRepository.findAll(pageRequest).content
-        val count = perfumeRepository.count()
+        val items = adminService.getPerfumes(pageRequest)
+        val count = adminService.getPerfumeCount()
 
         val maxPage = if (count%30L==0L) count/30 else count/30 + 1
 
@@ -39,7 +39,7 @@ class AdminPerfumeController(
         @PathVariable id: Long,
         @RequestParam(value = "page", defaultValue = "1") page : Int
     ) : String{
-        val perfume = perfumeService.getPerfume(UserDto(User.empty()), id)
+        val perfume = adminService.getPerfume(id)
         model.addAttribute("item", perfume)
         model.addAttribute("prevPage", page)
         return "perfume/perfumeDetail"

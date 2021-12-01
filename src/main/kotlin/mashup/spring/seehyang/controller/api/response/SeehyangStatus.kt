@@ -28,6 +28,7 @@ enum class SeehyangStatus(
     NOT_FOUND_PERFUME(4043,"The perfume does not exist."),
     NOT_FOUND_STORYLIKE(4044,"The story like does not exist"),
     NOT_FOUND_IMAGE(4045,"The image does not exist."),
+    NOT_FOUND_BRNAD(4046,"The brand does not exist."),
 
     INTERNAL_SERVER_ERROR(5000, "This request cannot be proceed."),
     INVALID_USER_ENTITY(5001, "Invalid User entity for making User Dto"),
