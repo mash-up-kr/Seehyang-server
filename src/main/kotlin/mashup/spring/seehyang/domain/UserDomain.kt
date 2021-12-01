@@ -22,9 +22,6 @@ class UserDomain(
      * Exceptions
      */
     private val NOT_FOUND_USER_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_USER)
-    private val INVALID_REQUESTED_EMAIL = BadRequestException(SeehyangStatus.INVALID_EMAIL)
-    private val MERGE_NOT_ALLOWED_EXCEPTION = InternalServerException(SeehyangStatus.INTERNAL_SERVER_ERROR)
-    private val EMPTY_USER_IS_NOT_ALLOWED = UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
     /**
      * Role and Responsibility (Public methods)
@@ -83,22 +80,27 @@ class UserDomain(
      */
 
     private fun isExistAndActive(foundUser: User?): Boolean {
+
         return foundUser != null && foundUser.isActivated
     }
 
 
     private fun validateActiveUser(foundUser: User) {
+
         val isActive = isActiveUser(foundUser)
+
         if (isActive.not()) throw NOT_FOUND_USER_EXCEPTION
     }
 
 
     private fun isActiveUser(foundUser: User): Boolean {
+
         return foundUser.isActivated
     }
 
 
     private fun validateDuplicatedEmail(email: String) {
+
         val isDuplicated = existsByEmail(email)
 
         if (isDuplicated) {
@@ -107,6 +109,7 @@ class UserDomain(
     }
 
     fun existsByEmail(email: String): Boolean {
+
         val foundUser = userRepository.findByEmail(email)
 
         return isExistAndActive(foundUser)

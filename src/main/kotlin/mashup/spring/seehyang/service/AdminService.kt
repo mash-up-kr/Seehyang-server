@@ -48,21 +48,25 @@ class AdminService(
 
         return StoryDto(story)
     }
+
     @Transactional(readOnly = true)
     fun getStories(pageRequest: PageRequest): List<StoryDto>{
         return storyRepository.findAll(pageRequest).map { StoryDto(it) }.toList()
     }
+
     @Transactional(readOnly = true)
     fun getStoryCount(): Long{
+
         return storyRepository.count()
     }
 
     fun saveStory(perfumeId: Long, tags: String, image: MultipartFile,){
+
         val uploadedImage = awsS3UploadService.upload(image, "application/image/post")
         val image = Image(url = uploadedImage!!)
-        imageRepository.save(image)
         val user = userRepository.findById(9L).get()
 
+        imageRepository.save(image)
         storyService.createStory(UserId(user.id!!), StoryCreateRequest(perfumeId, image.id!!, tags.split(","), isOnlyMe = false))
     }
 
@@ -71,15 +75,19 @@ class AdminService(
      */
     @Transactional(readOnly = true)
     fun getBrands(pageRequest: PageRequest): List<BrandDto>{
+
         return brandRepository.findAll(pageRequest).map { BrandDto(it) }.toList()
     }
     @Transactional(readOnly = true)
     fun getBrandCount(): Long{
+
         return brandRepository.count()
     }
     @Transactional(readOnly = true)
     fun getBrand(brandId: Long): BrandDto{
+
         val brand = brandRepository.findById(brandId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_BRNAD) }
+
         return BrandDto(brand)
     }
 
@@ -89,14 +97,17 @@ class AdminService(
      */
     @Transactional(readOnly = true)
     fun getPerfumes(pageRequest: PageRequest): List<PerfumeDto>{
+
         return perfumeRepository.findAll(pageRequest).map { PerfumeDto(it) }.toList()
     }
     @Transactional(readOnly = true)
     fun getPerfume(perfumeId: Long): PerfumeDto{
+
         return perfumeRepository.findById(perfumeId).map { PerfumeDto(it) }.orElseThrow{NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME)}
     }
     @Transactional(readOnly = true)
     fun getPerfumeCount(): Long{
+
         return perfumeRepository.count()
     }
 

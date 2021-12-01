@@ -150,7 +150,6 @@ class StoryDomain(
 
     fun getReplyComments(storyId: Long, commentId: Long, user: User?, cursor: Long?): List<Comment> {
 
-
         val story = getStoryById(storyId, user)
 
         val parentComment = story.viewComments().find { it.id == commentId } ?: throw COMMENT_NOT_FOUND_EXCEPTION
@@ -169,6 +168,7 @@ class StoryDomain(
 
 
     fun deleteStory(storyId: Long, user: User?): Long {
+
         val story = getStoryById(storyId, user)
 
         validateDeleteAccess(story, user ?: throw UNAUTHORIZED_STORY_ACCESS)
@@ -184,6 +184,7 @@ class StoryDomain(
      */
 
     fun getStoryIdByRecentLike(from: LocalDateTime, to: LocalDateTime, size: Int): List<Long> {
+
         val stories = storyLikeRepository.findStoryIdByRecentLike(
             from = from,
             to = to,
@@ -224,6 +225,7 @@ class StoryDomain(
 
 
     private fun validateAccessibility(story: Story, user: User?) {
+
         val userIdInStory = story.user.id
         val userIdInDto = user?.id
 
@@ -233,6 +235,7 @@ class StoryDomain(
     }
 
     private fun validateAccessibility(stories: List<Story>, user: User?) {
+
         stories.forEach {
             val userIdInStory = it.user.id
             val userIdInDto = user?.id
@@ -244,10 +247,12 @@ class StoryDomain(
     }
 
     private fun isAccessible(isOnlyMe: Boolean, idInDto: Long?, idInStory: Long?): Boolean {
+
         return if (idInDto != null && idInStory != null) (isOnlyMe && idInDto != idInStory).not() else isOnlyMe.not()
     }
 
     private fun getComment(storyId: Long, commentId: Long, user: User?): Comment {
+
         val story = getStoryById(storyId, user)
         val comment = commentRepository.findByStoryIdAndCommentId(story.id!!, commentId) ?: throw COMMENT_NOT_FOUND_EXCEPTION
         return comment

@@ -42,8 +42,8 @@ class HomeService(
     }
 
     fun hotStory(): List<StoryDto> {
-        val notLoginUser : User? = null
 
+        val notLoginUser : User? = null
         val storyIds = cacheDomain.getHotStoryList()
 
         return storyDomain.getStoriesByIds(storyIds, notLoginUser).map { StoryDto(it) }

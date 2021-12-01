@@ -12,7 +12,9 @@ class BrandService(
 ) {
     //TODO : Brand 로 향수 검색하기 기능 추가
     fun edit(id: Long, brandEditRequest: BrandEditRequest) {
+
         val brand = brandRepository.findById(id).get()
+
         brand.name = brandEditRequest.name!!
         brand.koreanName = brandEditRequest.koreanName!!
     }

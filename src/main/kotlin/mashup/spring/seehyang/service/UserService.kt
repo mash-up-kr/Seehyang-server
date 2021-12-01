@@ -125,11 +125,13 @@ class UserService(
      */
 
     private fun verifyOAuthToken(req: SignUpRequest) = when (req.oAuthType) {
+
         OAuthType.GOOGLE -> oAuthService.verifyGoogle(req.idToken)
         else -> throw BadRequestException(SeehyangStatus.NOT_EXIST_OAUTH_TYPE)
     }
 
     fun validateLoginUser(user: User?): User {
+
         if (user == null) {
             throw EMPTY_USER_IS_NOT_ALLOWED
         }

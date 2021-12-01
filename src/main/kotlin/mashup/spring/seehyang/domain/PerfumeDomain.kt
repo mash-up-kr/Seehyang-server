@@ -30,11 +30,14 @@ class PerfumeDomain(
 
 
     fun getPerfume(perfumeId: Long): Perfume {
+
         val perfume = perfumeRepository.findById(perfumeId).orElseThrow { PERFUME_NOT_FOUND_EXCEPTION }
+
         return perfume
     }
 
     fun getPerfumes(perfumeIds: List<Long>): List<Perfume>{
+
         return perfumeRepository.findByIds(perfumeIds)
     }
 
@@ -51,14 +54,13 @@ class PerfumeDomain(
     }
 
     fun getPerfumesWithStoriesMoreThan(todayPerfumeBaseline: Int): List<Perfume> {
+
         return perfumeRepository.findByStoryLengthGreaterThan(todayPerfumeBaseline)
     }
 
     fun searchByName(name: String, cursor: Long?): List<Perfume> {
 
         val perfumes: MutableList<Perfume> = mutableListOf()
-
-
 
         if (cursor == null) {
             perfumes.addAll(perfumeRepository.findTop10ByKoreanNameContainsOrderByIdDesc(name))
@@ -69,7 +71,6 @@ class PerfumeDomain(
         }
 
         return perfumes
-
     }
 
     fun editPerfume(perfumeId: Long, request: PerfumeEditRequest){
@@ -111,6 +112,7 @@ class PerfumeDomain(
      */
 
     fun getRecentLikedPerfumes(from: LocalDateTime, to: LocalDateTime, size: Int): List<Long>{
+
         return perfumeLikeRepository
             .findPerfumeIdByRecentLike(
                 from = from,
@@ -120,6 +122,7 @@ class PerfumeDomain(
     }
 
     fun getTopLikedPerfumeIds(size:Int):List<Long>{
+
         return perfumeRepository.findTop10ByOrderByLikeCountDesc().map { it.id!! }
     }
 
