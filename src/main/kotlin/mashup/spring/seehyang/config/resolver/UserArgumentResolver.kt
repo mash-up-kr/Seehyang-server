@@ -1,10 +1,7 @@
 package mashup.spring.seehyang.config.resolver
 
 import mashup.spring.seehyang.controller.api.dto.user.UserDto
-import mashup.spring.seehyang.controller.api.response.SeehyangStatus
-import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.service.auth.UserJwtService
-import mashup.spring.seehyang.service.UserService
 import mashup.spring.seehyang.service.auth.UserDetailsService
 import org.springframework.core.MethodParameter
 import org.springframework.stereotype.Component
@@ -35,9 +32,9 @@ class UserArgumentResolver(
 
         if(token.isNullOrBlank()) return null
 
-        val userId = userJwtService.getUserIdByToken(token)
-        val userDto = userDetailsService.getUserDtoByUserId(userId)
+        val userIdByToken = userJwtService.getUserIdByToken(token)
+        val userIdFromDB = userDetailsService.getUserDtoByUserId(userIdByToken)
 
-        return userDto
+        return userIdFromDB
     }
 }
