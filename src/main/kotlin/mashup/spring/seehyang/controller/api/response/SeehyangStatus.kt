@@ -15,7 +15,7 @@ enum class SeehyangStatus(
     INVALID_EMAIL(4007,"Invalid Email"),
     INVALID_CREATE_REQUEST(4008, "Necessary field is empty "),
     INVALID_PERFUME_EDIT_REQUEST(4009, "At least one filed must not be null"),
-    INVALID_COMMENT_REPLY_REQUEST(4010,"Cannot Reply to Reply Comment"),
+    INVALID_COMMENT_REPLY_REQUEST(40010,"Cannot Reply to Reply Comment"),
 
 
 
