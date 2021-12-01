@@ -33,7 +33,7 @@ class UserArgumentResolver(
         if(token.isNullOrBlank()) return null
 
         val userIdByToken = userJwtService.getUserIdByToken(token)
-        val userIdFromDB = userDetailsService.getUserDtoByUserId(userIdByToken)
+        val userIdFromDB = userDetailsService.getUserIdByUserId(userIdByToken)
 
         return userIdFromDB
     }

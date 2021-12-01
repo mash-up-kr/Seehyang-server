@@ -6,6 +6,7 @@ import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.service.HomeService
+import mashup.spring.seehyang.service.auth.UserId
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import springfox.documentation.annotations.ApiIgnore
@@ -16,7 +17,7 @@ class HomeApiController(
 ) {
 
     @GetMapping("/home/today")
-    fun today(@ApiIgnore userDto: UserDto?) : SeehyangResponse<TodaySeehyangDto> = SeehyangResponse(homeService.todaySeehyang())
+    fun today(@ApiIgnore userId: UserId?) : SeehyangResponse<TodaySeehyangDto> = SeehyangResponse(homeService.todaySeehyang())
 
     @GetMapping("/home/hot-story")
     fun hotStory(): SeehyangResponse<List<StoryDto>> = SeehyangResponse(homeService.hotStory())

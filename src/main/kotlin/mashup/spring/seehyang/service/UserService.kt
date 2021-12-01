@@ -12,6 +12,7 @@ import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.service.auth.JwtService
 import mashup.spring.seehyang.service.auth.OAuthService
+import mashup.spring.seehyang.service.auth.UserId
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -38,11 +39,11 @@ class UserService(
 
     @Transactional
     fun registerUserDetail(
-        userDto: UserDto,
+        userId: UserId,
         req: RegisterUserDetailRequest
     ): RegisterUserDetailResponse {
 
-        val user: User? = userDomain.getLoginUser(userDto)
+        val user: User? = userDomain.getLoginUser(userId)
 
         val validUser = validateLoginUser(user)
 
@@ -60,11 +61,11 @@ class UserService(
 
     @Transactional
     fun changeProfileImage(
-        userDto: UserDto,
+        userId: UserId,
         imageId: Long
     ) {
 
-        val user = userDomain.getLoginUser(userDto = userDto)
+        val user = userDomain.getLoginUser(userId = userId)
 
         val validUser = validateLoginUser(user)
 
@@ -88,9 +89,9 @@ class UserService(
 
 
     @Transactional(readOnly = true)
-    fun getUser(userDto: UserDto): UserDto {
+    fun getUser(userId: UserId): UserDto {
 
-        val user = userDomain.getLoginUser(userDto = userDto)
+        val user = userDomain.getLoginUser(userId = userId)
         val validUser = validateLoginUser(user)
 
         return UserDto(validUser)
@@ -107,9 +108,9 @@ class UserService(
     }
 
     @Transactional
-    fun withdrawUser(userDto: UserDto): Long {
+    fun withdrawUser(userId: UserId): Long {
 
-        val user = userDomain.getLoginUser(userDto)
+        val user = userDomain.getLoginUser(userId)
         val validUser = validateLoginUser(user)
 
         val userId = validUser.id ?: throw InternalServerException(SeehyangStatus.INVALID_USER_ENTITY)

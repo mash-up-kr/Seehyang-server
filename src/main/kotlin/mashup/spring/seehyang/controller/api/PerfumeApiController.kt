@@ -8,6 +8,7 @@ import mashup.spring.seehyang.service.PerfumeService
 import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.exception.UnauthorizedException
+import mashup.spring.seehyang.service.auth.UserId
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
@@ -19,10 +20,10 @@ class PerfumeApiController(
     @GetMapping("/perfume/{perfumeId}")
     fun getPerfumeDetail(
         @PathVariable perfumeId: Long,
-        @ApiIgnore userDto: UserDto?
+        @ApiIgnore userId: UserId?
     ) : SeehyangResponse<PerfumeDto> {
 
-        val perfume = perfumeService.getPerfume(perfumeId,userDto)
+        val perfume = perfumeService.getPerfume(perfumeId,userId)
 
         return SeehyangResponse(perfume)
     }
@@ -41,14 +42,14 @@ class PerfumeApiController(
     @PostMapping("/perfume/{perfumeId}/like")
     fun likePerfume(
         @PathVariable perfumeId: Long,
-        @ApiIgnore userDto: UserDto?
+        @ApiIgnore userId: UserId?
     ): SeehyangResponse<Map<String, Boolean>> {
 
-        if(userDto == null){
+        if(userId == null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
 
-        val isLiked = perfumeService.likePerfume(userDto, perfumeId)
+        val isLiked = perfumeService.likePerfume(userId, perfumeId)
 
         return SeehyangResponse(mutableMapOf(Pair("isLiked", isLiked)))
     }

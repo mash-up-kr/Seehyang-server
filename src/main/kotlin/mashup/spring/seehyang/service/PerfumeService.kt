@@ -9,6 +9,7 @@ import mashup.spring.seehyang.domain.PerfumeDomain
 import mashup.spring.seehyang.domain.UserDomain
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.UnauthorizedException
+import mashup.spring.seehyang.service.auth.UserId
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -22,11 +23,11 @@ class PerfumeService(
 
 
     @Transactional(readOnly = true)
-    fun getPerfume(perfumeId: Long, userDto: UserDto?): PerfumeDto {
+    fun getPerfume(perfumeId: Long, userId: UserId?): PerfumeDto {
 
         var user: User? = null
-        if (userDto != null) {
-            user = userDomain.getLoginUser(userDto)
+        if (userId != null) {
+            user = userDomain.getLoginUser(userId)
         }
 
         return perfumeDomain.getPerfumeWithUser(perfumeId, user)
@@ -44,9 +45,9 @@ class PerfumeService(
         perfumeDomain.editPerfume(perfumeId, request)
     }
 
-    fun likePerfume(userDto: UserDto, perfumeId: Long): Boolean {
+    fun likePerfume(userId: UserId, perfumeId: Long): Boolean {
 
-        val user = userDomain.getLoginUser(userDto)
+        val user = userDomain.getLoginUser(userId)
 
         return perfumeDomain.likePerfume(perfumeId, user ?: throw UNAUTHORIZED_PERFUME_ACCESS)
 

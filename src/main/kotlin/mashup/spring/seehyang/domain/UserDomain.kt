@@ -10,6 +10,7 @@ import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.user.UserRepository
+import mashup.spring.seehyang.service.auth.UserId
 import mashup.spring.seehyang.util.isValidEmailFormat
 
 
@@ -28,10 +29,9 @@ class UserDomain(
     /**
      * Role and Responsibility (Public methods)
      */
-    fun getLoginUser(userDto: UserDto): User? {
+    fun getLoginUser(userId: UserId): User? {
 
-
-        val user = userRepository.findById(userDto.id).orElseThrow { NOT_FOUND_USER_EXCEPTION }
+        val user = userRepository.findById(userId.id).orElseThrow { NOT_FOUND_USER_EXCEPTION }
         val activeUser = isActiveUser(user)
 
         if (activeUser) {

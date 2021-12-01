@@ -8,6 +8,7 @@ import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.StoryService
+import mashup.spring.seehyang.service.auth.UserId
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
@@ -29,10 +30,10 @@ class StoryApiController(
     @GetMapping("/story/{storyId}")
     fun getStory(
         @PathVariable("storyId") storyId : Long,
-        @ApiIgnore userDto: UserDto?,
+        @ApiIgnore userId: UserId?,
     ): SeehyangResponse<StoryDto> {
 
-        val storyDto = storyService.getStoryDetail(storyId, userDto)
+        val storyDto = storyService.getStoryDetail(storyId, userId)
 
         return SeehyangResponse(storyDto)
     }
@@ -43,12 +44,12 @@ class StoryApiController(
      */
     @GetMapping("/perfume/{perfumeId}/story")
     fun getStoryByPerfume(
-        @ApiIgnore userDto: UserDto?,
+        @ApiIgnore userId: UserId?,
         @PathVariable(value = "perfumeId") perfumeId: Long,
         @RequestParam(value = "cursor", required = false)cursor: Long? = null
     ): SeehyangResponse<List<StoryDto>>{
 
-        val storyListDto = storyService.getStoriesByPerfume(perfumeId, userDto, cursor)
+        val storyListDto = storyService.getStoriesByPerfume(perfumeId, userId, cursor)
 
         return SeehyangResponse(storyListDto)
     }
@@ -56,14 +57,14 @@ class StoryApiController(
     @PostMapping("/story")
     fun createStory(
         @RequestBody createRequest: StoryCreateRequest,
-        @ApiIgnore userDto: UserDto?,
+        @ApiIgnore userId: UserId?,
     ) : SeehyangResponse<StoryCreateResponse> {
 
-        if(userDto == null){
+        if(userId == null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
 
-        val storyDto = storyService.createStory(userDto, createRequest)
+        val storyDto = storyService.createStory(userId, createRequest)
 
         return SeehyangResponse(StoryCreateResponse(storyDto))
     }
@@ -72,30 +73,30 @@ class StoryApiController(
 
     @PostMapping("/story/{storyId}/like")
     fun likeStory(
-        @ApiIgnore userDto: UserDto?,
+        @ApiIgnore userId: UserId?,
         @PathVariable("storyId") storyId : Long,
     ): SeehyangResponse<Map<String, Boolean>> {
 
-        if(userDto == null){
+        if(userId == null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
 
-        val isLike = storyService.likeStory(userDto, storyId)
+        val isLike = storyService.likeStory(userId, storyId)
 
         return SeehyangResponse(mutableMapOf(Pair("isLike", isLike)))
     }
 
     @DeleteMapping("/story/{id}")
     fun deleteStory(
-        @ApiIgnore userDto: UserDto?,
+        @ApiIgnore userId: UserId?,
         @PathVariable id: Long
     ): SeehyangResponse<Map<String, Long>>{
 
-        if(userDto == null){
+        if(userId == null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
 
-        val deletedId = storyService.deleteStory(id,userDto)
+        val deletedId = storyService.deleteStory(id,userId)
 
         return SeehyangResponse(mutableMapOf(Pair("id", deletedId)))
     }

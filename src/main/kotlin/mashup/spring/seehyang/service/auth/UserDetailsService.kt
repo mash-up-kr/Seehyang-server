@@ -13,7 +13,7 @@ class UserDetailsService (
     val userRepository: UserRepository
 ){
 
-    fun getUserDtoByUserId(userId: Long): UserId?{
+    fun getUserIdByUserId(userId: Long): UserId?{
 
         val user = userRepository.findById(userId)
 

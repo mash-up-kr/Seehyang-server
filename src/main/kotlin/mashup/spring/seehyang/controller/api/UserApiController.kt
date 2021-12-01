@@ -5,6 +5,7 @@ import mashup.spring.seehyang.controller.api.response.SeehyangResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.service.UserService
+import mashup.spring.seehyang.service.auth.UserId
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
@@ -14,14 +15,14 @@ class UserApiController(
 ) {
     @GetMapping("/user")
     fun getUser(
-        @ApiIgnore userDto: UserDto?,
+        @ApiIgnore userId: UserId?,
     ): SeehyangResponse<UserDto> {
 
-        if(userDto ==null){
+        if(userId ==null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
 
-        val user = userService.getUser(userDto)
+        val user = userService.getUser(userId)
 
         return SeehyangResponse(user)
     }
@@ -40,40 +41,40 @@ class UserApiController(
 
     @PostMapping("/user/profile")
     fun changeUserProfileImage(
-        @ApiIgnore userDto: UserDto?,
+        @ApiIgnore userId: UserId?,
         @RequestParam(value = "imageId") imageId: Long
     ): SeehyangResponse<Pair<String, Long>> {
 
-        if(userDto ==null){
+        if(userId ==null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
-        userService.changeProfileImage(userDto, imageId)
+        userService.changeProfileImage(userId, imageId)
 
         return SeehyangResponse(Pair("imageId", imageId))
     }
 
     @PutMapping("/user")
     fun registerUserDetailInfo(
-        @ApiIgnore userDto: UserDto?,
+        @ApiIgnore userId: UserId?,
         @RequestBody registerUserDetailRequest: RegisterUserDetailRequest,
     ): SeehyangResponse<RegisterUserDetailResponse> {
 
-        if(userDto ==null){
+        if(userId ==null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
 
-        return SeehyangResponse(userService.registerUserDetail(userDto, registerUserDetailRequest))
+        return SeehyangResponse(userService.registerUserDetail(userId, registerUserDetailRequest))
     }
 
     @DeleteMapping("/user")
     fun withdrawUser(
-        @ApiIgnore userDto: UserDto?
+        @ApiIgnore userId: UserId?,
     ): SeehyangResponse<Pair<String, Long>> {
 
-        if(userDto ==null){
+        if(userId ==null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
-        val withdrawnUserId = userService.withdrawUser(userDto)
+        val withdrawnUserId = userService.withdrawUser(userId)
 
         return SeehyangResponse(Pair("id", withdrawnUserId))
     }

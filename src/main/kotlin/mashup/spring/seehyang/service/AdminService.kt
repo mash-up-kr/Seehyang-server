@@ -17,6 +17,7 @@ import mashup.spring.seehyang.repository.community.StoryRepository
 import mashup.spring.seehyang.repository.perfume.BrandRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import mashup.spring.seehyang.repository.user.UserRepository
+import mashup.spring.seehyang.service.auth.UserId
 import mashup.spring.seehyang.service.infra.AwsS3UploadService
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -62,7 +63,7 @@ class AdminService(
         imageRepository.save(image)
         val user = userRepository.findById(9L).get()
 
-        storyService.createStory(UserDto(user), StoryCreateRequest(perfumeId, image.id!!, tags.split(","), isOnlyMe = false))
+        storyService.createStory(UserId(user.id!!), StoryCreateRequest(perfumeId, image.id!!, tags.split(","), isOnlyMe = false))
     }
 
     /**
