@@ -1,23 +1,19 @@
 package mashup.spring.seehyang.domain.batch
 
-import mashup.spring.seehyang.domain.cache.CacheRepository
+import mashup.spring.seehyang.domain.CacheDomain
+import mashup.spring.seehyang.domain.PerfumeDomain
+import mashup.spring.seehyang.domain.StoryDomain
 import mashup.spring.seehyang.domain.cache.CacheType
-import mashup.spring.seehyang.repository.community.StoryLikeRepository
-import mashup.spring.seehyang.repository.community.StoryRepository
-import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
-import mashup.spring.seehyang.repository.perfume.PerfumeRepository
-import org.springframework.data.domain.Pageable
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
 class Scheduler(
-    val perfumeLikeRepository: PerfumeLikeRepository,
-    val storyLikeRepository: StoryLikeRepository,
-    val storyRepository: StoryRepository,
-    val perfumeRepository: PerfumeRepository,
-    val cacheRepository: CacheRepository
+
+    val perfumeDomain: PerfumeDomain,
+    val storyDomain: StoryDomain,
+    val cacheDomain: CacheDomain
 ) {
 
     @Scheduled(cron = "0 0 0/1 * *")
@@ -36,23 +32,23 @@ class Scheduler(
 
         val HOT_STORY_SIZE = CacheType.HOT_STORY.maximumSize!!.toInt()
 
-        val hotStoryIds = storyLikeRepository
-            .findStoryIdByRecentLike(
+        val hotStoryIds = storyDomain
+            .getStoryIdByRecentLike(
                 from = from,
                 to = to,
-                Pageable.ofSize(HOT_STORY_SIZE)
+                HOT_STORY_SIZE
             )
 
         if(hotStoryIds.size < HOT_STORY_SIZE){
 
-            val defaultStories = storyRepository.findTop10ByOrderByLikeCountDesc().map { it.id!! }.toList()
+            val defaultStories = storyDomain.getTopTenOrderByLike().map { it.id!! }.toList()
             for (i in defaultStories.indices) {
-                cacheRepository.save(CacheType.HOT_STORY, (i+1).toString(), defaultStories[i])
+                cacheDomain.saveEntity(CacheType.HOT_STORY, (i+1).toString(), defaultStories[i])
             }
 
         }else {
             for (i in 0 until HOT_STORY_SIZE) {
-                cacheRepository.save(CacheType.HOT_STORY, (i+1).toString(), hotStoryIds[i])
+                cacheDomain.saveEntity(CacheType.HOT_STORY, (i+1).toString(), hotStoryIds[i])
             }
         }
     }
@@ -63,21 +59,20 @@ class Scheduler(
 
         val WEEKLY_RANKING_SIZE = CacheType.WEEKLY_RANKING.maximumSize!!.toInt()
 
-        val perfumeIds = perfumeLikeRepository
-            .findPerfumeIdByRecentLike(
+        val perfumeIds = perfumeDomain.getRecentLikedPerfumes(
                 from = from,
                 to = to,
-                Pageable.ofSize(WEEKLY_RANKING_SIZE)
+                size = WEEKLY_RANKING_SIZE
             )
 
         if(perfumeIds.size < WEEKLY_RANKING_SIZE){
-            val defaultPerfumes = perfumeRepository.findTop10ByOrderByLikeCountDesc().map { it.id!! }
+            val defaultPerfumes = perfumeDomain.getTopLikedPerfumeIds(size = 10)
             for (i in defaultPerfumes.indices) {
-                cacheRepository.save(CacheType.WEEKLY_RANKING, (i+1).toString(), defaultPerfumes[i])
+                cacheDomain.saveEntity(CacheType.WEEKLY_RANKING, (i+1).toString(), defaultPerfumes[i])
             }
         }else {
             for (i in 0 until WEEKLY_RANKING_SIZE) {
-                cacheRepository.save(CacheType.WEEKLY_RANKING, (i+1).toString(), perfumeIds[i])
+                cacheDomain.saveEntity(CacheType.WEEKLY_RANKING, (i+1).toString(), perfumeIds[i])
             }
         }
     }

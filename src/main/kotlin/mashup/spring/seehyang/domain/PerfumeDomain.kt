@@ -9,12 +9,16 @@ import mashup.spring.seehyang.domain.enums.Domain
 import mashup.spring.seehyang.exception.BadRequestException
 import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.exception.NotFoundException
+import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import java.time.LocalDateTime
 
 @Domain
 class PerfumeDomain(
-    private val perfumeRepository: PerfumeRepository
+    val perfumeRepository: PerfumeRepository,
+    val perfumeLikeRepository: PerfumeLikeRepository
 ) {
 
     private val PERFUME_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME)
@@ -90,8 +94,6 @@ class PerfumeDomain(
 
     fun getSteadyPerfumes(idCursor: Long?, likeCursor: Int?): List<Perfume> {
 
-
-
         return if(idCursor == null && likeCursor == null) {
             perfumeRepository.findTop6ByOrderByLikeCountDescIdDesc()
         }else if(idCursor == null && likeCursor != null){
@@ -102,6 +104,23 @@ class PerfumeDomain(
         else {
             perfumeRepository.findSteadyPerfume(idCursor!!, likeCursor!!, PageRequest.ofSize(STEADY_PAGE_SIZE))
         }
+    }
+
+    /**
+     * ============= Caching 관련 ===============
+     */
+
+    fun getRecentLikedPerfumes(from: LocalDateTime, to: LocalDateTime, size: Int): List<Long>{
+        return perfumeLikeRepository
+            .findPerfumeIdByRecentLike(
+                from = from,
+                to = to,
+                Pageable.ofSize(size)
+            )
+    }
+
+    fun getTopLikedPerfumeIds(size:Int):List<Long>{
+        return perfumeRepository.findTop10ByOrderByLikeCountDesc().map { it.id!! }
     }
 
 

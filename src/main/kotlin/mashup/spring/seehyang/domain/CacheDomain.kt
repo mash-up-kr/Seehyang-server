@@ -44,5 +44,9 @@ class CacheDomain(
         return perfumeIds
     }
 
+    fun saveEntity(type:CacheType, key: String, entityId: Long){
+        cacheRepository.save(type, key, entityId)
+    }
+
 
 }

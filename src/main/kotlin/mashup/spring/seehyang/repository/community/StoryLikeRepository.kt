@@ -28,12 +28,12 @@ interface StoryLikeRepository : JpaRepository<StoryLike, Long> {
                    "where st.user = :user and st.story = :story")
     fun findByUserAndStory(@Param("user") user: User, @Param("story") story: Story) : Optional<StoryLike>
 
-    @Query("select s.id " +
+    @Query("select s " +
                    "from StoryLike l join l.story s " +
-                   "where l.createdAt >:from and l.createdAt <:to " +
+                   "where l.createdAt >:from and l.createdAt <:to and s.isOnlyMe = false " +
                    "group by s " +
                    "order by count(l) desc")
     fun findStoryIdByRecentLike(@Param("from")from: LocalDateTime,
-                                @Param("to") to: LocalDateTime, pageable: Pageable): List<Long>
+                                @Param("to") to: LocalDateTime, pageable: Pageable): List<Story>
 
 }

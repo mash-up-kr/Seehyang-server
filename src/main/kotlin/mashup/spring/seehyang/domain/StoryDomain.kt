@@ -12,14 +12,17 @@ import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.exception.NotFoundException
 import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.community.CommentRepository
+import mashup.spring.seehyang.repository.community.StoryLikeRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import java.time.LocalDateTime
 
 @Domain
 class StoryDomain(
     private val storyRepository: StoryRepository,
+    private val storyLikeRepository: StoryLikeRepository,
     private val commentRepository: CommentRepository
 ) {
     private val STORY_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_STORY)
@@ -178,7 +181,24 @@ class StoryDomain(
 
 
     /**
-     * =============== Methods for Admin =============
+     * ============= Caching =================
+     */
+
+    fun getStoryIdByRecentLike(from: LocalDateTime, to: LocalDateTime, size: Int): List<Long> {
+        val stories = storyLikeRepository.findStoryIdByRecentLike(
+            from = from,
+            to = to,
+            PageRequest.ofSize(size)
+        )
+
+        validateAccessibility(stories, null)
+
+        return stories.map { it.id?:throw InternalServerException(SeehyangStatus.INVALID_STORY_ENTITY) }
+    }
+
+
+    /**
+     * ============ Methods for Admin =============
      */
 
     fun adminGetStoryById(storyId: Long): Story = storyRepository.findById(storyId).orElseThrow { STORY_NOT_FOUND_EXCEPTION }
