@@ -1,11 +1,11 @@
-package mashup.spring.seehyang.service
+package mashup.spring.seehyang.service.auth
 
 import mashup.spring.seehyang.controller.api.dto.user.OAuthResponse
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.exception.UnauthorizedException
+import mashup.spring.seehyang.service.infra.RestTemplateService
 import mashup.spring.seehyang.util.UriGenerator
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service

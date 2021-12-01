@@ -1,4 +1,4 @@
-package mashup.spring.seehyang.service
+package mashup.spring.seehyang.service.auth
 
 import io.jsonwebtoken.Header
 import io.jsonwebtoken.Jwts
@@ -17,7 +17,7 @@ class UserJwtService(
     private val jwtSecretKey: String? = null,
     @Value("\${jwt.token-type}")
     private val jwtTokenType: String? = null,
-): JwtService<Long>{
+): JwtService<Long> {
 
     override fun encode(target: Long): String {
         return Jwts.builder()

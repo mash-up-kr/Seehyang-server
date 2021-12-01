@@ -1,4 +1,4 @@
-package mashup.spring.seehyang.service
+package mashup.spring.seehyang.service.infra
 
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders

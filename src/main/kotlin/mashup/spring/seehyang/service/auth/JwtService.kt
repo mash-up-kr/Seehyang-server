@@ -1,4 +1,4 @@
-package mashup.spring.seehyang.service
+package mashup.spring.seehyang.service.auth
 
 interface JwtService<T> {
     companion object {

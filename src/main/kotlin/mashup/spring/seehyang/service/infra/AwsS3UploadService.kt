@@ -1,4 +1,4 @@
-package mashup.spring.seehyang.service
+package mashup.spring.seehyang.service.infra
 
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
