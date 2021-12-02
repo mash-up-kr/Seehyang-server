@@ -18,13 +18,15 @@ import mashup.spring.seehyang.util.isValidEmailFormat
 class UserDomain(
     private val userRepository: UserRepository
 ) {
+
     /**
-     * Exceptions
+     * =========== Exceptions ==================
      */
     private val NOT_FOUND_USER_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_USER)
 
+
     /**
-     * Role and Responsibility (Public methods)
+     * =========== Responsibilities =============
      */
     fun getLoginUser(userId: UserId): User? {
 
@@ -108,7 +110,8 @@ class UserDomain(
         }
     }
 
-    fun existsByEmail(email: String): Boolean {
+
+    private fun existsByEmail(email: String): Boolean {
 
         val foundUser = userRepository.findByEmail(email)
 

@@ -55,7 +55,7 @@ class User(
         protected set
 
     /**
-     * =============== PK ===================
+     * =============== FK ===================
      */
 
     @OneToOne
@@ -77,7 +77,7 @@ class User(
 
 
     /**
-     * ============= Public Methods =============
+     * =========== Responsibilities =============
      */
 
     fun addUserInfo(age:Int, gender:Gender, nickname: String) {

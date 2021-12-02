@@ -21,13 +21,18 @@ class PerfumeDomain(
     val perfumeLikeRepository: PerfumeLikeRepository
 ) {
 
+    /**
+     * =========== Exceptions ==================
+     */
     private val PERFUME_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_PERFUME)
     private val INVALID_PERFUME_EDIT_EXCEPTION = BadRequestException(SeehyangStatus.INVALID_PERFUME_EDIT_REQUEST)
     private val INVALID_USER_ENTITY = InternalServerException(SeehyangStatus.INVALID_USER_ENTITY)
 
+    /**
+     * =========== Responsibilities =============
+     */
     private val SEARCH_BY_NAME_PAGE_SIZE: Int = 10
     private val STEADY_PAGE_SIZE: Int = 6
-
 
     fun getPerfume(perfumeId: Long): Perfume {
 
@@ -108,7 +113,7 @@ class PerfumeDomain(
     }
 
     /**
-     * ============= Caching 관련 ===============
+     * ============= Caching  ===============
      */
 
     fun getRecentLikedPerfumes(from: LocalDateTime, to: LocalDateTime, size: Int): List<Long>{
