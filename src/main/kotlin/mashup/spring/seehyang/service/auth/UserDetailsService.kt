@@ -1,6 +1,5 @@
 package mashup.spring.seehyang.service.auth
 
-import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.repository.user.UserRepository

@@ -1,8 +1,8 @@
 package mashup.spring.seehyang.config.resolver
 
-import mashup.spring.seehyang.controller.api.dto.user.UserDto
-import mashup.spring.seehyang.service.auth.UserJwtService
 import mashup.spring.seehyang.service.auth.UserDetailsService
+import mashup.spring.seehyang.service.auth.UserId
+import mashup.spring.seehyang.service.auth.UserJwtService
 import org.springframework.core.MethodParameter
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.WebDataBinderFactory
@@ -17,7 +17,7 @@ class UserArgumentResolver(
 ): HandlerMethodArgumentResolver {
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
-        if(parameter.parameterType == UserDto::class.java) return true
+        if(parameter.parameterType == UserId::class.java) return true
         return false
     }
 
