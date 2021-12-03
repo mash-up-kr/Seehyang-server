@@ -23,7 +23,7 @@ class Story(
     val id: Long? = id
 
 
-    //TODO: isOnlyMe 관련 로직 추가 필요
+    //TODO: isOnlyMe 관련 로직 추가 필요 -> User처럼 Getter를 막아버릴지?
     var isOnlyMe: Boolean = isOnlyMe
         protected set
 
@@ -48,10 +48,6 @@ class Story(
     private val comments : MutableList<Comment> = mutableListOf()
 
 
-    /**
-     * ========== One to Many ==========
-     * Like, Comment, Tagstory
-     */
 
     @OneToMany(mappedBy = "story", cascade = [CascadeType.ALL], orphanRemoval = true)
     private val storyLikes : MutableList<StoryLike> = mutableListOf()
@@ -64,7 +60,7 @@ class Story(
 
 
     /**
-     * ================ Public Methods =======================
+     * =========== Responsibilities =============
      */
 
     fun viewComments() :List<Comment> = ArrayList(comments)
@@ -93,36 +89,44 @@ class Story(
 
 
     fun addComment(contents: String, user: User) {
+
         val comment = Comment(contents = contents, user = user, story = this)
+
         comments.add(comment)
         this.commentCount++
     }
 
     fun deleteComment(commentId: Long, user:User): Boolean{
+
         val comment = comments.find { it.id == commentId && it.user.id == user.id!! }
+
         if(comment != null){
             commentCount -= comment.numOfReply
             commentCount -= 1
             comments.remove(comment)
             return true
         }
+
         return false
     }
 
     fun addReplyComment(commentId: Long, contents: String, user: User):Boolean {
 
         val comment = getComment(commentId)
+
         if(comment.parent == null){
             comment.addReplyComment(contents, user)
             commentCount++
             return true
         }
+
         return false
     }
 
     fun likeComment(commentId: Long):Boolean{
 
         val comment = getComment(commentId)
+
         val isLiked = comment.likeComment(user)
 
         return isLiked
@@ -131,12 +135,14 @@ class Story(
     fun dislikeComment(commentId: Long):Boolean{
 
         val comment = getComment(commentId)
+
         val isDiskiked = comment.disLikeComment(user)
 
         return isDiskiked
     }
 
     fun deleteReplyComment(commentId: Long, user:User){
+
         val comment = getComment(commentId)
 
         comment.deleteReplyComment(commentId)
@@ -145,11 +151,14 @@ class Story(
 
 
     fun addStoryTag(storyTag: StoryTag) {
+
         storyTags.add(storyTag)
     }
 
     fun deleteStoryTag(storyTag: StoryTag): Boolean{
+
         val isRemoved = storyTags.removeIf { it.id == storyTag.id }
+
         return isRemoved
     }
 
@@ -160,25 +169,30 @@ class Story(
      */
 
     private fun findUserLike(user: User) : StoryLike? {
+
         return storyLikes.find { it.user.id == (user.id ?: throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)) }
     }
 
 
     private fun doLike(user: User){
+
         storyLikes.add(StoryLike(user = user, story = this))
         likeCount = storyLikes.size
     }
 
     private fun cancelLike(storyLike: StoryLike){
+
          storyLikes.remove(storyLike)
          likeCount = storyLikes.size
     }
 
     private fun getComment(commentId : Long) : Comment{
+
         return comments.firstOrNull{it.id == commentId} ?: throw NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
     }
 
     private fun calculateNumberOfCommentsWithReply():Int{
+
         var sumOfReplyCount :Int = 0
 
         for( comment in comments){

@@ -11,6 +11,9 @@ class TagDomain(
     private val tagRepository: TagRepository
 ) {
 
+    /**
+     * =========== Responsibilities =============
+     */
 
     fun addTagsToStory(story: Story, tags: List<String>) {
 

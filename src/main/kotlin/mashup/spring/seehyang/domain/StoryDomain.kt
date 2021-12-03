@@ -25,6 +25,10 @@ class StoryDomain(
     private val storyLikeRepository: StoryLikeRepository,
     private val commentRepository: CommentRepository
 ) {
+
+    /**
+     * =========== Exceptions ==================
+     */
     private val STORY_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_STORY)
     private val COMMENT_NOT_FOUND_EXCEPTION = NotFoundException(SeehyangStatus.NOT_FOUND_COMMENT)
     private val UNAUTHORIZED_STORY_ACCESS = UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
@@ -32,7 +36,7 @@ class StoryDomain(
 
 
     /**
-     * ========= Story 생성 =============
+     * =========== Responsibilities =============
      */
 
     fun createStory(storyCreateRequest: StoryCreateRequest, user: User?, perfume: Perfume, image: Image): Story {
@@ -44,10 +48,6 @@ class StoryDomain(
         return storyRepository.save(story)
 
     }
-
-    /**
-     * ========= Story ID로 조회 =================
-     */
 
     // Story ID로 단건 조회
     fun getStoryById(storyId: Long, user: User?): Story {
@@ -102,10 +102,7 @@ class StoryDomain(
     }
 
 
-    /**
-     * ============= Perfume ID 로 조회 =================
-     */
-
+    // 특정 Perfume 에 관한 스토리 여러 개를 가져온다
     fun getStoriesByPerfume(
         perfumeId: Long,
         user: User?,
@@ -129,12 +126,20 @@ class StoryDomain(
         return stories
     }
 
-    /**
-     * =========== Comment ==========
-     */
+    fun deleteStory(storyId: Long, user: User?): Long {
 
+        val story = getStoryById(storyId, user)
+
+        validateDeleteAccess(story, user ?: throw UNAUTHORIZED_STORY_ACCESS)
+
+        storyRepository.deleteById(storyId)
+
+        return storyId
+    }
+
+
+    // 코멘트
     private val COMMENT_PAGE_SIZE: Int = 20
-
 
     fun getComments(storyId: Long, user: User?, cursor: Long?): List<Comment> {
 
@@ -162,27 +167,7 @@ class StoryDomain(
     }
 
 
-    /**
-     * =============== Story 변경 ================
-     */
-
-
-    fun deleteStory(storyId: Long, user: User?): Long {
-
-        val story = getStoryById(storyId, user)
-
-        validateDeleteAccess(story, user ?: throw UNAUTHORIZED_STORY_ACCESS)
-
-        storyRepository.deleteById(storyId)
-
-        return storyId
-    }
-
-
-    /**
-     * ============= Caching =================
-     */
-
+    //캐싱에 사용되는 메서드
     fun getStoryIdByRecentLike(from: LocalDateTime, to: LocalDateTime, size: Int): List<Long> {
 
         val stories = storyLikeRepository.findStoryIdByRecentLike(
@@ -249,13 +234,6 @@ class StoryDomain(
     private fun isAccessible(isOnlyMe: Boolean, idInDto: Long?, idInStory: Long?): Boolean {
 
         return if (idInDto != null && idInStory != null) (isOnlyMe && idInDto != idInStory).not() else isOnlyMe.not()
-    }
-
-    private fun getComment(storyId: Long, commentId: Long, user: User?): Comment {
-
-        val story = getStoryById(storyId, user)
-        val comment = commentRepository.findByStoryIdAndCommentId(story.id!!, commentId) ?: throw COMMENT_NOT_FOUND_EXCEPTION
-        return comment
     }
 
     private fun validateDeleteAccess(story: Story, user: User) {

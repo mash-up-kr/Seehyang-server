@@ -10,7 +10,6 @@ import java.time.LocalDateTime
 
 @Component
 class Scheduler(
-
     val perfumeDomain: PerfumeDomain,
     val storyDomain: StoryDomain,
     val cacheDomain: CacheDomain
