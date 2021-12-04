@@ -1,6 +1,9 @@
 package mashup.spring.seehyang
 
 import mashup.spring.seehyang.domain.entity.Image
+import mashup.spring.seehyang.domain.entity.community.Story
+import mashup.spring.seehyang.domain.entity.community.StoryTag
+import mashup.spring.seehyang.domain.entity.community.Tag
 import mashup.spring.seehyang.domain.entity.user.OAuthType
 import mashup.spring.seehyang.domain.entity.perfume.Brand
 import mashup.spring.seehyang.domain.entity.perfume.Gender
@@ -8,16 +11,37 @@ import mashup.spring.seehyang.domain.entity.perfume.Perfume
 import mashup.spring.seehyang.domain.entity.perfume.PerfumeType
 import mashup.spring.seehyang.domain.entity.user.User
 
-fun createTestUser() : User{
+fun createTestUser(isSetDefaultInfo: Boolean) : User{
     val user = User(
         email = "test@test.com",
         oAuthType = OAuthType.GOOGLE
     )
-    user.changeGender(Gender.BOTH)
-    user.changeAge(99)
-    user.changeNickname("test")
+    if(isSetDefaultInfo){
+
+        user.changeGender(Gender.BOTH)
+        user.changeAge(99)
+        user.changeNickname("test")
+    }
     return user
 }
+
+fun createTestStory(isSetDefaultInfo: Boolean): Story {
+
+    val user = createTestUser(true)
+    val story = Story(isOnlyMe = false,
+                      image = createTestImage(),
+                      perfume = createTestPerfume(createTestBrand()),
+                      user= user)
+
+    if(isSetDefaultInfo){
+        story.likeStory(user)
+        story.addStoryTag(StoryTag(tag = Tag(contents = "test"),story = story))
+        story.addComment("testComment", user)
+    }
+    return story
+}
+
+
 
 fun createTestBrand() : Brand{
     return Brand(
