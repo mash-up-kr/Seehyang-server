@@ -100,7 +100,7 @@ class User(
         this.nickname = nickname
     }
 
-    fun disableUser(){
+    fun inactivateUser(){
         this.isActivated = false
     }
 
@@ -118,7 +118,7 @@ class User(
 
 
     private fun validateAge(age: Int) {
-        if(age < 0 || age > 100) throw BadRequestException(SeehyangStatus.INVALID_AGE)
+        if(age < 1 || age > 100) throw BadRequestException(SeehyangStatus.INVALID_AGE)
     }
 
     private fun validateEmailFormat(email: String) :String{
