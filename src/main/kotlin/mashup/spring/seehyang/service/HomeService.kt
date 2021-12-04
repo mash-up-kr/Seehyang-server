@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional
 class HomeService(
     val storyDomain: StoryDomain,
     val perfumeDomain: PerfumeDomain,
-    val userDomain: UserDomain,
     val cacheDomain: CacheDomain
 ) {
 

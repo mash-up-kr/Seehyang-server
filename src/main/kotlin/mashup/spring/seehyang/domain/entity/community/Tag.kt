@@ -15,7 +15,7 @@ class Tag(
 ):BaseTimeEntity(){
 
     @OneToMany(mappedBy = "tag")
-    private val storyTags: MutableList<StoryTag> = mutableListOf()
+    private val storyTags: MutableSet<StoryTag> = mutableSetOf()
 
     fun addStoryTag(storyTag: StoryTag){
         this.storyTags.add(storyTag)

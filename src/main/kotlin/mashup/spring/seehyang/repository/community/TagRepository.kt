@@ -8,5 +8,5 @@ interface TagRepository: JpaRepository<Tag, Long> {
 
     fun existsByContents(contents: String) : Boolean
 
-    fun findByContents(contents: String) : Tag
+    fun findByContents(contents: String) : Tag?
 }

@@ -33,7 +33,8 @@ enum class SeehyangStatus(
     INTERNAL_SERVER_ERROR(5000, "This request cannot be proceed."),
     INVALID_USER_ENTITY(5001, "Invalid User entity for making User Dto"),
     INVALID_IMAGE_ENTITY(5002, "Invalid Image Entity"),
-    INVALID_STORY_ENTITY(5003, "Invalid Story Entity");
+    INVALID_STORY_ENTITY(5003, "Invalid Story Entity"),
+    INVALID_TAG_ENTITY(5004, "Invalid Tag Entity");
 
 
     companion object {
