@@ -88,12 +88,14 @@ class Story(
     }
 
 
-    fun addComment(contents: String, user: User) {
+    fun addComment(contents: String, user: User):Comment {
 
         val comment = Comment(contents = contents, user = user, story = this)
 
         comments.add(comment)
         this.commentCount++
+
+        return comment
     }
 
     fun deleteComment(commentId: Long, user:User): Boolean{

@@ -11,7 +11,17 @@ class Tag(
     @Column(unique = true)
     val contents : String,
 
-    @OneToMany(mappedBy = "tag")
-    val storyTags: MutableList<StoryTag> = mutableListOf()
 
-):BaseTimeEntity()
+):BaseTimeEntity(){
+
+    @OneToMany(mappedBy = "tag")
+    private val storyTags: MutableList<StoryTag> = mutableListOf()
+
+    fun addStoryTag(storyTag: StoryTag){
+        this.storyTags.add(storyTag)
+    }
+
+    fun viewStoryTag(): List<StoryTag>{
+        return ArrayList(storyTags)
+    }
+}

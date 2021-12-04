@@ -115,7 +115,7 @@ class UserService(
 
         val userId = validUser.id ?: throw InternalServerException(SeehyangStatus.INVALID_USER_ENTITY)
 
-        validUser.disableUser()
+        validUser.inactivateUser()
 
         return userId
     }
