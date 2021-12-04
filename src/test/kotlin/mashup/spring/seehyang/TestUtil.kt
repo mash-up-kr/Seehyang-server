@@ -25,19 +25,13 @@ fun createTestUser(isSetDefaultInfo: Boolean) : User{
     return user
 }
 
-fun createTestStory(isSetDefaultInfo: Boolean): Story {
+fun createTestStory(image: Image, perfume: Perfume, user: User): Story {
 
-    val user = createTestUser(true)
     val story = Story(isOnlyMe = false,
-                      image = createTestImage(),
-                      perfume = createTestPerfume(createTestBrand()),
+                      image = image,
+                      perfume = perfume,
                       user= user)
 
-    if(isSetDefaultInfo){
-        story.likeStory(user)
-        story.addStoryTag(StoryTag(tag = Tag(contents = "test"),story = story))
-        story.addComment("testComment", user)
-    }
     return story
 }
 

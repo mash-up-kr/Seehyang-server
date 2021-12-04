@@ -1,10 +1,18 @@
 package mashup.spring.seehyang.domain.entity
 
+import mashup.spring.seehyang.createTestBrand
+import mashup.spring.seehyang.createTestPerfume
 import mashup.spring.seehyang.createTestStory
 import mashup.spring.seehyang.createTestUser
+import mashup.spring.seehyang.domain.entity.community.Story
 import mashup.spring.seehyang.domain.entity.community.StoryTag
 import mashup.spring.seehyang.domain.entity.community.Tag
+import mashup.spring.seehyang.domain.entity.perfume.Perfume
+import mashup.spring.seehyang.domain.entity.user.User
+import mashup.spring.seehyang.repository.ImageRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
+import mashup.spring.seehyang.repository.perfume.BrandRepository
+import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import mashup.spring.seehyang.repository.user.UserRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
@@ -12,26 +20,43 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 
 @DataJpaTest
 class StoryTest @Autowired constructor (
+    val imageRepository: ImageRepository,
     val userRepository: UserRepository,
-    val storyRepository: StoryRepository
+    val storyRepository: StoryRepository,
+    val perfumeRepository: PerfumeRepository,
+    val brandRepository: BrandRepository
 ){
 
+    @BeforeEach
+    fun before(){
+
+        //set other entities
+        val image = Image(url = "test")
+        val brand = createTestBrand()
+        val perfume = createTestPerfume(brand)
+        val user = createTestUser(true)
+
+        imageRepository.save(image)
+        brandRepository.save(brand)
+        perfumeRepository.save(perfume)
+        userRepository.save(user)
+    }
 
     /**
      * 테스트용 스토리를 만드는 함수를 테스트한다.
      */
     @Test
     fun createTestStoryTest(){
-        val isSetDefault = true
 
-        val testStory = createTestStory(isSetDefault)
+        val testStory = createStory()
 
-        assertEquals(testStory.commentCount, 1)
-        assertEquals(testStory.likeCount, 1)
-        assertEquals(testStory.viewStoryTags().size, 1)
+        assertEquals(testStory.commentCount, 0)
+        assertEquals(testStory.likeCount, 0)
+        assertEquals(testStory.viewStoryTags().size, 0)
     }
 
     /**
@@ -39,13 +64,12 @@ class StoryTest @Autowired constructor (
      */
     @Test
     fun likeStoryTest(){
-        val user = createTestUser(false)
-        val story = createTestStory(false)
+        val user = userRepository.findAll()[0]
+        val story = createStory()
 
-        val savedUser = userRepository.save(user)
 
         for(i in 1..3){
-            story.likeStory(savedUser)
+            story.likeStory(user)
         }
         //좋아요-좋아요취소-좋아요
         assertEquals(story.likeCount, 1)
@@ -53,7 +77,7 @@ class StoryTest @Autowired constructor (
 
     @Test
     fun addStoryTagTest(){
-        val story = createTestStory(false)
+        val story = createStory()
 
         story.addStoryTag(StoryTag(tag = Tag(contents = "testTag1"), story = story))
         story.addStoryTag(StoryTag(tag = Tag(contents = "testTag2"), story = story))
@@ -65,7 +89,7 @@ class StoryTest @Autowired constructor (
     @Test
     fun deleteStoryTagTest(){
         val user = createTestUser(false)
-        val story = createTestStory(false)
+        val story = createStory()
 
         val tag1 = Tag(contents = "testTag1")
         val tag2 = Tag(contents = "testTag2")
@@ -88,7 +112,7 @@ class StoryTest @Autowired constructor (
 
     @Test
     fun saveStoryTest(){
-        val story = createTestStory(false)
+        val story = createStory()
 
         storyRepository.save(story)
         val storyUser = userRepository.save(story.user)
@@ -99,7 +123,7 @@ class StoryTest @Autowired constructor (
 
     @Test
     fun addCommentTest(){
-        val story = createTestStory(false)
+        val story = createStory()
 
         storyRepository.save(story)
         val user = userRepository.save(story.user)
@@ -117,7 +141,7 @@ class StoryTest @Autowired constructor (
 
     @Test
     fun saveCommentTest(){
-        val story = createTestStory(false)
+        val story = createStory()
         val user = userRepository.save(story.user)
         val comment2 = story.addComment("testComment2", user)
         val comment1 = story.addComment("testComment1", user)
@@ -126,6 +150,15 @@ class StoryTest @Autowired constructor (
         val foundStory = storyRepository.findById(story.id!!).get()
 
         assertThat(foundStory.viewComments()).contains(comment1, comment2)
+    }
+
+
+    private fun createStory(): Story {
+        val image = imageRepository.findAll()[0]
+        val perfume = perfumeRepository.findAll()[0]
+        val user = userRepository.findAll()[0]
+
+        return createTestStory(image = image, perfume = perfume, user = user)
     }
 
 
