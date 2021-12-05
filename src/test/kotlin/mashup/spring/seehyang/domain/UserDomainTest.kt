@@ -85,7 +85,7 @@ class UserDomainTest @Autowired constructor(
         assertThat(loginUser).isNull()
     }
 
-
+    //TODO: 모든 메서드 모든 조건 테스트 코드 작성하기
 
     private fun createStory(): Story {
         val image = imageRepository.findAll()[0]

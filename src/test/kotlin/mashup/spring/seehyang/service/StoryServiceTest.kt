@@ -1,68 +1,106 @@
-//package mashup.spring.seehyang.service
-//
-//import mashup.spring.seehyang.controller.api.dto.community.StoryCreateRequest
-//import mashup.spring.seehyang.createTestBrand
-//import mashup.spring.seehyang.createTestImage
-//import mashup.spring.seehyang.createTestPerfume
-//import mashup.spring.seehyang.createTestUser
-//import mashup.spring.seehyang.domain.entity.Image
-//import mashup.spring.seehyang.domain.entity.perfume.Brand
-//import mashup.spring.seehyang.domain.entity.perfume.Perfume
-//import mashup.spring.seehyang.domain.entity.user.User
-//import mashup.spring.seehyang.repository.ImageRepository
-//import mashup.spring.seehyang.repository.community.StoryLikeRepository
-//import mashup.spring.seehyang.repository.community.StoryRepository
-//import mashup.spring.seehyang.repository.community.StoryTagRepository
-//import mashup.spring.seehyang.repository.community.TagRepository
-//import mashup.spring.seehyang.repository.perfume.BrandRepository
-//import mashup.spring.seehyang.repository.perfume.PerfumeRepository
-//import mashup.spring.seehyang.repository.user.UserRepository
-//import org.junit.jupiter.api.Assertions.*
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Test
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.boot.test.context.SpringBootTest
-//
-//@SpringBootTest
-//class StoryServiceTest  @Autowired constructor(
-//    val storyLikeRepository: StoryLikeRepository,
-//    val userRepository: UserRepository,
-//    val imageRepository: ImageRepository,
-//    val brandRepository: BrandRepository,
-//    val storyRepository: StoryRepository,
-//    val perfumeRepository: PerfumeRepository,
-//    val storyTagRepository: StoryTagRepository,
-//    val tagRepository: TagRepository,
-//    val userService: UserService
-//) {
-//
-//    private val expectedTag: String ="태그1"
-//    private val expectedTag2: String ="태그2"
-//
-//    private lateinit var user: User
-//    private lateinit var brand: Brand
-//    private lateinit var perfume: Perfume
-//    private lateinit var image: Image
-//
-//    private val tagService : TagService = TagService(tagRepository)
-//    private val storyService: StoryService = StoryService(storyLikeRepository, storyRepository, imageRepository, perfumeRepository, tagService,userService)
-//
-//    @BeforeEach
-//    fun setUp() {
-//        user = userRepository.save(createTestUser())
-//        brand = brandRepository.save(createTestBrand())
-//        perfume = perfumeRepository.save(createTestPerfume(brand))
-//        image = imageRepository.save(createTestImage())
-//    }
-//
-//    @Test
-//    fun storyCreateTest() {
-//        val request = StoryCreateRequest(perfume.id!!, image.id!!, mutableListOf(expectedTag, expectedTag2),false)
-//
-//        val actual = storyService.createStory(user, request)
-//
-//        assertEquals(expectedTag, actual.tags[0].contents)
-//        assertEquals(expectedTag2, actual.tags[1].contents)
-//    }
-//
-//}
+package mashup.spring.seehyang.service
+
+import mashup.spring.seehyang.createTestBrand
+import mashup.spring.seehyang.createTestPerfume
+import mashup.spring.seehyang.createTestStory
+import mashup.spring.seehyang.createTestUser
+import mashup.spring.seehyang.domain.StoryDomain
+import mashup.spring.seehyang.domain.entity.Image
+import mashup.spring.seehyang.domain.entity.community.Story
+import mashup.spring.seehyang.repository.ImageRepository
+import mashup.spring.seehyang.repository.community.StoryRepository
+import mashup.spring.seehyang.repository.community.TagRepository
+import mashup.spring.seehyang.repository.perfume.BrandRepository
+import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
+import mashup.spring.seehyang.repository.perfume.PerfumeRepository
+import mashup.spring.seehyang.repository.user.UserRepository
+import mashup.spring.seehyang.service.auth.UserId
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import javax.persistence.EntityManager
+import org.assertj.core.api.Assertions.assertThat
+import org.springframework.transaction.annotation.Transactional
+
+@Transactional
+@SpringBootTest
+class StoryServiceTest  @Autowired constructor(
+    val perfumeRepository: PerfumeRepository,
+    val imageRepository: ImageRepository,
+    val userRepository: UserRepository,
+    val storyRepository: StoryRepository,
+    val brandRepository: BrandRepository,
+    val entityManager: EntityManager,
+    val storyService: StoryService
+)  {
+    @BeforeEach
+    fun before(){
+        //set other entities
+        val image = Image(url = "test")
+        val brand = createTestBrand()
+        val perfume = createTestPerfume(brand)
+        val user = createTestUser(true)
+
+        imageRepository.save(image)
+        brandRepository.save(brand)
+        perfumeRepository.save(perfume)
+        userRepository.save(user)
+    }
+
+    @Test
+    @DisplayName("User Id 가 Null 이 아니고 좋아요 한 경우")
+    fun getStoryDetailWithLikeTest(){
+        val story = storyRepository.save(createStory())
+        val storyId = story.id!!
+        story.likeStory(story.user)
+        val userId = story.user.id!!
+        entityManager.flush()
+        entityManager.clear()
+
+        val foundStory = storyService.getStoryDetail(storyId, UserId(userId))
+
+        assertThat(foundStory.id).isEqualTo(storyId)
+        assertThat(foundStory.isLiked).isTrue
+    }
+
+    @Test
+    @DisplayName("User Id 가 Null 이 아니고 좋아요하지 않은 경우")
+    fun getStoryDetailWithOutLikeTest(){
+        val story = storyRepository.save(createStory())
+        val storyId = story.id!!
+        val userId = story.user.id!!
+        entityManager.flush()
+        entityManager.clear()
+
+        val foundStory = storyService.getStoryDetail(storyId, UserId(userId))
+
+        assertThat(foundStory.id).isEqualTo(storyId)
+        assertThat(foundStory.isLiked).isFalse
+    }
+
+    @Test
+    @DisplayName("User Id 가 Null 인 경우")
+    fun getStoryDetailWithOutUserTest(){
+        val story = storyRepository.save(createStory())
+        val storyId = story.id!!
+        entityManager.flush()
+        entityManager.clear()
+
+        val foundStory = storyService.getStoryDetail(storyId, null)
+
+        assertThat(foundStory.id).isEqualTo(storyId)
+        assertThat(foundStory.isLiked).isFalse
+    }
+
+    //TODO: 모든 메서드 모든 조건 테스트 코드 작성하기
+
+    private fun createStory(): Story {
+        val image = imageRepository.findAll()[0]
+        val perfume = perfumeRepository.findAll()[0]
+        val user = userRepository.findAll()[0]
+
+        return createTestStory(image = image, perfume = perfume, user = user)
+    }
+}

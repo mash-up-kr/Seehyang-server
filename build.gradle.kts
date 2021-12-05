@@ -42,7 +42,7 @@ dependencies {
 	implementation("com.github.ben-manes.caffeine:caffeine:2.8.5")
 	implementation("io.springfox:springfox-boot-starter:3.0.0")
 
-    // test
+	// test
 	runtimeOnly("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
