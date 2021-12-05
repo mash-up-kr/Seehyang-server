@@ -12,11 +12,9 @@ import mashup.spring.seehyang.repository.perfume.PerfumeLikeRepository
 import mashup.spring.seehyang.repository.perfume.PerfumeRepository
 import mashup.spring.seehyang.repository.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import javax.persistence.EntityManager
 
@@ -61,6 +59,33 @@ class PerfumeDomainTest @Autowired constructor(
         assertThat(foundPerfume.id).isEqualTo(perfume.id)
     }
 
+    @Test
+    fun getPerfumesTest(){
+        val perfume = perfumeRepository.findAll()[0]
+        val perfumeId = perfume.id!!
+        val brand = brandRepository.findAll()[0]
+        val perfume2 = perfumeRepository.save(createTestPerfume(brand))
+        //순서 조심
+        entityManager.flush()
+        entityManager.clear()
 
+        val foundPerfume = perfumeDomain.getPerfumes(listOf(perfumeId,perfume2.id!!)).map { it.id!! }
+
+        assertThat(foundPerfume).contains(perfumeId, perfume2.id!!)
+    }
+
+    @Test
+    fun getPerfumeWithUserTest(){
+        val perfume = perfumeRepository.findAll()[0]
+        val user = userRepository.findAll()[0]
+        perfume.likePerfume(user)
+
+        val foundPerfume = perfumeDomain.getPerfumeWithUser(perfumeId = perfume.id!!, user)
+
+        assertThat(foundPerfume.id).isEqualTo(perfume.id!!)
+        assertThat(foundPerfume.isLiked).isTrue
+        assertThat(foundPerfume.likeCount).isEqualTo(1)
+
+    }
 
 }
