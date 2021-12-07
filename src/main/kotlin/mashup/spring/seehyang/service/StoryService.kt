@@ -66,7 +66,6 @@ class StoryService(
             cursor = cursor
         )
 
-
         return getStoryDtosWithIsLiked(stories, user)
     }
 

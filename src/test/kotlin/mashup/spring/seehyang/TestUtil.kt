@@ -25,9 +25,9 @@ fun createTestUser(isSetDefaultInfo: Boolean) : User{
     return user
 }
 
-fun createTestStory(image: Image, perfume: Perfume, user: User): Story {
+fun createTestStory(image: Image, perfume: Perfume, user: User, isOnlyMe:Boolean = false): Story {
 
-    val story = Story(isOnlyMe = false,
+    val story = Story(isOnlyMe = isOnlyMe,
                       image = image,
                       perfume = perfume,
                       user= user)

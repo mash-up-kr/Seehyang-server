@@ -81,6 +81,21 @@ class StoryServiceTest  @Autowired constructor(
     }
 
     @Test
+    @DisplayName("Image 에 prefix 잘 붙어서 오는지")
+    fun getStoryDetailImageUrlTest(){
+        val story = storyRepository.save(createStory())
+        val storyId = story.id!!
+        val userId = story.user.id!!
+        entityManager.flush()
+        entityManager.clear()
+
+        val foundStory = storyService.getStoryDetail(storyId, UserId(userId))
+
+        assertThat(foundStory.id).isEqualTo(storyId)
+        assertThat(foundStory.imageUrl).contains("https://elasticbeanstalk-ap-northeast-2-306614265263.s3.ap-northeast-2.amazonaws.com/")
+    }
+
+    @Test
     @DisplayName("User Id 가 Null 인 경우")
     fun getStoryDetailWithOutUserTest(){
         val story = storyRepository.save(createStory())
@@ -92,6 +107,22 @@ class StoryServiceTest  @Autowired constructor(
 
         assertThat(foundStory.id).isEqualTo(storyId)
         assertThat(foundStory.isLiked).isFalse
+    }
+    @Test
+    @DisplayName("")
+    fun getStoriesByPerfumeTest(){
+        //getStoriesByPerfume(perfumeId: Long, userId: UserId?, cursor: Long?)
+        storyRepository.save(createStory())
+        val story = storyRepository.findAll()[0]
+        val perfumeId = story.perfume.id!!
+        entityManager.flush()
+        entityManager.clear()
+
+        val stories = storyService.getStoriesByPerfume(perfumeId, null, null)
+        assertThat(stories.size).isEqualTo(1)
+        assertThat(stories[0].isLiked).isFalse
+        assertThat(stories[0].id!!).isEqualTo(story.id!!)
+
     }
 
     //TODO: 모든 메서드 모든 조건 테스트 코드 작성하기

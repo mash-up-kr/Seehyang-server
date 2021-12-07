@@ -43,7 +43,7 @@ class StoryApiController(
      * 2. 향수 id 로 여러개 가져오기
      */
     @GetMapping("/perfume/{perfumeId}/story")
-    fun getStoryByPerfume(
+    fun getStoriesByPerfume(
         @ApiIgnore userId: UserId?,
         @PathVariable(value = "perfumeId") perfumeId: Long,
         @RequestParam(value = "cursor", required = false)cursor: Long? = null
@@ -53,6 +53,8 @@ class StoryApiController(
 
         return SeehyangResponse(storyListDto)
     }
+
+
 
     @PostMapping("/story")
     fun createStory(

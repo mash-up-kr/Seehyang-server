@@ -1,17 +1,13 @@
 package mashup.spring.seehyang.domain
 
-import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.entity.user.OAuthType
 import mashup.spring.seehyang.domain.enums.Domain
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.BadRequestException
-import mashup.spring.seehyang.exception.InternalServerException
 import mashup.spring.seehyang.exception.NotFoundException
-import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.user.UserRepository
 import mashup.spring.seehyang.service.auth.UserId
-import mashup.spring.seehyang.util.isValidEmailFormat
 
 
 @Domain
@@ -68,9 +64,10 @@ class UserDomain(
     }
 
 
-    fun saveUser(email: String, oAuthType: OAuthType): User {
+    fun signUpUser(email: String, oAuthType: OAuthType): User {
 
-        validateDuplicatedEmail(email)
+        validateDuplicatedEmailWithInActiveUser(email)
+
 
         val user = User(email = email, oAuthType = oAuthType)
 
@@ -81,10 +78,7 @@ class UserDomain(
      * Private Methods
      */
 
-    private fun isExistAndActive(foundUser: User?): Boolean {
 
-        return foundUser != null && foundUser.isActivated
-    }
 
 
     private fun validateActiveUser(foundUser: User) {
@@ -101,7 +95,7 @@ class UserDomain(
     }
 
 
-    private fun validateDuplicatedEmail(email: String) {
+    private fun validateDuplicatedEmailWithInActiveUser(email: String) {
 
         val isDuplicated = existsByEmail(email)
 
@@ -110,11 +104,14 @@ class UserDomain(
         }
     }
 
-
     private fun existsByEmail(email: String): Boolean {
 
         val foundUser = userRepository.findByEmail(email)
 
         return isExistAndActive(foundUser)
+    }
+    private fun isExistAndActive(foundUser: User?): Boolean {
+
+        return foundUser != null && foundUser.isActivated
     }
 }

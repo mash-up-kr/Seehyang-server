@@ -57,7 +57,7 @@ class UserApiController(
     fun registerUserDetailInfo(
         @ApiIgnore userId: UserId?,
         @RequestBody registerUserDetailRequest: RegisterUserDetailRequest,
-    ): SeehyangResponse<RegisterUserDetailResponse> {
+    ): SeehyangResponse<UserDto> {
 
         if(userId ==null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)

@@ -31,7 +31,7 @@ class UserService(
 
         val verifiedInfo = verifyOAuthToken(req)
 
-        val user = userDomain.saveUser(verifiedInfo.email, req.oAuthType)
+        val user = userDomain.signUpUser(verifiedInfo.email, req.oAuthType)
 
         return SignUpResponse(userJwtService.encode(user.id!!))
     }
@@ -41,7 +41,7 @@ class UserService(
     fun registerUserDetail(
         userId: UserId,
         req: RegisterUserDetailRequest
-    ): RegisterUserDetailResponse {
+    ): UserDto {
 
         val user: User? = userDomain.getLoginUser(userId)
 
@@ -53,7 +53,7 @@ class UserService(
             nickname = req.nickname
         )
 
-        return RegisterUserDetailResponse(UserDto(validUser))
+        return UserDto(validUser)
 
 
     }
