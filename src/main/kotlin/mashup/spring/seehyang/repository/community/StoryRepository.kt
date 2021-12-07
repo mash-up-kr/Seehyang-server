@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 import java.util.*
 
 @Repository
@@ -34,6 +35,18 @@ interface StoryRepository : JpaRepository<Story, Long>{
                    "and s.perfume.id = :perfumeId " +
                    "and s.id < :cursor ")
     fun findPublicStoriesByPerfumeId(@Param("perfumeId") perfumeId: Long, @Param("cursor") cursor: Long, pageable: Pageable): List<Story>
+
+    @Query("select count(s) from Story s " +
+                   "where s.isOnlyMe = false " +
+                   "and s.perfume.id = :perfumeId " +
+                   "and s.createdAt >= :from and s.createdAt <= :to")
+    fun countPublicStoriesByPerfumeId(@Param("perfumeId") perfumeId: Long, @Param("from") from: LocalDateTime, @Param("to") to: LocalDateTime): Long
+
+    @Query("select count(s) from Story s " +
+                   "where s.perfume.id = :perfumeId " +
+                   "and (s.user.id = :userId or (s.user.id <> :userId and s.isOnlyMe = false)) " +
+                   "and s.createdAt >= :from and s.createdAt <= :to")
+    fun countStoriesByPerfumeIdWithUser(@Param("perfumeId") perfumeId: Long, @Param("userId") userId: Long, @Param("from") from: LocalDateTime, @Param("to") to: LocalDateTime): Long
 
     @EntityGraph(attributePaths = ["user","image","perfume"])
     @Query("select s from Story s " +

@@ -14,10 +14,12 @@ import mashup.spring.seehyang.exception.UnauthorizedException
 import mashup.spring.seehyang.repository.community.CommentRepository
 import mashup.spring.seehyang.repository.community.StoryLikeRepository
 import mashup.spring.seehyang.repository.community.StoryRepository
+import mashup.spring.seehyang.service.auth.UserId
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import java.time.LocalDateTime
+import java.time.Month
 
 @Domain
 class StoryDomain(
@@ -67,6 +69,16 @@ class StoryDomain(
         validateAccessibility(story, user)
 
         return story
+    }
+
+    fun countStoriesByPerfume(perfumeId : Long, user: User?): Long{
+        val fast = LocalDateTime.of(1970, Month.JANUARY,1,0,0)
+        return if(user == null){
+            storyRepository.countPublicStoriesByPerfumeId(perfumeId, from = fast, to = LocalDateTime.now())
+        }else{
+            storyRepository.countStoriesByPerfumeIdWithUser(perfumeId, user.id?: throw INVALID_USER_ENTITY, from = fast, to = LocalDateTime.now())
+        }
+
     }
 
     // 여러개 Story ID 로 스토리 조회

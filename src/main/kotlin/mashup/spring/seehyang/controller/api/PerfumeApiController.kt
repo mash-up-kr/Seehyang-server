@@ -28,6 +28,20 @@ class PerfumeApiController(
         return SeehyangResponse(perfume)
     }
 
+    /**
+     * 향수 id로 특정 시점의 스토리 개수가 몇개인지 조회
+     * https://github.com/mash-up-kr/Seehyang-server/issues/67
+     */
+    @GetMapping("/perfume/{perfumeId}/storyCount")
+    fun getStoryCount(
+        @PathVariable perfumeId: Long,
+        @ApiIgnore userId: UserId?
+    ): SeehyangResponse<Long>{
+        val count = perfumeService.getStoryCount(perfumeId, userId)
+
+        return SeehyangResponse(count)
+    }
+
     @GetMapping("/perfume/list")
     fun getPerfumeByName(
         @RequestParam(value = "name") name: String,

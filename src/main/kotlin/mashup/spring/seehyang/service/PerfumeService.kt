@@ -6,6 +6,7 @@ import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeEditRequest
 import mashup.spring.seehyang.controller.api.dto.user.UserDto
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
 import mashup.spring.seehyang.domain.PerfumeDomain
+import mashup.spring.seehyang.domain.StoryDomain
 import mashup.spring.seehyang.domain.UserDomain
 import mashup.spring.seehyang.domain.entity.user.User
 import mashup.spring.seehyang.exception.UnauthorizedException
@@ -17,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class PerfumeService(
     private val perfumeDomain: PerfumeDomain,
-    private val userDomain: UserDomain
+    private val userDomain: UserDomain,
+    private val storyDomain: StoryDomain
 ) {
     private val UNAUTHORIZED_PERFUME_ACCESS = UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
 
@@ -31,6 +33,16 @@ class PerfumeService(
         }
 
         return perfumeDomain.getPerfumeWithUser(perfumeId, user)
+    }
+
+    @Transactional(readOnly = true)
+    fun getStoryCount(perfumeId: Long, userId: UserId?): Long{
+
+        var user: User? = null
+        if (userId != null) {
+            user = userDomain.getLoginUser(userId)
+        }
+        return storyDomain.countStoriesByPerfume(perfumeId, user)
     }
 
     @Transactional(readOnly = true)
