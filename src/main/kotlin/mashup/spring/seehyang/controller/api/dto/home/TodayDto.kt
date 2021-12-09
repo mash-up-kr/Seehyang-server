@@ -12,7 +12,7 @@ data class TodaySeehyangDto(
     val storyEntityList: List<Story>,
 
     val perfume: TodayPerfume = TodayPerfume(perfumeEntity.id!!, addBucketUrl(perfumeEntity.thumbnailUrl), perfumeEntity.koreanName),
-    val stories: List<TodayStory> = storyEntityList.map { TodayStory(it.id!!, it.image.url, it.user.profileImage?.url, it.user.nickname, it.likeCount) }
+    val stories: List<TodayStory> = storyEntityList.map { TodayStory(it.id!!, addBucketUrl(it.image.url), it.user.profileImage?.url, it.user.nickname, it.likeCount) }
 )
 
 data class TodayPerfume(
