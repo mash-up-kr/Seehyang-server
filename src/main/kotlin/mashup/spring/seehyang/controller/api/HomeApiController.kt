@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.controller.api
 
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.dto.home.HotStoryDto
 import mashup.spring.seehyang.controller.api.dto.home.TodaySeehyangDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.controller.api.dto.user.UserDto
@@ -20,7 +21,7 @@ class HomeApiController(
     fun today(@ApiIgnore userId: UserId?) : SeehyangResponse<TodaySeehyangDto> = SeehyangResponse(homeService.todaySeehyang())
 
     @GetMapping("/home/hot-story")
-    fun hotStory(): SeehyangResponse<List<StoryDto>> = SeehyangResponse(homeService.hotStory())
+    fun hotStory(): SeehyangResponse<List<HotStoryDto>> = SeehyangResponse(homeService.hotStory())
 
     @GetMapping("/home/weekly-ranking")
     fun weeklyRanking(): SeehyangResponse<List<PerfumeDto>> = SeehyangResponse(homeService.weeklyRanking())

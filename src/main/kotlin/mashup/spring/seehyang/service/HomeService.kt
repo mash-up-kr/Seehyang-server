@@ -1,6 +1,7 @@
 package mashup.spring.seehyang.service
 
 import mashup.spring.seehyang.controller.api.dto.community.StoryDto
+import mashup.spring.seehyang.controller.api.dto.home.HotStoryDto
 import mashup.spring.seehyang.controller.api.dto.home.TodaySeehyangDto
 import mashup.spring.seehyang.controller.api.dto.perfume.PerfumeDto
 import mashup.spring.seehyang.controller.api.dto.user.UserDto
@@ -40,12 +41,12 @@ class HomeService(
 
     }
 
-    fun hotStory(): List<StoryDto> {
+    fun hotStory(): List<HotStoryDto> {
 
         val notLoginUser : User? = null
         val storyIds = cacheDomain.getHotStoryList()
 
-        return storyDomain.getStoriesByIds(storyIds, notLoginUser).map { StoryDto(it) }
+        return storyDomain.getStoriesByIds(storyIds, notLoginUser).map { HotStoryDto(it) }
     }
 
     fun weeklyRanking(): List<PerfumeDto> {
