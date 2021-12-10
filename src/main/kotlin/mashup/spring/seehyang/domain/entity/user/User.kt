@@ -80,7 +80,7 @@ class User(
      * =========== Responsibilities =============
      */
 
-    fun addUserInfo(age:Int, gender:Gender, nickname: String) {
+    fun setUserInfo(age:Int, gender:Gender, nickname: String) {
         changeAge(age)
         changeGender(gender)
         changeNickname(nickname)

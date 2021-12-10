@@ -42,15 +42,15 @@ class UserApiController(
     @PostMapping("/user/profile")
     fun changeUserProfileImage(
         @ApiIgnore userId: UserId?,
-        @RequestParam(value = "imageId") imageId: Long
-    ): SeehyangResponse<Pair<String, Long>> {
+        @RequestBody profileUpdateDto: ProfileUpdateDto
+    ): SeehyangResponse<UserDto> {
 
         if(userId ==null){
             throw UnauthorizedException(SeehyangStatus.UNAUTHORIZED_USER)
         }
-        userService.changeProfileImage(userId, imageId)
+        val changedUser = userService.changeProfileImage(userId, profileUpdateDto)
 
-        return SeehyangResponse(Pair("imageId", imageId))
+        return SeehyangResponse(UserDto(changedUser))
     }
 
     @PutMapping("/user")

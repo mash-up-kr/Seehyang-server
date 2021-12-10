@@ -47,7 +47,7 @@ class UserService(
 
         val validUser = validateLoginUser(user)
 
-        validUser.addUserInfo(
+        validUser.setUserInfo(
             age = req.age,
             gender = req.gender,
             nickname = req.nickname
@@ -62,21 +62,31 @@ class UserService(
     @Transactional
     fun changeProfileImage(
         userId: UserId,
-        imageId: Long
-    ) {
+        profileUpdateDto: ProfileUpdateDto
+    ): User {
 
         val user = userDomain.getLoginUser(userId = userId)
 
         val validUser = validateLoginUser(user)
 
-        val newImage = imageRepository.findById(imageId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_IMAGE) }
-        val oldImage = validUser.profileImage
+        val imageId = profileUpdateDto.imageId
+        val nickname = profileUpdateDto.nickname
 
-        if (oldImage != null) {
-            imageRepository.deleteById(oldImage.id ?: throw InternalServerException(SeehyangStatus.INVALID_IMAGE_ENTITY))
+        if (imageId != null){
+            val newImage = imageRepository.findById(imageId).orElseThrow { NotFoundException(SeehyangStatus.NOT_FOUND_IMAGE) }
+            val oldImage = validUser.profileImage
+
+            if (oldImage != null) {
+                imageRepository.deleteById(oldImage.id ?: throw InternalServerException(SeehyangStatus.INVALID_IMAGE_ENTITY))
+            }
+            validUser.changeProfileImage(newImage)
         }
 
-        validUser.changeProfileImage(newImage)
+        if (nickname != null) {
+            validUser.changeNickname(nickname)
+        }
+
+        return validUser
     }
 
     @Transactional(readOnly = true)
