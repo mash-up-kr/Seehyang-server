@@ -40,11 +40,12 @@ class UserDomain(
     fun getUserByEmail(email: String): User {
 
 
-        val foundUser = userRepository.findByEmail(email) ?: throw NOT_FOUND_USER_EXCEPTION
+        val foundUser = userRepository.findByEmail(email)
+        if(foundUser.isEmpty()) throw NOT_FOUND_USER_EXCEPTION
 
-        validateActiveUser(foundUser)
+        validateActiveUser(foundUser.last())
 
-        return foundUser
+        return foundUser.last()
     }
 
     fun getUserByNickname(nickname: String): User {
@@ -107,8 +108,9 @@ class UserDomain(
     private fun existsByEmail(email: String): Boolean {
 
         val foundUser = userRepository.findByEmail(email)
+        if(foundUser.isEmpty()) return false
 
-        return isExistAndActive(foundUser)
+        return isExistAndActive(foundUser.last())
     }
     private fun isExistAndActive(foundUser: User?): Boolean {
 
