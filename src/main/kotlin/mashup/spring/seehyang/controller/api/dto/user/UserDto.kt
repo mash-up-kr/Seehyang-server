@@ -1,8 +1,8 @@
 package mashup.spring.seehyang.controller.api.dto.user
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import mashup.spring.seehyang.controller.api.dto.addBucketUrl
 import mashup.spring.seehyang.controller.api.response.SeehyangStatus
-import mashup.spring.seehyang.domain.entity.Image
 import mashup.spring.seehyang.domain.entity.user.OAuthType
 import mashup.spring.seehyang.domain.entity.perfume.Gender
 import mashup.spring.seehyang.domain.entity.user.User
@@ -17,7 +17,7 @@ data class UserDto(
     val gender: Gender? = user.gender,
     val age:Short? = user.age,
     val nickname:String? = user.nickname,
-    val profileImage:Image? = user.profileImage,
+    val profileImage:String? = if (user.profileImage != null) addBucketUrl(user.profileImage!!.url) else null,
     val isActivated:Boolean = user.isActivated
 ) {
 
