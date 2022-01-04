@@ -18,6 +18,11 @@ spring:
         format_sql: true
     show-sql: true
 
+  servlet:
+    multipart:
+      maxFileSize: 2MB
+      maxRequestSize: 2MB
+
 # ===================================================================
 # AWS PROPERTIES
 # ===================================================================
@@ -39,6 +44,7 @@ cloud:
 server:
   tomcat:
     max-swallow-size: 2MB
+
 ---
 
 spring:
